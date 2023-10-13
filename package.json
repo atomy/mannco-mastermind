@@ -22,7 +22,7 @@
   "license": "MIT",
   "author": {
     "name": "Marcel Lamm",
-    "email": "info@marcel-lamm.de",
+    "email": "info@marcel-lamm.de"
   },
   "main": "./src/main/main.ts",
   "scripts": {
