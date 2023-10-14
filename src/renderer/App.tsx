@@ -1,4 +1,4 @@
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
+import { MemoryRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import { useState } from 'react';
 import { ReadyState } from 'react-use-websocket';
@@ -19,26 +19,30 @@ function Main() {
   };
 
   return (
-    <div>
-      <h1>Status</h1>
-      <div>
-        <span>
-          Connection to backend: <WebsocketsReadyState value={readyState} />
-        </span>
+    <div className="content">
+      <div className="connection-status">
+        <h1>Status</h1>
+        <div>
+          <span>
+            Connection to backend: <WebsocketsReadyState value={readyState} />
+          </span>
+        </div>
+        <div>
+          <span>
+            Connection to TF2: <span>✅</span>
+          </span>
+        </div>
       </div>
-      <div>
-        <span>
-          Connection to TF2: <span>✅</span>
-        </span>
+      <div className="player-list">
+        <h1>Current Players</h1>
+        <PlayerTableComponent players={players} />
+        <h1>Debug</h1>
+        <h2>Websocket</h2>
+        <WebsocketComponent
+          refreshPlayers={refreshPlayers}
+          refreshReadyState={refreshReadyState}
+        />
       </div>
-      <h1>Current Players</h1>
-      <PlayerTableComponent players={players} />
-      <h1>Debug</h1>
-      <h2>Websocket</h2>
-      <WebsocketComponent
-        refreshPlayers={refreshPlayers}
-        refreshReadyState={refreshReadyState}
-      />
     </div>
   );
 }

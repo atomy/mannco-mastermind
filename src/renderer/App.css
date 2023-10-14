@@ -14,7 +14,6 @@ body {
   );
   font-family: sans-serif;
   overflow-y: scroll;
-  display: flex;
   justify-content: center;
 }
 
@@ -55,8 +54,19 @@ a:hover {
 
 .Main {
   width: 100%;
-  display: flex;
   justify-content: center;
   align-items: center;
   margin: 20px 0;
+}
+
+.content {
+  display: flex;
+}
+
+.connection-status {
+  padding-right: 40px;
+}
+
+.player-list {
+  flex: 1;
 }
