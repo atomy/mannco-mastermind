@@ -23,7 +23,7 @@ export default function WebsocketComponent({
 
   useEffect(() => {
     if (lastMessage !== null) {
-      // console.log(`re: ${String(lastMessage.data)}`);
+      console.log(`re: ${String(lastMessage.data)}`);
       refreshPlayers(String(lastMessage.data));
     }
   }, [lastMessage]); // eslint-disable-line
