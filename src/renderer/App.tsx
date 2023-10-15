@@ -5,13 +5,21 @@ import { ReadyState } from 'react-use-websocket';
 import PlayerTableComponent from './PlayerTableComponent';
 import WebsocketComponent from './WebsocketComponent';
 import WebsocketsReadyState from './WebsocketsReadyState';
+import { PlayerInfo } from './PlayerInfo';
 
 function Main() {
-  const [players, setPlayers] = useState([]);
+  const [players, setPlayers] = useState<PlayerInfo[]>([]);
   const [readyState, setReadyState] = useState(ReadyState.UNINSTANTIATED);
 
   const refreshPlayers = (jsonPlayers: string) => {
-    setPlayers(JSON.parse(jsonPlayers));
+    const playerCollection: PlayerInfo[] = JSON.parse(jsonPlayers);
+
+    // Sort the players array by the LastSeen field
+    playerCollection.sort((a, b) => {
+      return b.LastSeen - a.LastSeen;
+    });
+
+    setPlayers(playerCollection);
   };
 
   const refreshReadyState = (updatedReadyState: ReadyState) => {
