@@ -39,9 +39,18 @@ function formatTimeDifference(timestamp: number) {
 }
 
 function Row(props: { row: PlayerInfo }) {
+  interface TeamMapping {
+    [key: string]: string;
+  }
+
   const { row } = props;
   const humanReadableTimeLastSeen = formatTimeDifference(row.LastSeen);
+  const teamMapping: TeamMapping = {
+    TF_GC_TEAM_INVADERS: 'Attackers',
+    TF_GC_TEAM_DEFENDERS: 'Defenders',
+  };
 
+  // @ts-ignore
   return (
     <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
       <TableCell component="th" scope="row">
@@ -53,8 +62,11 @@ function Row(props: { row: PlayerInfo }) {
       <TableCell align="right">{row.Loss}</TableCell>
       <TableCell align="right">{row.State}</TableCell>
       <TableCell align="right">{humanReadableTimeLastSeen}</TableCell>
-      <TableCell align="right">x</TableCell>
-      <TableCell align="right">x</TableCell>
+      <TableCell align="right">{row.MemberType}</TableCell>
+      <TableCell align="right">
+        {row.Type === 'MATCH_PLAYER' ? 'Player' : row.Team}
+      </TableCell>
+      <TableCell align="center">{teamMapping[row.Team] || row.Team}</TableCell>
     </TableRow>
   );
 }
@@ -74,8 +86,9 @@ export default function PlayerTableComponent({
             <TableCell align="right">Loss</TableCell>
             <TableCell align="right">State</TableCell>
             <TableCell align="right">LastSeen</TableCell>
-            <TableCell align="right">Team</TableCell>
+            <TableCell align="right">MemberType</TableCell>
             <TableCell align="right">Type</TableCell>
+            <TableCell align="right">Team</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

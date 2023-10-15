@@ -6,4 +6,7 @@ export interface PlayerInfo {
   Loss: number;
   State: string;
   LastSeen: number;
+  MemberType: string;
+  Type: string;
+  Team: string;
 }
