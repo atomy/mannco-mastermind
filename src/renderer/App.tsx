@@ -13,13 +13,15 @@ function Main() {
 
   const refreshPlayers = (jsonPlayers: string) => {
     const playerCollection: PlayerInfo[] = JSON.parse(jsonPlayers);
+    // Get current Unix timestamp in seconds
+    const currentTime = Math.floor(Date.now() / 1000);
 
-    // Sort the players array by the LastSeen field
-    playerCollection.sort((a, b) => {
-      return b.LastSeen - a.LastSeen;
+    // Filter out PlayerInfo objects with LastSeen greater than 60 seconds ago
+    const filteredPlayerCollection = playerCollection.filter((playerInfo) => {
+      return currentTime - playerInfo.LastSeen <= 60;
     });
 
-    setPlayers(playerCollection);
+    setPlayers(filteredPlayerCollection);
   };
 
   const refreshReadyState = (updatedReadyState: ReadyState) => {
