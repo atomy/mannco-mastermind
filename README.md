@@ -24,6 +24,9 @@ Start the app in the `dev` environment:
 npm start
 ```
 
+Note: Don't kill the program with CTL+C on windows, cause the sub-process (tf2-rcon) will still be running and not being able to start on next startup cause of blocked listening port.
+(https://github.com/electron/electron/issues/5273)
+
 ## Packaging for Production
 
 To package apps for the local platform:

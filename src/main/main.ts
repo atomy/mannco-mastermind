@@ -9,9 +9,12 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import { ChildProcessWithoutNullStreams } from 'node:child_process';
+import * as childProcess from 'child_process';
+import { WebSocket } from 'ws';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -24,10 +27,24 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+let tf2rconChild: ChildProcessWithoutNullStreams | null = null;
+let tf2rconWs: WebSocket | null = null;
+
+// Signal handler.
+function handleExit(): void {
+  console.log(`[main.ts] Received signal. Exiting application.`);
+
+  if (tf2rconChild) {
+    tf2rconChild.kill('SIGTERM');
+  }
+
+  // Safely exit the Electron application
+  app.quit();
+}
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
+  console.log(`[main.ts] ${msgTemplate(arg)}`);
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
@@ -54,6 +71,72 @@ const installExtensions = async () => {
       forceDownload,
     )
     .catch(console.log);
+};
+
+// Establish connection to tf2rcon websocket.
+const connectTf2rconWebsocket = () => {
+  tf2rconWs = new WebSocket('ws://127.0.0.1:27689/websocket');
+
+  if (tf2rconWs !== null) {
+    tf2rconWs.on('open', function open() {
+      // const jsonPayload = JSON.stringify({ key: 'value' }); // Replace with your JSON payload
+      // tf2rconWs.send(jsonPayload);
+      // console.log('Sent message:', jsonPayload);
+    });
+
+    // tf2rconWs.on('message', function incoming(data) {
+    // console.log('[main.ts] Received:', data);
+    // });
+
+    tf2rconWs.on('close', function close() {
+      console.log('[main.ts] Connection closed. Trying to reconnect...');
+      setTimeout(connectTf2rconWebsocket, 1000); // Reconnect every 1 second
+    });
+
+    tf2rconWs.on('error', function error(err) {
+      console.error('[main.ts] WebSocket error:', err.message);
+      if (tf2rconWs !== null) {
+        tf2rconWs.close(); // Trigger the close event, which handles the retry
+      }
+    });
+  }
+};
+
+// start TF2-Rcon-Subprocess
+const startTF2Rcon = () => {
+  tf2rconChild = childProcess.spawn(
+    'cmd /c "cd D:\\\\git\\\\TF2-RCON-MISC && .\\\\runDev.bat"',
+    [''],
+    {
+      shell: true,
+    },
+  );
+
+  // You can also use a variable to save the output for when the script closes later
+  tf2rconChild.on('error', (error) => {
+    console.log(`[main.ts][TF2RCON] ERROR: ${error}`);
+  });
+
+  tf2rconChild.stdout.setEncoding('utf8');
+  tf2rconChild.stdout.on('data', (data) => {
+    console.log(`[main.ts][TF2RCON][STDOUT]: ${data}`);
+  });
+
+  tf2rconChild.stderr.setEncoding('utf8');
+  tf2rconChild.stderr.on('data', (data) => {
+    // Here is the output from the command
+    console.log(`[main.ts][TF2RCON][STDERR]: ${data}`);
+  });
+
+  tf2rconChild.on('close', (code) => {
+    console.log(`[main.ts][TF2RCON] CLOSE: ${code}`);
+  });
+
+  tf2rconChild.on('exit', (code, signal) => {
+    console.log(
+      `[main.ts][TF2RCON] Child process exited with code ${code} and signal ${signal}`,
+    );
+  });
 };
 
 const createWindow = async () => {
@@ -127,11 +210,40 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
+    process.on('SIGTERM', handleExit);
+    process.on('SIGHUP', handleExit);
+    process.on('SIGQUIT', handleExit);
+    process.on('SIGINT', handleExit);
+
+    // Start tf2-rcon-backend.
+    startTF2Rcon();
     createWindow();
+    connectTf2rconWebsocket();
+
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
       if (mainWindow === null) createWindow();
+    });
+
+    app.on('before-quit', () => {
+      if (tf2rconWs !== null && tf2rconWs.readyState !== WebSocket.CLOSED) {
+        const jsonPayload = JSON.stringify({ type: 'exit' });
+        tf2rconWs.send(jsonPayload);
+      }
+
+      if (tf2rconChild && !tf2rconChild.killed) {
+        console.log('[main.ts] Terminating tf2rcon-child process...');
+        tf2rconChild.kill('SIGINT');
+
+        // Wait for 5 seconds before sending SIGKILL
+        setTimeout(() => {
+          if (tf2rconChild && !tf2rconChild.killed) {
+            console.log('[main.ts] Forcefully terminating child process...');
+            tf2rconChild.kill('SIGKILL');
+          }
+        }, 5000);
+      }
     });
   })
   .catch(console.log);
