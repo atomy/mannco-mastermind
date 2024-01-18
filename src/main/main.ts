@@ -29,10 +29,12 @@ class AppUpdater {
 let mainWindow: BrowserWindow | null = null;
 let tf2rconChild: ChildProcessWithoutNullStreams | null = null;
 let tf2rconWs: WebSocket | null = null;
+let shouldRestartTF2Rcon = true;
 
 // Signal handler.
 function handleExit(): void {
   console.log(`[main.ts] Received signal. Exiting application.`);
+  shouldRestartTF2Rcon = false;
 
   if (tf2rconChild) {
     tf2rconChild.kill('SIGTERM');
@@ -136,6 +138,10 @@ const startTF2Rcon = () => {
     console.log(
       `[main.ts][TF2RCON] Child process exited with code ${code} and signal ${signal}`,
     );
+
+    if (shouldRestartTF2Rcon) {
+      startTF2Rcon();
+    }
   });
 };
 
@@ -227,6 +233,8 @@ app
     });
 
     app.on('before-quit', () => {
+      shouldRestartTF2Rcon = false;
+
       if (tf2rconWs !== null && tf2rconWs.readyState !== WebSocket.CLOSED) {
         const jsonPayload = JSON.stringify({ type: 'exit' });
         tf2rconWs.send(jsonPayload);
