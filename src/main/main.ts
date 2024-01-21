@@ -17,6 +17,7 @@ import * as childProcess from 'child_process';
 import { WebSocket } from 'ws';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { PlayerInfo } from '../renderer/PlayerInfo';
 
 class AppUpdater {
   constructor() {
@@ -29,7 +30,7 @@ class AppUpdater {
 let mainWindow: BrowserWindow | null = null;
 let tf2rconChild: ChildProcessWithoutNullStreams | null = null;
 let tf2rconWs: WebSocket | null = null;
-let shouldRestartTF2Rcon = true;
+let shouldRestartTF2Rcon = false; // %TODO, make it true
 
 // Signal handler.
 function handleExit(): void {
@@ -75,6 +76,16 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
+const sendPlayerData = (playerData: PlayerInfo[]) => {
+  // Get all window instances
+  const windows = BrowserWindow.getAllWindows();
+
+  // Send data to each window
+  windows.forEach((w) => {
+    w.webContents.send('player-data', playerData);
+  });
+};
+
 // Establish connection to tf2rcon websocket.
 const connectTf2rconWebsocket = () => {
   tf2rconWs = new WebSocket('ws://127.0.0.1:27689/websocket');
@@ -86,9 +97,22 @@ const connectTf2rconWebsocket = () => {
       // console.log('Sent message:', jsonPayload);
     });
 
-    // tf2rconWs.on('message', function incoming(data) {
-    // console.log('[main.ts] Received:', data);
-    // });
+    tf2rconWs.on('message', function incoming(data) {
+      console.log(`[main.ts] Received: ${String(data)}`);
+      const incommingJson = JSON.parse(String(data));
+
+      if (incommingJson.type === 'player-update') {
+        const playerJson = JSON.stringify(incommingJson['current-players']);
+        const playerCollection: PlayerInfo[] = JSON.parse(playerJson);
+        sendPlayerData(playerCollection);
+      } else {
+        console.log(
+          `[main.ts] Discarding unconfigured type ${incommingJson.type}!`,
+        );
+      }
+
+      // const playerCollection: PlayerInfo[] = JSON.parse(incommingJson);
+    });
 
     tf2rconWs.on('close', function close() {
       console.log('[main.ts] Connection closed. Trying to reconnect...');
