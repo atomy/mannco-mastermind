@@ -16,28 +16,6 @@ interface PlayerTableComponentProps {
   players: PlayerInfo[];
 }
 
-// function formatTimeDifference(timestamp: number) {
-//   const nowInSeconds = Math.floor(Date.now() / 1000);
-//   const secondsAgo = Math.floor(nowInSeconds - timestamp);
-//
-//   if (secondsAgo < 60) {
-//     return 'now';
-//   }
-//
-//   if (secondsAgo < 3600) {
-//     const minutesAgo = Math.floor(secondsAgo / 60);
-//     return `${minutesAgo} minute${minutesAgo > 1 ? 's' : ''} ago`;
-//   }
-//
-//   if (secondsAgo < 86400) {
-//     const hoursAgo = Math.floor(secondsAgo / 3600);
-//     return `${hoursAgo} hour${hoursAgo > 1 ? 's' : ''} ago`;
-//   }
-//
-//   const daysAgo = Math.floor(secondsAgo / 86400);
-//   return `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`;
-// }
-
 function Row(props: { row: PlayerInfo }) {
   interface TeamMapping {
     [key: string]: string;
@@ -49,6 +27,7 @@ function Row(props: { row: PlayerInfo }) {
   const teamMapping: TeamMapping = {
     TF_GC_TEAM_INVADERS: 'Defenders',
     TF_GC_TEAM_DEFENDERS: 'Attackers',
+    MEMBER: 'No Team',
   };
 
   // @ts-ignore
