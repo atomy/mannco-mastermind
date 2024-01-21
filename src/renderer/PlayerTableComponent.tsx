@@ -44,10 +44,11 @@ function Row(props: { row: PlayerInfo }) {
   }
 
   const { row } = props;
-  // const humanReadableTimeLastSeen = formatTimeDifference(row.LastSeen);
+
+  // Teams are indeed the other way around.
   const teamMapping: TeamMapping = {
-    TF_GC_TEAM_INVADERS: 'Attackers',
-    TF_GC_TEAM_DEFENDERS: 'Defenders',
+    TF_GC_TEAM_INVADERS: 'Defenders',
+    TF_GC_TEAM_DEFENDERS: 'Attackers',
   };
 
   // @ts-ignore
