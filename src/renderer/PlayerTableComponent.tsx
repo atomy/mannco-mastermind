@@ -34,6 +34,9 @@ function Row(props: { row: PlayerInfo }) {
   return (
     <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
       <TableCell component="th" scope="row">
+        <img src={row.SteamAvatarSmall} alt="Avatar" />
+      </TableCell>
+      <TableCell component="th" scope="row">
         {row.Name}
       </TableCell>
       <TableCell align="right">

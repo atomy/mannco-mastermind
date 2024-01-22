@@ -19,6 +19,8 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { PlayerInfo } from '../renderer/PlayerInfo';
 
+const SteamApi = require('steam-web');
+
 class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
@@ -31,6 +33,11 @@ let mainWindow: BrowserWindow | null = null;
 let tf2rconChild: ChildProcessWithoutNullStreams | null = null;
 let tf2rconWs: WebSocket | null = null;
 let shouldRestartTF2Rcon = false; // %TODO, make it true
+let currentPlayerCollection: PlayerInfo[] = [];
+let steamUpdateTimer: NodeJS.Timeout | null = null;
+let steamUpdatePlayerList: string[] = [];
+
+const currentSteamInformation: PlayerInfo[] = [];
 
 // Signal handler.
 function handleExit(): void {
@@ -76,17 +83,89 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
-const sendPlayerData = (playerData: PlayerInfo[]) => {
+const sendPlayerData = () => {
   // Get all window instances
   const windows = BrowserWindow.getAllWindows();
 
   // Send data to each window
   windows.forEach((w) => {
-    w.webContents.send('player-data', playerData);
+    w.webContents.send('player-data', currentPlayerCollection);
   });
 };
 
-// Establish connection to tf2rcon websocket.
+// updateSteamInfoForPlayers updates steam info to current player-list
+const updateSteamInfoForPlayers = (
+  steam: typeof SteamApi,
+  playerSteamIds: string[],
+) => {
+  console.log(`updateSteamInfoForPlayer() for: ${playerSteamIds.join(', ')}`);
+
+  steam.getPlayerSummaries({
+    steamids: playerSteamIds,
+    callback: (err: any, data: any) => {
+      if (data && typeof data.response === 'object') {
+        data.response.players.forEach((steamPlayer: any) => {
+          currentPlayerCollection.forEach((player) => {
+            if (player.SteamID === steamPlayer.steamid) {
+              player.SteamDataLoaded = 'COMPLETED';
+              player.SteamURL = steamPlayer.profileurl;
+              player.SteamAvatarSmall = steamPlayer.avatar;
+              player.SteamAvatarMedium = steamPlayer.avatarmedium;
+              player.SteamAvatarFull = steamPlayer.avatarfull;
+              player.SteamVisible = steamPlayer.communityvisibilitystate;
+              player.SteamConfigured = steamPlayer.profilestate;
+              player.SteamCreatedTimestamp = steamPlayer.timecreated;
+              player.SteamCountryCode = steamPlayer.loccountrycode;
+              console.log(
+                `Updated '${player.SteamID}': ${JSON.stringify(player)}`,
+              );
+              currentSteamInformation.push(player);
+            }
+          });
+        });
+      }
+    },
+  });
+};
+
+// updateSteamInfo updates steam info to current player-list
+const updateSteamInfo = () => {
+  // Enrich current players with steam-cache-data if available.
+  currentPlayerCollection.forEach((player) => {
+    currentSteamInformation.forEach((steamPlayer) => {
+      if (player.SteamID === steamPlayer.SteamID) {
+        player.SteamDataLoaded = 'COMPLETED';
+        player.SteamURL = steamPlayer.SteamURL;
+        player.SteamAvatarSmall = steamPlayer.SteamAvatarSmall;
+        player.SteamAvatarMedium = steamPlayer.SteamAvatarMedium;
+        player.SteamAvatarFull = steamPlayer.SteamAvatarFull;
+        player.SteamVisible = steamPlayer.SteamVisible;
+        player.SteamConfigured = steamPlayer.SteamConfigured;
+        player.SteamCreatedTimestamp = steamPlayer.SteamCreatedTimestamp;
+        player.SteamCountryCode = steamPlayer.SteamCountryCode;
+        console.log(
+          `Updated '${player.SteamID}' with cached data: ${JSON.stringify(player)}`,
+        );
+      }
+    });
+  });
+
+  // Check if there are currently any players.
+  currentPlayerCollection.forEach((player) => {
+    if (
+      typeof player.SteamURL === 'undefined' &&
+      typeof player.SteamDataLoaded === 'undefined'
+    ) {
+      // Check if the SteamID is not already in the list
+      if (!steamUpdatePlayerList.includes(player.SteamID)) {
+        steamUpdatePlayerList.push(player.SteamID);
+      }
+      player.SteamDataLoaded = 'IN_PROGRESS';
+    }
+  });
+};
+
+// Establish connection to tf2-rcon websocket.
 const connectTf2rconWebsocket = () => {
   tf2rconWs = new WebSocket('ws://127.0.0.1:27689/websocket');
 
@@ -98,13 +177,15 @@ const connectTf2rconWebsocket = () => {
     });
 
     tf2rconWs.on('message', function incoming(data) {
-      console.log(`[main.ts] Received: ${String(data)}`);
+      // console.log(`[main.ts] Received: ${String(data)}`);
       const incommingJson = JSON.parse(String(data));
 
       if (incommingJson.type === 'player-update') {
         const playerJson = JSON.stringify(incommingJson['current-players']);
-        const playerCollection: PlayerInfo[] = JSON.parse(playerJson);
-        sendPlayerData(playerCollection);
+        currentPlayerCollection = JSON.parse(playerJson);
+
+        updateSteamInfo();
+        sendPlayerData();
       } else {
         console.log(
           `[main.ts] Discarding unconfigured type ${incommingJson.type}!`,
@@ -237,6 +318,25 @@ app.on('window-all-closed', () => {
   }
 });
 
+const startSteamUpdater = () => {
+  if (typeof process.env.STEAM_KEY === 'undefined') {
+    console.log('Env *STEAM_KEY* not configured, not updating steam-data.');
+    return;
+  }
+
+  // Regularly update steam-data.
+  steamUpdateTimer = setInterval(() => {
+    console.log('[main.ts] Updating steam data...');
+    const steam = new SteamApi({
+      apiKey: process.env.STEAM_KEY,
+      format: 'json',
+    });
+    updateSteamInfoForPlayers(steam, steamUpdatePlayerList);
+    steamUpdatePlayerList = [];
+    console.log('[main.ts] Updating steam data... DONE');
+  }, 10000);
+};
+
 app
   .whenReady()
   .then(() => {
@@ -249,6 +349,7 @@ app
     startTF2Rcon();
     createWindow();
     connectTf2rconWebsocket();
+    startSteamUpdater();
 
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
@@ -275,6 +376,11 @@ app
             tf2rconChild.kill('SIGKILL');
           }
         }, 5000);
+      }
+
+      if (steamUpdateTimer) {
+        clearInterval(steamUpdateTimer);
+        steamUpdateTimer = null;
       }
     });
   })
