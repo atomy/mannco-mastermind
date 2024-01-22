@@ -1,40 +1,36 @@
 import { MemoryRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PlayerTableComponent from './PlayerTableComponent';
 import { PlayerInfo } from './PlayerInfo';
 
 function Main() {
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
 
-  // const refreshPlayers = (jsonPlayers: string) => {
-  //   const playerCollection: PlayerInfo[] = JSON.parse(jsonPlayers);
-  //   // Get current Unix timestamp in seconds
-  //   const currentTime = Math.floor(Date.now() / 1000);
-  //
-  //   // Filter out PlayerInfo objects with LastSeen greater than 60 seconds ago
-  //   const filteredPlayerCollection = playerCollection.filter((playerInfo) => {
-  //     return currentTime - playerInfo.LastSeen <= 60;
-  //   });
-  //
-  //   filteredPlayerCollection.forEach((player) => {
-  //     console.log(`Setting player: ${JSON.stringify(player)}`);
-  //   });
-  //
-  //   setPlayers(filteredPlayerCollection);
-  // };
+  const refreshPlayers = (playerCollection: PlayerInfo[]) => {
+    // Get current Unix timestamp in seconds
+    const currentTime = Math.floor(Date.now() / 1000);
 
-  // useEffect(() => {
-  //   electronHandler
-  //   ipcRenderer.on('player-data', (event, playerData) => {
-  //     refreshPlayers(playerData);
-  //   });
-  //
-  //   // Cleanup listener when component unmounts
-  //   return () => {
-  //     ipcRenderer.removeAllListeners('player-data');
-  //   };
-  // }, []);
+    // Filter out PlayerInfo objects with LastSeen greater than 60 seconds ago
+    const filteredPlayerCollection = playerCollection.filter((playerInfo) => {
+      return currentTime - playerInfo.LastSeen <= 60;
+    });
+
+    // filteredPlayerCollection.forEach((player) => {
+    //   console.log(`Setting player: ${JSON.stringify(player)}`);
+    // });
+
+    setPlayers(filteredPlayerCollection);
+  };
+
+  useEffect(() => {
+    window.electron.ipcRenderer.on(
+      'player-data',
+      (playerInfoCollection: PlayerInfo[]) => {
+        refreshPlayers(playerInfoCollection);
+      },
+    );
+  }, []);
 
   return (
     <div className="content">
