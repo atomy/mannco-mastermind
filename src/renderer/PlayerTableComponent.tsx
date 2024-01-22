@@ -30,20 +30,51 @@ function Row(props: { row: PlayerInfo }) {
     MEMBER: 'No Team',
   };
 
+  const steamWarnings = () => {
+    let warnings = '';
+
+    // 1 - profile configured
+    if (row.SteamConfigured > 1) {
+      warnings += 'S';
+    }
+
+    return warnings;
+  };
+
   // @ts-ignore
   return (
     <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
       <TableCell component="th" scope="row">
-        <img src={row.SteamAvatarSmall} alt="Avatar" />
-      </TableCell>
-      <TableCell component="th" scope="row">
-        {row.Name}
+        {row.SteamCountryCode ? (
+          <img
+            width="30px"
+            src={`https://flagcdn.com/h40/${row.SteamCountryCode.toLowerCase()}.png`}
+            style={{ paddingRight: '4px' }}
+            alt={"Players Country: ${row.SteamCountryCode}"}
+          />
+        ) : (
+          <img
+            width="30px"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Flag_of_None.svg/2560px-Flag_of_None.svg.png"
+            style={{ paddingRight: '4px' }}
+            alt="Players country: Unknown"
+          />
+        )}
+        {row.SteamAvatarSmall && (
+          <img src={row.SteamAvatarSmall} alt="Avatar" />
+        )}
+        <span style={{ paddingLeft: '10px' }}>{row.Name}</span>
       </TableCell>
       <TableCell align="right">
         <Link
           target="_blank"
           rel="noreferrer"
           href={`https://steamcommunity.com/profiles/${row.SteamID}`}
+          style={{
+            color: row.SteamVisible < 3 ? 'red' : '',
+            backgroundColor: row.SteamConfigured > 1 ? 'red' : 'transparent',
+          }}
+          title={row.SteamVisible < 3 ? 'Steam-Profile is private' : ''}
         >
           Profile
         </Link>
@@ -64,6 +95,7 @@ function Row(props: { row: PlayerInfo }) {
       </TableCell>
       <TableCell align="right">{row.State}</TableCell>
       <TableCell align="right">{teamMapping[row.Team] || row.Team}</TableCell>
+      <TableCell align="right">{steamWarnings()}</TableCell>
     </TableRow>
   );
 }
@@ -87,6 +119,7 @@ export default function PlayerTableComponent({
             </TableCell>
             <TableCell align="right">State</TableCell>
             <TableCell align="right">Team</TableCell>
+            <TableCell align="right">Warnings</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

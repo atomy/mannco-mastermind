@@ -14,7 +14,7 @@ export interface PlayerInfo {
   SteamAvatarSmall: string;
   SteamAvatarMedium: string;
   SteamAvatarFull: string;
-  SteamVisible: string;
+  SteamVisible: number;
   SteamCreatedTimestamp: number;
   SteamCountryCode: string;
   SteamConfigured: number;
