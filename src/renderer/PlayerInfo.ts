@@ -9,4 +9,13 @@ export interface PlayerInfo {
   MemberType: string;
   Type: string;
   Team: string;
+  SteamDataLoaded: string;
+  SteamURL: string;
+  SteamAvatarSmall: string;
+  SteamAvatarMedium: string;
+  SteamAvatarFull: string;
+  SteamVisible: number;
+  SteamCreatedTimestamp: number;
+  SteamCountryCode: string;
+  SteamConfigured: number;
 }
