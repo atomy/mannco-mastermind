@@ -32,7 +32,7 @@ class AppUpdater {
 let mainWindow: BrowserWindow | null = null;
 let tf2rconChild: ChildProcessWithoutNullStreams | null = null;
 let tf2rconWs: WebSocket | null = null;
-let shouldRestartTF2Rcon = false; // %TODO, make it true
+let shouldRestartTF2Rcon = true;
 let currentPlayerCollection: PlayerInfo[] = [];
 let steamUpdateTimer: NodeJS.Timeout | null = null;
 let steamUpdatePlayerList: string[] = [];
@@ -98,7 +98,9 @@ const updateSteamInfoForPlayers = (
   steam: typeof SteamApi,
   playerSteamIds: string[],
 ) => {
-  console.log(`updateSteamInfoForPlayer() for: ${playerSteamIds.join(', ')}`);
+  if (playerSteamIds.length > 0) {
+    console.log(`updateSteamInfoForPlayer() for: ${playerSteamIds.join(', ')}`);
+  }
 
   steam.getPlayerSummaries({
     steamids: playerSteamIds,
@@ -116,9 +118,9 @@ const updateSteamInfoForPlayers = (
               player.SteamConfigured = steamPlayer.profilestate;
               player.SteamCreatedTimestamp = steamPlayer.timecreated;
               player.SteamCountryCode = steamPlayer.loccountrycode;
-              console.log(
-                `Updated '${player.SteamID}': ${JSON.stringify(player)}`,
-              );
+              // console.log(
+              // `Updated '${player.SteamID}': ${JSON.stringify(player)}`,
+              // );
               currentSteamInformation.push(player);
             }
           });
@@ -143,9 +145,9 @@ const updateSteamInfo = () => {
         player.SteamConfigured = steamPlayer.SteamConfigured;
         player.SteamCreatedTimestamp = steamPlayer.SteamCreatedTimestamp;
         player.SteamCountryCode = steamPlayer.SteamCountryCode;
-        console.log(
-          `Updated '${player.SteamID}' with cached data: ${JSON.stringify(player)}`,
-        );
+        // console.log(
+        // `Updated '${player.SteamID}' with cached data: ${JSON.stringify(player)}`,
+        // );
       }
     });
   });
@@ -326,14 +328,14 @@ const startSteamUpdater = () => {
 
   // Regularly update steam-data.
   steamUpdateTimer = setInterval(() => {
-    console.log('[main.ts] Updating steam data...');
+    // console.log('[main.ts] Updating steam data...');
     const steam = new SteamApi({
       apiKey: process.env.STEAM_KEY,
       format: 'json',
     });
     updateSteamInfoForPlayers(steam, steamUpdatePlayerList);
     steamUpdatePlayerList = [];
-    console.log('[main.ts] Updating steam data... DONE');
+    // console.log('[main.ts] Updating steam data... DONE');
   }, 10000);
 };
 
