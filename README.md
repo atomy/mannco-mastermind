@@ -4,7 +4,7 @@ Frontend for [TF2-RCON-MISC](https://github.com/algo7/tf2_rcon_misc) CLI-Tool, s
 
 Work in progress.
 
-![App overview](https://raw.githubusercontent.com/atomy/mannco-mastermind/doc/app.png)
+![App overview](https://github.com/atomy/mannco-mastermind/blob/main/doc/app.png)
 
 # Development
 
