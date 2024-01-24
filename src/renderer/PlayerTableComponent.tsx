@@ -11,6 +11,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import Link from '@mui/material/Link';
 import WarningIcon from '@mui/icons-material/Warning';
 import { PlayerInfo } from './PlayerInfo';
+import SteamAccountAge from './SteamAccountAge';
 
 interface PlayerTableComponentProps {
   players: PlayerInfo[];
@@ -50,7 +51,7 @@ function Row(props: { row: PlayerInfo }) {
             width="30px"
             src={`https://flagcdn.com/h40/${row.SteamCountryCode.toLowerCase()}.png`}
             style={{ paddingRight: '4px' }}
-            alt={"Players Country: ${row.SteamCountryCode}"}
+            alt={`Players Country: ${row.SteamCountryCode}`}
           />
         ) : (
           <img
@@ -95,6 +96,9 @@ function Row(props: { row: PlayerInfo }) {
       </TableCell>
       <TableCell align="right">{row.State}</TableCell>
       <TableCell align="right">{teamMapping[row.Team] || row.Team}</TableCell>
+      <TableCell align="right">
+        <SteamAccountAge steamCreatedTimestamp={row.SteamCreatedTimestamp} />
+      </TableCell>
       <TableCell align="right">{steamWarnings()}</TableCell>
     </TableRow>
   );
@@ -119,6 +123,7 @@ export default function PlayerTableComponent({
             </TableCell>
             <TableCell align="right">State</TableCell>
             <TableCell align="right">Team</TableCell>
+            <TableCell align="right">AccountAge</TableCell>
             <TableCell align="right">Warnings</TableCell>
           </TableRow>
         </TableHead>
