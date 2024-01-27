@@ -34,10 +34,13 @@ let tf2rconChild: ChildProcessWithoutNullStreams | null = null;
 let tf2rconWs: WebSocket | null = null;
 let shouldRestartTF2Rcon = true;
 let currentPlayerCollection: PlayerInfo[] = [];
-let steamUpdateTimer: NodeJS.Timeout | null = null;
-let steamUpdatePlayerList: string[] = [];
+let steamProfileUpdateTimer: NodeJS.Timeout | null = null;
+let steamTF2UpdateTimer: NodeJS.Timeout | null = null;
+let steamProfileUpdatePlayerList: string[] = [];
+let steamTF2UpdatePlayerList: string[] = [];
 
-const currentSteamInformation: PlayerInfo[] = [];
+const currentSteamProfileInformation: PlayerInfo[] = [];
+const currentSteamTF2Information: PlayerInfo[] = [];
 
 // Signal handler.
 function handleExit(): void {
@@ -93,13 +96,15 @@ const sendPlayerData = () => {
   });
 };
 
-// updateSteamInfoForPlayers updates steam info to current player-list
-const updateSteamInfoForPlayers = (
+// updateSteamProfileDataForPlayers updates steam info to current player-list
+const updateSteamProfileDataForPlayers = (
   steam: typeof SteamApi,
   playerSteamIds: string[],
 ) => {
   if (playerSteamIds.length > 0) {
-    console.log(`updateSteamInfoForPlayer() for: ${playerSteamIds.join(', ')}`);
+    console.log(
+      `updateSteamProfileDataForPlayers() for: ${playerSteamIds.join(', ')}`,
+    );
   }
 
   steam.getPlayerSummaries({
@@ -109,7 +114,7 @@ const updateSteamInfoForPlayers = (
         data.response.players.forEach((steamPlayer: any) => {
           currentPlayerCollection.forEach((player) => {
             if (player.SteamID === steamPlayer.steamid) {
-              player.SteamDataLoaded = 'COMPLETED';
+              player.SteamProfileDataLoaded = 'COMPLETED';
               player.SteamURL = steamPlayer.profileurl;
               player.SteamAvatarSmall = steamPlayer.avatar;
               player.SteamAvatarMedium = steamPlayer.avatarmedium;
@@ -121,9 +126,53 @@ const updateSteamInfoForPlayers = (
               // console.log(
               // `Updated '${player.SteamID}': ${JSON.stringify(player)}`,
               // );
-              currentSteamInformation.push(player);
+              currentSteamProfileInformation.push(player);
             }
           });
+        });
+      }
+    },
+  });
+};
+
+// updateSteamTF2DataForPlayer updates steam tf2 data to current player-list
+const updateSteamTF2DataForPlayer = (
+  steam: typeof SteamApi,
+  playerSteamId: string,
+) => {
+  console.log(`updateSteamTF2DataForPlayer() for: ${playerSteamId}`);
+
+  steam.getUserStatsForGame({
+    steamid: playerSteamId,
+    appid: 440,
+    callback: (err: any, data: any) => {
+      // console.log(`? ${err} --- ${JSON.stringify(data)}`);
+      // HTTP 403 are expected, they happen when that information is private.
+      if (typeof err !== 'undefined') {
+        currentPlayerCollection.forEach((player) => {
+          if (player.SteamID === playerSteamId) {
+            const fixedErr = err.replace(
+              ' Error: Check your API key is correct',
+              '',
+            );
+            player.SteamTF2DataLoaded = 'ERROR';
+            console.log(`ERROR '${player.SteamID}': ${fixedErr}`);
+            currentSteamTF2Information.push(player);
+          }
+        });
+      } else if (data && typeof data.playerstats === 'object') {
+        const steamPlayerStats = data.playerstats;
+        console.log(
+          `Incomming tf2-data-update for ${data.playerstats.steamID}`,
+        );
+        currentPlayerCollection.forEach((player) => {
+          if (player.SteamID === playerSteamId) {
+            player.SteamTF2DataLoaded = 'COMPLETED';
+            console.log(
+              `Updated '${player.SteamID}' gameName: ${steamPlayerStats.gameName}`,
+            );
+            currentSteamTF2Information.push(player);
+          }
         });
       }
     },
@@ -134,9 +183,9 @@ const updateSteamInfoForPlayers = (
 const updateSteamInfo = () => {
   // Enrich current players with steam-cache-data if available.
   currentPlayerCollection.forEach((player) => {
-    currentSteamInformation.forEach((steamPlayer) => {
+    currentSteamProfileInformation.forEach((steamPlayer) => {
       if (player.SteamID === steamPlayer.SteamID) {
-        player.SteamDataLoaded = 'COMPLETED';
+        player.SteamProfileDataLoaded = steamPlayer.SteamProfileDataLoaded;
         player.SteamURL = steamPlayer.SteamURL;
         player.SteamAvatarSmall = steamPlayer.SteamAvatarSmall;
         player.SteamAvatarMedium = steamPlayer.SteamAvatarMedium;
@@ -150,19 +199,39 @@ const updateSteamInfo = () => {
         // );
       }
     });
+
+    currentSteamTF2Information.forEach((steamPlayer) => {
+      if (player.SteamID === steamPlayer.SteamID) {
+        player.SteamTF2DataLoaded = steamPlayer.SteamTF2DataLoaded;
+        player.SteamTFGamePlaytime = steamPlayer.SteamTFGamePlaytime;
+        // console.log(
+        //   `Updated '${player.SteamID}' with cached tf2-data: ${JSON.stringify(player)}`,
+        // );
+      }
+    });
   });
 
   // Check if there are currently any players.
   currentPlayerCollection.forEach((player) => {
+    // Update general steam profile data for the given player.
     if (
       typeof player.SteamURL === 'undefined' &&
-      typeof player.SteamDataLoaded === 'undefined'
+      typeof player.SteamProfileDataLoaded === 'undefined'
     ) {
       // Check if the SteamID is not already in the list
-      if (!steamUpdatePlayerList.includes(player.SteamID)) {
-        steamUpdatePlayerList.push(player.SteamID);
+      if (!steamProfileUpdatePlayerList.includes(player.SteamID)) {
+        steamProfileUpdatePlayerList.push(player.SteamID);
       }
-      player.SteamDataLoaded = 'IN_PROGRESS';
+      player.SteamProfileDataLoaded = 'IN_PROGRESS';
+    }
+
+    // Update tf2 steam stats for the given player.
+    if (typeof player.SteamTF2DataLoaded === 'undefined') {
+      // Check if the SteamID is not already in the list
+      if (!steamTF2UpdatePlayerList.includes(player.SteamID)) {
+        steamTF2UpdatePlayerList.push(player.SteamID);
+      }
+      player.SteamTF2DataLoaded = 'IN_PROGRESS';
     }
   });
 };
@@ -320,22 +389,43 @@ app.on('window-all-closed', () => {
   }
 });
 
-const startSteamUpdater = () => {
+const startSteamProfileUpdater = () => {
   if (typeof process.env.STEAM_KEY === 'undefined') {
     console.log('Env *STEAM_KEY* not configured, not updating steam-data.');
     return;
   }
 
   // Regularly update steam-data.
-  steamUpdateTimer = setInterval(() => {
+  steamProfileUpdateTimer = setInterval(() => {
     // console.log('[main.ts] Updating steam data...');
     const steam = new SteamApi({
       apiKey: process.env.STEAM_KEY,
       format: 'json',
     });
-    updateSteamInfoForPlayers(steam, steamUpdatePlayerList);
-    steamUpdatePlayerList = [];
+    updateSteamProfileDataForPlayers(steam, steamProfileUpdatePlayerList);
+    steamProfileUpdatePlayerList = [];
     // console.log('[main.ts] Updating steam data... DONE');
+  }, 10000);
+};
+
+const startSteamTF2Updater = () => {
+  if (typeof process.env.STEAM_KEY === 'undefined') {
+    console.log('Env *STEAM_KEY* not configured, not updating steam-tf2-data.');
+    return;
+  }
+
+  // Regularly update steam-data.
+  steamTF2UpdateTimer = setInterval(() => {
+    console.log('[main.ts] Updating steam tf2 data...');
+    const steam = new SteamApi({
+      apiKey: process.env.STEAM_KEY,
+      format: 'json',
+    });
+    steamTF2UpdatePlayerList.forEach((playerSteamID) => {
+      updateSteamTF2DataForPlayer(steam, playerSteamID);
+    });
+    steamTF2UpdatePlayerList = [];
+    console.log('[main.ts] Updating steam tf2 data... DONE');
   }, 10000);
 };
 
@@ -351,7 +441,8 @@ app
     startTF2Rcon();
     createWindow();
     connectTf2rconWebsocket();
-    startSteamUpdater();
+    startSteamProfileUpdater();
+    startSteamTF2Updater();
 
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
@@ -380,9 +471,14 @@ app
         }, 5000);
       }
 
-      if (steamUpdateTimer) {
-        clearInterval(steamUpdateTimer);
-        steamUpdateTimer = null;
+      if (steamProfileUpdateTimer) {
+        clearInterval(steamProfileUpdateTimer);
+        steamProfileUpdateTimer = null;
+      }
+
+      if (steamTF2UpdateTimer) {
+        clearInterval(steamTF2UpdateTimer);
+        steamTF2UpdateTimer = null;
       }
     });
   })

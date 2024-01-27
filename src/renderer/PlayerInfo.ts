@@ -9,7 +9,9 @@ export interface PlayerInfo {
   MemberType: string;
   Type: string;
   Team: string;
-  SteamDataLoaded: string;
+  SteamProfileDataLoaded: string;
+  SteamTF2DataLoaded: string;
+  SteamTFGamePlaytime: number;
   SteamURL: string;
   SteamAvatarSmall: string;
   SteamAvatarMedium: string;

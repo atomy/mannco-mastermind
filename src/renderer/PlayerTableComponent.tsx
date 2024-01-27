@@ -100,6 +100,9 @@ function Row(props: { row: PlayerInfo }) {
         <SteamAccountAge steamCreatedTimestamp={row.SteamCreatedTimestamp} />
       </TableCell>
       <TableCell align="right">{steamWarnings()}</TableCell>
+      <TableCell align="right">
+        {row.SteamProfileDataLoaded} - {row.SteamTF2DataLoaded}
+      </TableCell>
     </TableRow>
   );
 }
@@ -125,6 +128,7 @@ export default function PlayerTableComponent({
             <TableCell align="right">Team</TableCell>
             <TableCell align="right">AccountAge</TableCell>
             <TableCell align="right">Warnings</TableCell>
+            <TableCell align="right">Debug</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
