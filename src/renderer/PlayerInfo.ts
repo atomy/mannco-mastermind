@@ -9,7 +9,16 @@ export interface PlayerInfo {
   MemberType: string;
   Type: string;
   Team: string;
-  SteamDataLoaded: string;
+  SteamProfileDataLoaded: string;
+  SteamTF2DataLoaded: string;
+  SteamBanDataLoaded: string;
+  SteamBanCommunityBanned: boolean;
+  SteamBanNumberOfGameBans: number;
+  SteamBanEconomyBan: string;
+  SteamBanVACBanned: boolean;
+  SteamBanVACBans: number;
+  SteamBanDaysSinceLastBan: number;
+  SteamTF2Playtime: number;
   SteamURL: string;
   SteamAvatarSmall: string;
   SteamAvatarMedium: string;
