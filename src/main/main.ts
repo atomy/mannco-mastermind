@@ -35,8 +35,11 @@ let tf2rconChild: ChildProcessWithoutNullStreams | null = null;
 let tf2rconWs: WebSocket | null = null;
 let shouldRestartTF2Rcon = true;
 let currentPlayerCollection: PlayerInfo[] = [];
+// eslint-disable-next-line no-undef
 let steamProfileUpdateTimer: NodeJS.Timeout | null = null;
+// eslint-disable-next-line no-undef
 let steamTF2UpdateTimer: NodeJS.Timeout | null = null;
+// eslint-disable-next-line no-undef
 let steamBanUpdateTimer: NodeJS.Timeout | null = null;
 let steamProfileUpdatePlayerList: string[] = [];
 let steamTF2UpdatePlayerList: string[] = [];
@@ -109,34 +112,34 @@ const updateSteamProfileDataForPlayers = (
     console.log(
       `updateSteamProfileDataForPlayers() for: ${playerSteamIds.join(', ')}`,
     );
-  }
 
-  steam.getPlayerSummaries({
-    steamids: playerSteamIds,
-    callback: (err: any, data: any) => {
-      if (data && typeof data.response === 'object') {
-        data.response.players.forEach((steamPlayer: any) => {
-          currentPlayerCollection.forEach((player) => {
-            if (player.SteamID === steamPlayer.steamid) {
-              player.SteamProfileDataLoaded = 'COMPLETED';
-              player.SteamURL = steamPlayer.profileurl;
-              player.SteamAvatarSmall = steamPlayer.avatar;
-              player.SteamAvatarMedium = steamPlayer.avatarmedium;
-              player.SteamAvatarFull = steamPlayer.avatarfull;
-              player.SteamVisible = steamPlayer.communityvisibilitystate;
-              player.SteamConfigured = steamPlayer.profilestate;
-              player.SteamCreatedTimestamp = steamPlayer.timecreated;
-              player.SteamCountryCode = steamPlayer.loccountrycode;
-              // console.log(
-              // `Updated '${player.SteamID}': ${JSON.stringify(player)}`,
-              // );
-              currentSteamProfileInformation.push(player);
-            }
+    steam.getPlayerSummaries({
+      steamids: playerSteamIds,
+      callback: (err: any, data: any) => {
+        if (data && typeof data.response === 'object') {
+          data.response.players.forEach((steamPlayer: any) => {
+            currentPlayerCollection.forEach((player) => {
+              if (player.SteamID === steamPlayer.steamid) {
+                player.SteamProfileDataLoaded = 'COMPLETED';
+                player.SteamURL = steamPlayer.profileurl;
+                player.SteamAvatarSmall = steamPlayer.avatar;
+                player.SteamAvatarMedium = steamPlayer.avatarmedium;
+                player.SteamAvatarFull = steamPlayer.avatarfull;
+                player.SteamVisible = steamPlayer.communityvisibilitystate;
+                player.SteamConfigured = steamPlayer.profilestate;
+                player.SteamCreatedTimestamp = steamPlayer.timecreated;
+                player.SteamCountryCode = steamPlayer.loccountrycode;
+                // console.log(
+                // `Updated '${player.SteamID}': ${JSON.stringify(player)}`,
+                // );
+                currentSteamProfileInformation.push(player);
+              }
+            });
           });
-        });
-      }
-    },
-  });
+        }
+      },
+    });
+  }
 };
 
 // updateSteamBanDataForPlayers updates steam info to current player-list
@@ -207,6 +210,15 @@ const parsePlayerstats = (
     'Demoman',
   ];
 
+  // When playerStats are unavailable, skip.
+  if (typeof playerStats.stats === 'undefined') {
+    console.log(
+      `Failed to acquire tf2-playtime for SteamID '${player.SteamID}'!`,
+    );
+
+    return player;
+  }
+
   playerStats.stats.forEach((stat) => {
     const classMatch = classes.some((className) =>
       stat.name.startsWith(className),
@@ -228,7 +240,7 @@ const updateSteamTF2DataForPlayer = (
   steam: typeof SteamApi,
   playerSteamId: string,
 ) => {
-  console.log(`updateSteamTF2DataForPlayer() for: ${playerSteamId}`);
+  // console.log(`updateSteamTF2DataForPlayer() for: ${playerSteamId}`);
 
   steam.getUserStatsForGame({
     steamid: playerSteamId,
@@ -250,19 +262,19 @@ const updateSteamTF2DataForPlayer = (
         });
       } else if (data && typeof data.playerstats === 'object') {
         const steamPlayerStats = data.playerstats;
-        console.log(
-          `Incomming tf2-data-update for ${data.playerstats.steamID}`,
-        );
+        // console.log(
+        //   `Incomming tf2-data-update for ${data.playerstats.steamID}`,
+        // );
         currentPlayerCollection.forEach((player) => {
           if (player.SteamID === playerSteamId) {
             player.SteamTF2DataLoaded = 'COMPLETED';
-            console.log(
-              `Updated '${player.SteamID}' gameName: ${steamPlayerStats.gameName}`,
-            );
+            // console.log(
+            //   `Updated '${player.SteamID}' gameName: ${steamPlayerStats.gameName}`,
+            // );
             const playtimePlayer = parsePlayerstats(player, steamPlayerStats);
-            console.log(
-              `SteamID '${player.SteamID}' SteamTF2Playtime: ${playtimePlayer.SteamTF2Playtime}`,
-            );
+            // console.log(
+            //   `SteamID '${player.SteamID}' SteamTF2Playtime: ${playtimePlayer.SteamTF2Playtime}`,
+            // );
             player.SteamTF2Playtime = playtimePlayer.SteamTF2Playtime;
             currentSteamTF2Information.push(playtimePlayer);
           }
