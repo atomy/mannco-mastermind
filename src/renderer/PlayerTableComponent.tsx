@@ -11,7 +11,9 @@ import InfoIcon from '@mui/icons-material/Info';
 import Link from '@mui/material/Link';
 import WarningIcon from '@mui/icons-material/Warning';
 import { PlayerInfo } from './PlayerInfo';
+import PlayerWarning from './PlayerWarning';
 import SteamAccountAge from './SteamAccountAge';
+import Playtime from './Playtime';
 
 interface PlayerTableComponentProps {
   players: PlayerInfo[];
@@ -29,17 +31,6 @@ function Row(props: { row: PlayerInfo }) {
     TF_GC_TEAM_INVADERS: 'Attackers',
     TF_GC_TEAM_DEFENDERS: 'Defenders',
     MEMBER: 'No Team',
-  };
-
-  const steamWarnings = () => {
-    let warnings = '';
-
-    // 1 - profile configured
-    if (row.SteamConfigured > 1) {
-      warnings += 'S';
-    }
-
-    return warnings;
   };
 
   // @ts-ignore
@@ -97,12 +88,13 @@ function Row(props: { row: PlayerInfo }) {
       <TableCell align="right">{row.State}</TableCell>
       <TableCell align="right">{teamMapping[row.Team] || row.Team}</TableCell>
       <TableCell align="right">
+        <Playtime seconds={row.SteamTF2Playtime} /> |{' '}
         <SteamAccountAge steamCreatedTimestamp={row.SteamCreatedTimestamp} />
       </TableCell>
-      <TableCell align="right">{steamWarnings()}</TableCell>
       <TableCell align="right">
-        {row.SteamProfileDataLoaded} - {row.SteamTF2DataLoaded}
+        <PlayerWarning player={row} />
       </TableCell>
+      <TableCell align="right" />
     </TableRow>
   );
 }
