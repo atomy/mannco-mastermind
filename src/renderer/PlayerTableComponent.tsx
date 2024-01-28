@@ -85,7 +85,6 @@ function Row(props: { row: PlayerInfo }) {
           ''
         )}
       </TableCell>
-      <TableCell align="right">{row.State}</TableCell>
       <TableCell align="right">{teamMapping[row.Team] || row.Team}</TableCell>
       <TableCell align="right">
         <Playtime seconds={row.SteamTF2Playtime} /> |{' '}
@@ -116,7 +115,6 @@ export default function PlayerTableComponent({
                 <InfoIcon color="primary" fontSize="small" />
               </Tooltip>
             </TableCell>
-            <TableCell align="right">State</TableCell>
             <TableCell align="right">Team</TableCell>
             <TableCell align="right">AccountAge</TableCell>
             <TableCell align="right">Warnings</TableCell>
