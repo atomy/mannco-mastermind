@@ -15,9 +15,11 @@ import log from 'electron-log';
 import { ChildProcessWithoutNullStreams } from 'node:child_process';
 import * as childProcess from 'child_process';
 import { WebSocket } from 'ws';
+import fs from 'fs';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { PlayerInfo } from '../renderer/PlayerInfo';
+import { loadPlayerWarnings, PlayerWarning } from './playerWarnings';
 import { SteamGamePlayerstats } from '../renderer/SteamGamePlayerstats';
 
 const SteamApi = require('steam-web');
@@ -41,9 +43,14 @@ let steamProfileUpdateTimer: NodeJS.Timeout | null = null;
 let steamTF2UpdateTimer: NodeJS.Timeout | null = null;
 // eslint-disable-next-line no-undef
 let steamBanUpdateTimer: NodeJS.Timeout | null = null;
+// eslint-disable-next-line no-undef
+let playerWarningsUpdateTime: NodeJS.Timeout | null = null;
 let steamProfileUpdatePlayerList: string[] = [];
 let steamTF2UpdatePlayerList: string[] = [];
 let steamBanUpdatePlayerList: string[] = [];
+let playerWarnings: PlayerWarning[] = [];
+
+const playerWarningsFilepath = './doc/players.json';
 
 const currentSteamProfileInformation: PlayerInfo[] = [];
 const currentSteamTF2Information: PlayerInfo[] = [];
@@ -142,6 +149,19 @@ const updateSteamProfileDataForPlayers = (
   }
 };
 
+// updatePlayerWarningData retrieve player-warnings and store it in memory
+const updatePlayerWarningData = () => {
+  loadPlayerWarnings(playerWarningsFilepath, (err, players) => {
+    if (err) {
+      // Handle error
+      console.error(`updatePlayerWarningData() ERROR: ${err}`);
+    } else if (players) {
+      // Handle success
+      playerWarnings = players;
+    }
+  });
+};
+
 // updateSteamBanDataForPlayers updates steam info to current player-list
 const updateSteamBanDataForPlayers = (
   steam: typeof SteamApi,
@@ -180,9 +200,9 @@ const updateSteamBanDataForPlayers = (
                 player.SteamBanNumberOfGameBans =
                   steamBanPlayer.NumberOfGameBans;
                 player.SteamBanEconomyBan = steamBanPlayer.EconomyBan;
-                console.log(
-                  `updateSteamBanDataForPlayers() Updated '${player.SteamID}': ${JSON.stringify(player)}`,
-                );
+                // console.log(
+                //   `updateSteamBanDataForPlayers() Updated '${player.SteamID}': ${JSON.stringify(player)}`,
+                // );
                 currentSteamBanInformation.push(player);
               }
             });
@@ -367,6 +387,18 @@ const updateSteamInfo = () => {
   });
 };
 
+// updatePlayerWarns updates player-warn data
+const updatePlayerWarns = () => {
+  // Enrich current players with steam-cache-data if available.
+  currentPlayerCollection.forEach((player) => {
+    playerWarnings.forEach((playerWarning) => {
+      if (player.SteamID === playerWarning.steamid) {
+        player.PlayerWarningReason = playerWarning.reason;
+      }
+    });
+  });
+};
+
 // Establish connection to tf2-rcon websocket.
 const connectTf2rconWebsocket = () => {
   tf2rconWs = new WebSocket('ws://127.0.0.1:27689/websocket');
@@ -387,6 +419,7 @@ const connectTf2rconWebsocket = () => {
         currentPlayerCollection = JSON.parse(playerJson);
 
         updateSteamInfo();
+        updatePlayerWarns();
         sendPlayerData();
       } else {
         console.log(
@@ -579,6 +612,23 @@ const startSteamBanUpdater = () => {
   }, 10000);
 };
 
+const startPlayerWarningsUpdateTimer = () => {
+  // Check if the file exists
+  const exists = fs.existsSync(playerWarningsFilepath);
+
+  if (!exists) {
+    console.error(`File ${playerWarningsFilepath} does not exist!`);
+    return;
+  }
+
+  // Regularly update steam-bans.
+  playerWarningsUpdateTime = setInterval(() => {
+    console.log('[main.ts] Updating player-warning data...');
+    updatePlayerWarningData();
+    console.log('[main.ts] Updating player-warning data...DONE');
+  }, 60000);
+};
+
 app
   .whenReady()
   .then(() => {
@@ -594,6 +644,7 @@ app
     startSteamProfileUpdater();
     startSteamTF2Updater();
     startSteamBanUpdater();
+    startPlayerWarningsUpdateTimer();
 
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
@@ -635,6 +686,11 @@ app
       if (steamBanUpdateTimer) {
         clearInterval(steamBanUpdateTimer);
         steamBanUpdateTimer = null;
+      }
+
+      if (playerWarningsUpdateTime) {
+        clearInterval(playerWarningsUpdateTime);
+        playerWarningsUpdateTime = null;
       }
     });
   })

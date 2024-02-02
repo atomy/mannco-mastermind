@@ -27,4 +27,5 @@ export interface PlayerInfo {
   SteamCreatedTimestamp: number;
   SteamCountryCode: string;
   SteamConfigured: number;
+  PlayerWarningReason: string;
 }

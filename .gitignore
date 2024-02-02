@@ -28,4 +28,6 @@ npm-debug.log.*
 *.sass.d.ts
 *.scss.d.ts
 
+doc/players.json
+
 run2.bat
