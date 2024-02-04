@@ -71,7 +71,6 @@ function Row(props: { row: PlayerInfo }) {
           Profile
         </Link>
       </TableCell>
-      <TableCell align="right">{row.Connected}</TableCell>
       <TableCell align="right">
         {row.Ping > 200 && row.State !== 'spawning' ? (
           <WarningIcon color="warning" fontSize="small" />
@@ -108,7 +107,6 @@ export default function PlayerTableComponent({
           <TableRow>
             <TableCell>Name</TableCell>
             <TableCell align="right">Steam</TableCell>
-            <TableCell align="right">Connected</TableCell>
             <TableCell align="right">
               P/L
               <Tooltip title="Ping in ms / Packetloss">
