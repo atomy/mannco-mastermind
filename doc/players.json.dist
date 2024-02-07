@@ -3,6 +3,17 @@
     {
       "steamid": "12345",
       "reason": "Test-Entry"
+      "type": "warn"
+    },
+    {
+      "steamid": "232323",
+      "reason": "Kickbot"
+      "type": "bot"
+    },
+    {
+      "steamid": "555",
+      "reason": "Aimbot sniper"
+      "type": "cheat"
     }
   ]
 }
