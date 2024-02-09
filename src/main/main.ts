@@ -11,11 +11,13 @@
 import path from 'path';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
+import crypto from 'crypto';
 import log from 'electron-log';
 import { ChildProcessWithoutNullStreams } from 'node:child_process';
 import * as childProcess from 'child_process';
 import { WebSocket } from 'ws';
 import fs from 'fs';
+import * as https from 'https';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { PlayerInfo } from '../renderer/PlayerInfo';
@@ -51,10 +53,17 @@ let steamBanUpdatePlayerList: string[] = [];
 let playerWarnings: PlayerWarning[] = [];
 
 const playerWarningsFilepath = './doc/players.json';
+const tf2RconFilepath = './tf2-rcon.exe';
+const tf2RconDownloadSite =
+  'https://github.com/atomy/TF2-RCON-MISC/releases/download/1.0.0/main-windows-amd64.exe';
+const tf2RconExpectedFilehash = 'f52642415a752c55d9f787e58a4dc3e9a2a2295a';
 
 const currentSteamProfileInformation: PlayerInfo[] = [];
 const currentSteamTF2Information: PlayerInfo[] = [];
 const currentSteamBanInformation: PlayerInfo[] = [];
+
+// Define the callback type
+type CallbackFunction = (error?: string | null) => void;
 
 // Signal handler.
 function handleExit(): void {
@@ -444,43 +453,167 @@ const connectTf2rconWebsocket = () => {
   }
 };
 
+// computeFileSHA1 function to compute SHA1 hash of a file
+function computeFileSHA1Sync(filePath: string): string {
+  const fileBuffer = fs.readFileSync(filePath);
+  const hashSum = crypto.createHash('sha1');
+  hashSum.update(fileBuffer);
+  const hex = hashSum.digest('hex');
+  return hex;
+}
+
+// downloadFile function to download a file
+function downloadFile(
+  url: string,
+  dest: string,
+  expectedSHA1: string,
+  cb: (error?: string | null) => void,
+) {
+  const processDownload = (response: any) => {
+    const file = fs.createWriteStream(dest);
+    response.pipe(file);
+    file.on('finish', () => {
+      file.close(() => {
+        // Compute SHA1 hash of the downloaded file synchronously
+        const fileHash = computeFileSHA1Sync(dest);
+        if (fileHash === expectedSHA1) {
+          console.log(
+            `File hash of downloaded file validated (hash: ${fileHash})`,
+          );
+          cb(null); // Success
+        } else {
+          console.log(
+            `File hash of downloaded file FAILED validation (hash: ${fileHash})`,
+          );
+          fs.unlink(dest, () => {}); // Delete the file on hash mismatch
+          cb('SHA1 hash mismatch, file discarded.');
+        }
+      });
+    });
+  };
+
+  const makeRequest = (urlToDownload: string) => {
+    const request = https
+      .get(urlToDownload, (response) => {
+        // Handle redirect
+        if (response.statusCode === 302 || response.statusCode === 301) {
+          // Get the redirect URL from the Location header
+          const { location } = response.headers;
+          if (location) {
+            console.log(`Following redirect to ${location}`);
+            // Close the current response stream and follow the redirect
+            response.destroy();
+            // Follow only one redirect
+            const newRequest = https
+              .get(location, (newResponse) => {
+                if (newResponse.statusCode === 200) {
+                  processDownload(newResponse);
+                } else {
+                  cb(
+                    `Server responded with status code: ${newResponse.statusCode}`,
+                  );
+                }
+              })
+              .on('error', (err) => {
+                cb(err.message);
+              });
+            newRequest.end();
+          } else {
+            cb('Redirect location header missing');
+          }
+        } else if (response.statusCode === 200) {
+          processDownload(response);
+        } else {
+          cb(`Server responded with status code: ${response.statusCode}`);
+        }
+      })
+      .on('error', (err) => {
+        cb(err.message);
+      });
+
+    request.end();
+  };
+
+  // Start the download process
+  makeRequest(url);
+}
+
+// downloadTF2Rcon downloads the tf2-rcon program that establishes communication with tf2
+const downloadTF2Rcon = (callback: CallbackFunction) => {
+  // Use fs.access to check if the file exists
+  fs.access(tf2RconFilepath, fs.constants.F_OK, (err) => {
+    if (err) {
+      console.log('File does not exist, downloading...');
+      downloadFile(
+        tf2RconDownloadSite,
+        tf2RconFilepath,
+        tf2RconExpectedFilehash,
+        (error) => {
+          if (error) {
+            console.error('Error downloading the file:', error);
+          } else {
+            console.log('File downloaded successfully');
+            callback();
+          }
+        },
+      );
+    } else {
+      console.log('File already exists');
+      callback();
+    }
+  });
+};
+
 // start TF2-Rcon-Subprocess
 const startTF2Rcon = () => {
-  tf2rconChild = childProcess.spawn(
-    'cmd /c "cd D:\\\\git\\\\TF2-RCON-MISC && .\\\\runDev.bat"',
-    [''],
-    {
-      shell: true,
-    },
-  );
+  console.log('startTF2Rcon()');
 
-  // You can also use a variable to save the output for when the script closes later
-  tf2rconChild.on('error', (error) => {
-    console.log(`[main.ts][TF2RCON] ERROR: ${error}`);
-  });
+  fs.access(tf2RconFilepath, fs.constants.F_OK, (err) => {
+    if (err) {
+      console.log('TF2RCON not found, unable to start!');
+    } else {
+      console.log('Starting TF2RCON...');
+      tf2rconChild = childProcess.spawn('.\\\\tf2-rcon.exe"', [''], {
+        shell: true,
+      });
+      // %TODO, add dev support
+      // tf2rconChild = childProcess.spawn(
+      //   'cmd /c "cd D:\\\\git\\\\TF2-RCON-MISC && .\\\\runDev.bat"',
+      //   [''],
+      //   {
+      //     shell: true,
+      //   },
+      // );
 
-  tf2rconChild.stdout.setEncoding('utf8');
-  tf2rconChild.stdout.on('data', (data) => {
-    console.log(`[main.ts][TF2RCON][STDOUT]: ${data}`);
-  });
+      // You can also use a variable to save the output for when the script closes later
+      tf2rconChild.on('error', (error) => {
+        console.log(`[main.ts][TF2RCON] ERROR: ${error}`);
+      });
 
-  tf2rconChild.stderr.setEncoding('utf8');
-  tf2rconChild.stderr.on('data', (data) => {
-    // Here is the output from the command
-    console.log(`[main.ts][TF2RCON][STDERR]: ${data}`);
-  });
+      tf2rconChild.stdout.setEncoding('utf8');
+      tf2rconChild.stdout.on('data', (data) => {
+        console.log(`[main.ts][TF2RCON][STDOUT]: ${data}`);
+      });
 
-  tf2rconChild.on('close', (code) => {
-    console.log(`[main.ts][TF2RCON] CLOSE: ${code}`);
-  });
+      tf2rconChild.stderr.setEncoding('utf8');
+      tf2rconChild.stderr.on('data', (data) => {
+        // Here is the output from the command
+        console.log(`[main.ts][TF2RCON][STDERR]: ${data}`);
+      });
 
-  tf2rconChild.on('exit', (code, signal) => {
-    console.log(
-      `[main.ts][TF2RCON] Child process exited with code ${code} and signal ${signal}`,
-    );
+      tf2rconChild.on('close', (code) => {
+        console.log(`[main.ts][TF2RCON] CLOSE: ${code}`);
+      });
 
-    if (shouldRestartTF2Rcon) {
-      startTF2Rcon();
+      tf2rconChild.on('exit', (code, signal) => {
+        console.log(
+          `[main.ts][TF2RCON] Child process exited with code ${code} and signal ${signal}`,
+        );
+
+        if (shouldRestartTF2Rcon) {
+          startTF2Rcon();
+        }
+      });
     }
   });
 };
@@ -637,8 +770,12 @@ app
     process.on('SIGQUIT', handleExit);
     process.on('SIGINT', handleExit);
 
-    // Start tf2-rcon-backend.
-    startTF2Rcon();
+    // Download tf2-rcon when needed.
+    downloadTF2Rcon(() => {
+      // Start tf2-rcon-backend when download completed or file already present.
+      startTF2Rcon();
+    });
+
     createWindow();
     connectTf2rconWebsocket();
     startSteamProfileUpdater();

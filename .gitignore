@@ -31,3 +31,5 @@ npm-debug.log.*
 doc/players.json
 
 run2.bat
+
+tf2-rcon.*
