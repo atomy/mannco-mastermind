@@ -573,17 +573,17 @@ const startTF2Rcon = () => {
       console.log('TF2RCON not found, unable to start!');
     } else {
       console.log('Starting TF2RCON...');
-      tf2rconChild = childProcess.spawn('.\\\\tf2-rcon.exe"', [''], {
-        shell: true,
-      });
+      // tf2rconChild = childProcess.spawn('.\\\\tf2-rcon.exe"', [''], {
+      //   shell: true,
+      // });
       // %TODO, add dev support
-      // tf2rconChild = childProcess.spawn(
-      //   'cmd /c "cd D:\\\\git\\\\TF2-RCON-MISC && .\\\\runDev.bat"',
-      //   [''],
-      //   {
-      //     shell: true,
-      //   },
-      // );
+      tf2rconChild = childProcess.spawn(
+        'cmd /c "cd D:\\\\git\\\\TF2-RCON-MISC && .\\\\runDev.bat"',
+        [''],
+        {
+          shell: true,
+        },
+      );
 
       // You can also use a variable to save the output for when the script closes later
       tf2rconChild.on('error', (error) => {
@@ -610,8 +610,13 @@ const startTF2Rcon = () => {
           `[main.ts][TF2RCON] Child process exited with code ${code} and signal ${signal}`,
         );
 
+        // Restart after 5s.
         if (shouldRestartTF2Rcon) {
-          startTF2Rcon();
+          console.log('[main.ts][TF2RCON] Restarting after 5 seconds...');
+          setTimeout(() => {
+            console.log('[main.ts][TF2RCON] Restarting after 5 seconds... RESTARTING');
+            startTF2Rcon();
+          }, 5000);
         }
       });
     }
