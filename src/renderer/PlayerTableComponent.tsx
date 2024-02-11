@@ -14,6 +14,7 @@ import PlayerAction from './PlayerAction';
 import PlayerWarning from './PlayerWarning';
 import SteamAccountAge from './SteamAccountAge';
 import Playtime from './Playtime';
+import { loadPlayerWarnings } from '../main/playerWarnings';
 
 interface PlayerTableComponentProps {
   players: PlayerInfo[];
@@ -34,9 +35,29 @@ function Row(props: {
 }) {
   const { row, handleAddBlacklistSave } = props;
 
+  // Determine background-color of row based on various player attributes.
+  const rowBackgroundColor = (): string => {
+    if (row.IsMe) {
+      return '#768a88';
+    }
+
+    if (['bot', 'cheat'].includes(row.PlayerWarningType)) {
+      return '#bd3b3b';
+    }
+
+    if (['warn'].includes(row.PlayerWarningType)) {
+      return '#ef9849';
+    }
+
+    return 'transparent';
+  };
+
   // @ts-ignore
   return (
-    <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+    <TableRow
+      sx={{ '& > *': { borderBottom: 'unset' } }}
+      style={{ backgroundColor: rowBackgroundColor() }}
+    >
       <TableCell component="th" scope="row">
         {row.SteamCountryCode ? (
           <img
