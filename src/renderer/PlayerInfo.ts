@@ -29,4 +29,5 @@ export interface PlayerInfo {
   SteamCountryCode: string;
   SteamConfigured: number;
   PlayerWarningReason: string;
+  PlayerWarningType: string;
 }

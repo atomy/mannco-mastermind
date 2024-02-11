@@ -10,16 +10,29 @@ import Link from '@mui/material/Link';
 import WarningIcon from '@mui/icons-material/Warning';
 import { Grid } from '@mui/material';
 import { PlayerInfo } from './PlayerInfo';
+import PlayerAction from './PlayerAction';
 import PlayerWarning from './PlayerWarning';
 import SteamAccountAge from './SteamAccountAge';
 import Playtime from './Playtime';
 
 interface PlayerTableComponentProps {
   players: PlayerInfo[];
+  handleAddBlacklistSave: (
+    steamid: string,
+    type: string,
+    reason: string,
+  ) => void;
 }
 
-function Row(props: { row: PlayerInfo }) {
-  const { row } = props;
+function Row(props: {
+  row: PlayerInfo;
+  handleAddBlacklistSave: (
+    steamid: string,
+    type: string,
+    reason: string,
+  ) => void;
+}) {
+  const { row, handleAddBlacklistSave } = props;
 
   // @ts-ignore
   return (
@@ -78,12 +91,19 @@ function Row(props: { row: PlayerInfo }) {
       <TableCell align="right">
         <PlayerWarning player={row} />
       </TableCell>
+      <TableCell align="right">
+        <PlayerAction
+          player={row}
+          handleAddBlacklistSave={handleAddBlacklistSave}
+        />
+      </TableCell>
     </TableRow>
   );
 }
 
 export default function PlayerTableComponent({
   players,
+  handleAddBlacklistSave,
 }: PlayerTableComponentProps) {
   const getTeamPlayers = (ownTeam: boolean): PlayerInfo[] => {
     const mePlayer = players.find((element) => {
@@ -119,13 +139,18 @@ export default function PlayerTableComponent({
                   <InfoIcon color="primary" fontSize="small" />
                 </Tooltip>
               </TableCell>
-              <TableCell align="right">AccountAge</TableCell>
+              <TableCell align="right">Playtime | AccountAge</TableCell>
               <TableCell align="right">Warnings</TableCell>
+              <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {getTeamPlayers(true).map((player) => (
-              <Row key={player.SteamID.toString()} row={player} />
+              <Row
+                key={player.SteamID.toString()}
+                row={player}
+                handleAddBlacklistSave={handleAddBlacklistSave}
+              />
             ))}
           </TableBody>
         </Table>
@@ -142,13 +167,18 @@ export default function PlayerTableComponent({
                   <InfoIcon color="primary" fontSize="small" />
                 </Tooltip>
               </TableCell>
-              <TableCell align="right">AccountAge</TableCell>
+              <TableCell align="right">Playtime | AccountAge</TableCell>
               <TableCell align="right">Warnings</TableCell>
+              <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {getTeamPlayers(false).map((player) => (
-              <Row key={player.SteamID.toString()} row={player} />
+              <Row
+                key={player.SteamID.toString()}
+                row={player}
+                handleAddBlacklistSave={handleAddBlacklistSave}
+              />
             ))}
           </TableBody>
         </Table>

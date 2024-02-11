@@ -23,6 +23,25 @@ function Main() {
     setPlayers(filteredPlayerCollection);
   };
 
+  const handleAddBlacklistSave = (
+    steamid: string,
+    type: string,
+    reason: string,
+  ) => {
+    const blacklistedPlayer = players.find((pl) => {
+      return pl.SteamID === steamid;
+    });
+
+    if (blacklistedPlayer) {
+      console.log(`Blacklisting ${steamid} -- ${type} -- ${reason}`);
+      window.electron.ipcRenderer.sendBlacklist({
+        steamid,
+        type,
+        reason,
+      });
+    }
+  };
+
   useEffect(() => {
     window.electron.ipcRenderer.on(
       'player-data',
@@ -36,7 +55,10 @@ function Main() {
     <div className="content">
       <div className="player-list">
         <h1>Current Players</h1>
-        <PlayerTableComponent players={players} />
+        <PlayerTableComponent
+          players={players}
+          handleAddBlacklistSave={handleAddBlacklistSave}
+        />
       </div>
     </div>
   );

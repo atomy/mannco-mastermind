@@ -25,12 +25,12 @@ export default function PlayerWarning(props: { player: PlayerInfo }) {
         alt={`Days since last ban: ${player.SteamBanDaysSinceLastBan}`}
       />
     )) ||
-    (typeof player.PlayerWarningReason !== 'undefined' && (
+    (typeof player.PlayerWarningType !== 'undefined' && (
       <img
         width="20px"
-        title={`Reason: ${player.PlayerWarningReason}`}
+        title={`Type: '${player.PlayerWarningType}' Reason: '${player.PlayerWarningReason}'`}
         src={Blacklist}
-        alt={`Reason: ${player.PlayerWarningReason}`}
+        alt={`Type: '${player.PlayerWarningType}' Reason: '${player.PlayerWarningReason}'`}
       />
     ))
   );

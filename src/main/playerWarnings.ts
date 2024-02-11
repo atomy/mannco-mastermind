@@ -5,6 +5,7 @@ import fs from 'fs';
 export interface PlayerWarning {
   steamid: string;
   reason: string;
+  type: string;
 }
 
 // Define the structure for the JSON data in players.json

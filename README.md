@@ -26,3 +26,7 @@ npm start
 
 Note: Don't kill the program with CTL+C on windows, cause the sub-process (tf2-rcon) will still be running and not being able to start on next startup cause of blocked listening port.
 (https://github.com/electron/electron/issues/5273)
+
+### Team Fortress 2 Color Palette
+
+https://lospec.com/palette-list/team-fortress-2-official

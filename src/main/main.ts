@@ -80,8 +80,80 @@ function handleExit(): void {
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(`[main.ts] ${msgTemplate(arg)}`);
+  console.log(`[main.ts][IPC][*ipc-example*] ${msgTemplate(arg)}`);
   event.reply('ipc-example', msgTemplate('pong'));
+});
+
+// addPlayerBlacklist add entry to blacklist
+const addPlayerBlacklist = (
+  steamid: string,
+  type: string,
+  reason: string,
+): void => {
+  console.log(
+    `[main.ts] addPlayerBlacklist() ${steamid} -- ${type} -- ${reason}`,
+  );
+
+  fs.readFile(playerWarningsFilepath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('[main.ts] addPlayerBlacklist() Error reading file: ', err);
+      return;
+    }
+
+    try {
+      const json = JSON.parse(data);
+
+      // Check for duplicate steamid
+      const index = json.players.findIndex(
+        (player: PlayerWarning) => player.steamid === steamid,
+      );
+
+      if (index !== -1) {
+        console.log(
+          `[main.ts] addPlayerBlacklist() Error - Player with steamid ${steamid} already exists.`,
+        );
+        return; // Exit if duplicate is found
+      }
+
+      // Add the new player entry
+      json.players.push({ steamid, type, reason });
+
+      fs.writeFile(
+        playerWarningsFilepath,
+        JSON.stringify(json, null, 2),
+        'utf8',
+        (error) => {
+          if (error) {
+            console.error(
+              '[main.ts] addPlayerBlacklist() Error writing file: ',
+              error,
+            );
+          } else {
+            console.log(
+              '[main.ts] addPlayerBlacklist() Successfully added player entry.',
+            );
+          }
+        },
+      );
+    } catch (error) {
+      console.error(
+        '[main.ts] addPlayerBlacklist() Error parsing JSON: ',
+        error,
+      );
+    }
+  });
+};
+
+// Listen for *blacklist-player* messages over IPC.
+ipcMain.on('blacklist-player', async (event, arg) => {
+  console.log(`[main.ts][IPC][*blacklist-player*] ${JSON.stringify(arg)}`);
+  playerWarnings.push({
+    steamid: arg.steamid,
+    reason: arg.reason,
+    type: arg.type,
+  });
+
+  addPlayerBlacklist(arg.steamid, arg.type, arg.reason);
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -403,6 +475,7 @@ const updatePlayerWarns = () => {
     playerWarnings.forEach((playerWarning) => {
       if (player.SteamID === playerWarning.steamid) {
         player.PlayerWarningReason = playerWarning.reason;
+        player.PlayerWarningType = playerWarning.type;
       }
     });
   });
