@@ -16,9 +16,9 @@ function Main() {
       return currentTime - playerInfo.LastSeen <= 60;
     });
 
-    filteredPlayerCollection.forEach((player) => {
-      console.log(`Setting player: ${JSON.stringify(player)}`);
-    });
+    // filteredPlayerCollection.forEach((player) => {
+    //   console.log(`Setting player: ${JSON.stringify(player)}`);
+    // });
 
     setPlayers(filteredPlayerCollection);
   };

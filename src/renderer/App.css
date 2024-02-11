@@ -2,16 +2,12 @@
  * @NOTE: Prepend a `~` to css file paths that are in your node_modules
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
+/* https://lospec.com/palette-list/team-fortress-2-official */
 body {
   position: relative;
   color: white;
   height: 100vh;
-  background: linear-gradient(
-    200.96deg,
-    #fedc2a -29.09%,
-    #dd5789 51.77%,
-    #7a2c9e 129.35%
-  );
+  background-color: #f5e7de;
   font-family: sans-serif;
   overflow-y: scroll;
   justify-content: center;
@@ -69,4 +65,8 @@ a:hover {
 
 .player-list {
   flex: 1;
+}
+
+h1 {
+  color: black;
 }

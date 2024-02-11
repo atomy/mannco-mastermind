@@ -566,8 +566,6 @@ const downloadTF2Rcon = (callback: CallbackFunction) => {
 
 // start TF2-Rcon-Subprocess
 const startTF2Rcon = () => {
-  console.log('startTF2Rcon()');
-
   fs.access(tf2RconFilepath, fs.constants.F_OK, (err) => {
     if (err) {
       console.log('TF2RCON not found, unable to start!');
@@ -576,7 +574,6 @@ const startTF2Rcon = () => {
       // tf2rconChild = childProcess.spawn('.\\\\tf2-rcon.exe"', [''], {
       //   shell: true,
       // });
-      // %TODO, add dev support
       tf2rconChild = childProcess.spawn(
         'cmd /c "cd D:\\\\git\\\\TF2-RCON-MISC && .\\\\runDev.bat"',
         [''],
@@ -614,7 +611,9 @@ const startTF2Rcon = () => {
         if (shouldRestartTF2Rcon) {
           console.log('[main.ts][TF2RCON] Restarting after 5 seconds...');
           setTimeout(() => {
-            console.log('[main.ts][TF2RCON] Restarting after 5 seconds... RESTARTING');
+            console.log(
+              '[main.ts][TF2RCON] Restarting after 5 seconds... RESTARTING',
+            );
             startTF2Rcon();
           }, 5000);
         }
