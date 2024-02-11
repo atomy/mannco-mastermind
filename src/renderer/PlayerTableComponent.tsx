@@ -14,7 +14,6 @@ import PlayerAction from './PlayerAction';
 import PlayerWarning from './PlayerWarning';
 import SteamAccountAge from './SteamAccountAge';
 import Playtime from './Playtime';
-import { loadPlayerWarnings } from '../main/playerWarnings';
 
 interface PlayerTableComponentProps {
   players: PlayerInfo[];
