@@ -34,17 +34,6 @@ function Main() {
 
   return (
     <div className="content">
-      <div className="connection-status">
-        <h1>Status</h1>
-        <div>
-          <span>Connection to backend: IPC</span>
-        </div>
-        <div>
-          <span>
-            Connection to TF2: <span>✅</span>
-          </span>
-        </div>
-      </div>
       <div className="player-list">
         <h1>Current Players</h1>
         <PlayerTableComponent players={players} />
