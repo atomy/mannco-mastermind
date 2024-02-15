@@ -185,6 +185,12 @@ const sendPlayerData = () => {
   // Get all window instances
   const windows = BrowserWindow.getAllWindows();
 
+  currentPlayerCollection.forEach((player) => {
+    if (!player.Team) {
+      console.log(`Sending players: ${player.Name} -- ${player.Team}`);
+    }
+  });
+
   // Send data to each window
   windows.forEach((w) => {
     w.webContents.send('player-data', currentPlayerCollection);
@@ -263,7 +269,7 @@ const updateSteamBanDataForPlayers = (
           currentPlayerCollection.forEach((player) => {
             if (playerSteamIds.includes(player.SteamID)) {
               player.SteamBanDataLoaded = 'ERROR';
-              console.log(`ERROR '${player.SteamID}': ${err}`);
+              // console.log(`ERROR '${player.SteamID}': ${err}`);
               currentSteamBanInformation.push(player);
             }
           });
@@ -329,7 +335,7 @@ const parsePlayerstats = (
     }
   });
 
-  console.log(`SteamID '${player.SteamID}' totalPlayTime: ${totalPlayTime}`);
+  // console.log(`SteamID '${player.SteamID}' totalPlayTime: ${totalPlayTime}`);
 
   player.SteamTF2Playtime = totalPlayTime;
 
@@ -357,7 +363,7 @@ const updateSteamTF2DataForPlayer = (
               '',
             );
             player.SteamTF2DataLoaded = 'ERROR';
-            console.log(`ERROR '${player.SteamID}': ${fixedErr}`);
+            // console.log(`ERROR '${player.SteamID}': ${fixedErr}`);
             currentSteamTF2Information.push(player);
           }
         });
@@ -499,6 +505,9 @@ const connectTf2rconWebsocket = () => {
       if (incommingJson.type === 'player-update') {
         const playerJson = JSON.stringify(incommingJson['current-players']);
         currentPlayerCollection = JSON.parse(playerJson);
+        console.log(
+          `play-update coming in, len: ${currentPlayerCollection.length}`,
+        );
 
         updateSteamInfo();
         updatePlayerWarns();

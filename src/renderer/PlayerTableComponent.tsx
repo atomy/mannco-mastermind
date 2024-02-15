@@ -126,21 +126,21 @@ export default function PlayerTableComponent({
   handleAddBlacklistSave,
 }: PlayerTableComponentProps) {
   const getTeamPlayers = (ownTeam: boolean): PlayerInfo[] => {
-    const mePlayer = players.find((element) => {
-      if (element.IsMe) {
-        return element;
-      }
-
-      return undefined;
-    });
+    const mePlayer = players.find((element) => element.IsMe);
 
     if (mePlayer) {
+      if (!mePlayer.Team) {
+        console.log('Own team is empty!');
+      }
       if (ownTeam) {
         return players.filter((element) => element.Team === mePlayer.Team);
       }
 
       return players.filter((element) => element.Team !== mePlayer.Team);
     }
+    console.error(
+      `getTeamPlayers() Unable to find myself! (current-player-count: ${players.length})`,
+    );
 
     return [];
   };

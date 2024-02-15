@@ -16,10 +16,19 @@ function Main() {
       return currentTime - playerInfo.LastSeen <= 60;
     });
 
-    // filteredPlayerCollection.forEach((player) => {
-    //   console.log(`Setting player: ${JSON.stringify(player)}`);
-    // });
+    let foundMe = false;
 
+    filteredPlayerCollection.forEach((player) => {
+      // console.log(`Setting player: ${JSON.stringify(player)}`);
+      if (player.IsMe) {
+        foundMe = true;
+      }
+    });
+
+    if (!foundMe) {
+      console.log('Settings players w/o myself in it!');
+    }
+    console.log(`Settings players, count: ${filteredPlayerCollection.length}`);
     setPlayers(filteredPlayerCollection);
   };
 
