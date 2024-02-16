@@ -129,9 +129,6 @@ export default function PlayerTableComponent({
     const mePlayer = players.find((element) => element.IsMe);
 
     if (mePlayer) {
-      if (!mePlayer.Team) {
-        console.log('Own team is empty!');
-      }
       if (ownTeam) {
         return players.filter((element) => element.Team === mePlayer.Team);
       }

@@ -202,6 +202,9 @@ export default class MenuBuilder {
             accelerator: 'Ctrl+O',
           },
           {
+            label: '&Settings',
+          },
+          {
             label: '&Close',
             accelerator: 'Ctrl+W',
             click: () => {

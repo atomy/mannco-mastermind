@@ -505,9 +505,9 @@ const connectTf2rconWebsocket = () => {
       if (incommingJson.type === 'player-update') {
         const playerJson = JSON.stringify(incommingJson['current-players']);
         currentPlayerCollection = JSON.parse(playerJson);
-        console.log(
-          `play-update coming in, len: ${currentPlayerCollection.length}`,
-        );
+        // console.log(
+        //   `play-update coming in, len: ${currentPlayerCollection.length}`,
+        // );
 
         updateSteamInfo();
         updatePlayerWarns();

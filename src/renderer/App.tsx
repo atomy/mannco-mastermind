@@ -25,10 +25,6 @@ function Main() {
       }
     });
 
-    if (!foundMe) {
-      console.log('Settings players w/o myself in it!');
-    }
-    console.log(`Settings players, count: ${filteredPlayerCollection.length}`);
     setPlayers(filteredPlayerCollection);
   };
 
