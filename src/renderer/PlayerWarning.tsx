@@ -11,7 +11,7 @@ export default function PlayerWarning(props: { player: PlayerInfo }) {
     (player.SteamBanDaysSinceLastBan > 0 && (
       <VacBanned
         strongWarning={player.SteamBanDaysSinceLastBan < 365 ?? false}
-        number={1000}
+        number={player.SteamBanDaysSinceLastBan}
       />
     )) ||
     (typeof player.PlayerWarningType !== 'undefined' && (

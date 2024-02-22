@@ -21,7 +21,7 @@ export default function VacBanned(props: {
       ctx.drawImage(image, 0, 0);
 
       // Customize text properties (font, size, color, etc.)
-      ctx.font = '10px Arial';
+      ctx.font = 'bold 10px Arial';
       ctx.textAlign = 'center';
 
       // Draw the number in the center of the icon
