@@ -9,6 +9,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import Link from '@mui/material/Link';
 import WarningIcon from '@mui/icons-material/Warning';
 import { Grid } from '@mui/material';
+import { styled } from '@mui/system';
 import { PlayerInfo } from './PlayerInfo';
 import PlayerAction from './PlayerAction';
 import PlayerWarning from './PlayerWarning';
@@ -23,6 +24,11 @@ interface PlayerTableComponentProps {
     reason: string,
   ) => void;
 }
+
+const StyledTableCell = styled(TableCell)({
+  paddingTop: '4px',
+  paddingBottom: '4px',
+});
 
 function Row(props: {
   row: PlayerInfo;
@@ -57,7 +63,7 @@ function Row(props: {
       sx={{ '& > *': { borderBottom: 'unset' } }}
       style={{ backgroundColor: rowBackgroundColor() }}
     >
-      <TableCell component="th" scope="row">
+      <StyledTableCell component="th" scope="row">
         {row.SteamCountryCode ? (
           <img
             width="30px"
@@ -77,8 +83,8 @@ function Row(props: {
           <img src={row.SteamAvatarSmall} alt="Avatar" />
         )}
         <span style={{ paddingLeft: '10px' }}>{row.Name}</span>
-      </TableCell>
-      <TableCell align="right">
+      </StyledTableCell>
+      <StyledTableCell align="right">
         <Link
           target="_blank"
           rel="noreferrer"
@@ -90,8 +96,8 @@ function Row(props: {
         >
           Profile
         </Link>
-      </TableCell>
-      <TableCell align="right">
+      </StyledTableCell>
+      <StyledTableCell align="right">
         {row.Ping > 200 && row.State !== 'spawning' ? (
           <WarningIcon color="warning" fontSize="small" />
         ) : (
@@ -103,20 +109,20 @@ function Row(props: {
         ) : (
           ''
         )}
-      </TableCell>
-      <TableCell align="right">
+      </StyledTableCell>
+      <StyledTableCell align="right">
         <Playtime seconds={row.SteamTF2Playtime} /> |{' '}
         <SteamAccountAge steamCreatedTimestamp={row.SteamCreatedTimestamp} />
-      </TableCell>
-      <TableCell align="right">
+      </StyledTableCell>
+      <StyledTableCell align="right">
         <PlayerWarning player={row} />
-      </TableCell>
-      <TableCell align="right">
+      </StyledTableCell>
+      <StyledTableCell align="right">
         <PlayerAction
           player={row}
           handleAddBlacklistSave={handleAddBlacklistSave}
         />
-      </TableCell>
+      </StyledTableCell>
     </TableRow>
   );
 }
@@ -148,17 +154,19 @@ export default function PlayerTableComponent({
         <Table aria-label="collapsible table">
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell align="right">Steam</TableCell>
-              <TableCell align="right">
+              <StyledTableCell>Name</StyledTableCell>
+              <StyledTableCell align="right">Steam</StyledTableCell>
+              <StyledTableCell align="right">
                 P/L
                 <Tooltip title="Ping in ms / Packetloss">
                   <InfoIcon color="primary" fontSize="small" />
                 </Tooltip>
-              </TableCell>
-              <TableCell align="right">Playtime | AccountAge</TableCell>
-              <TableCell align="right">Warnings</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                Playtime | AccountAge
+              </StyledTableCell>
+              <StyledTableCell align="right">Warnings</StyledTableCell>
+              <StyledTableCell align="right">Actions</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -176,17 +184,19 @@ export default function PlayerTableComponent({
         <Table aria-label="collapsible table">
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell align="right">Steam</TableCell>
-              <TableCell align="right">
+              <StyledTableCell>Name</StyledTableCell>
+              <StyledTableCell align="right">Steam</StyledTableCell>
+              <StyledTableCell align="right">
                 P/L
                 <Tooltip title="Ping in ms / Packetloss">
                   <InfoIcon color="primary" fontSize="small" />
                 </Tooltip>
-              </TableCell>
-              <TableCell align="right">Playtime | AccountAge</TableCell>
-              <TableCell align="right">Warnings</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                Playtime | AccountAge
+              </StyledTableCell>
+              <StyledTableCell align="right">Warnings</StyledTableCell>
+              <StyledTableCell align="right">Actions</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
