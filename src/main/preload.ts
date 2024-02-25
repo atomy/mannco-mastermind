@@ -2,8 +2,10 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { PlayerInfo } from '../renderer/PlayerInfo';
+import { RconAppLogEntry } from '../renderer/RconAppLogEntry';
 
 export type PlayerDataChannel = 'player-data';
+export type RconAppLogChannel = 'rcon-applog';
 
 const electronHandler = {
   ipcRenderer: {
@@ -18,6 +20,18 @@ const electronHandler = {
     },
     sendBlacklist(args: { steamid: string; type: string; reason: string }) {
       ipcRenderer.send('blacklist-player', args);
+    },
+    onApplicationLogMessage(
+      channel: RconAppLogChannel,
+      func: (args: RconAppLogEntry) => void,
+    ) {
+      const subscription = (_event: IpcRendererEvent, args: RconAppLogEntry) =>
+        func(args);
+      ipcRenderer.on(channel, subscription);
+
+      return () => {
+        ipcRenderer.removeListener(channel, subscription);
+      };
     },
   },
 };

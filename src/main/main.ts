@@ -23,6 +23,7 @@ import { resolveHtmlPath } from './util';
 import { PlayerInfo } from '../renderer/PlayerInfo';
 import { loadPlayerWarnings, PlayerWarning } from './playerWarnings';
 import { SteamGamePlayerstats } from '../renderer/SteamGamePlayerstats';
+import { RconAppLogEntry } from '../renderer/RconAppLogEntry';
 
 const SteamApi = require('steam-web');
 
@@ -197,6 +198,18 @@ const sendPlayerData = () => {
   });
 };
 
+const sendApplicationLogData = (logMessage: RconAppLogEntry) => {
+  // Get all window instances
+  const windows = BrowserWindow.getAllWindows();
+
+  // console.log(`Sending log-message: ${logMessage}`);
+
+  // Send data to each window
+  windows.forEach((w) => {
+    w.webContents.send('rcon-applog', logMessage);
+  });
+};
+
 // updateSteamProfileDataForPlayers updates steam info to current player-list
 const updateSteamProfileDataForPlayers = (
   steam: typeof SteamApi,
@@ -358,10 +371,10 @@ const updateSteamTF2DataForPlayer = (
       if (typeof err !== 'undefined') {
         currentPlayerCollection.forEach((player) => {
           if (player.SteamID === playerSteamId) {
-            const fixedErr = err.replace(
-              ' Error: Check your API key is correct',
-              '',
-            );
+            // const fixedErr = err.replace(
+            //   ' Error: Check your API key is correct',
+            //   '',
+            // );
             player.SteamTF2DataLoaded = 'ERROR';
             // console.log(`ERROR '${player.SteamID}': ${fixedErr}`);
             currentSteamTF2Information.push(player);
@@ -512,9 +525,15 @@ const connectTf2rconWebsocket = () => {
         updateSteamInfo();
         updatePlayerWarns();
         sendPlayerData();
+      } else if (incommingJson.type === 'application-log') {
+        const logEntry: RconAppLogEntry = {
+          Timestamp: Date.now(), // Set the timestamp to the current time
+          Message: incommingJson.message,
+        };
+        sendApplicationLogData(logEntry);
       } else {
         console.log(
-          `[main.ts] Discarding unconfigured type ${incommingJson.type}!`,
+          `[main.ts] Discarding unconfigured type *${incommingJson.type}*!`,
         );
       }
 
