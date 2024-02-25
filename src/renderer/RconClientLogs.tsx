@@ -21,7 +21,7 @@ export default function RconClientLogs(props: { logs: RconAppLogEntry[] }) {
     <div style={containerStyle}>
       {logs.length > 0 ? (
         <ul style={{ paddingLeft: '10px' }}>
-          {logs.reverse().map((logEntry) => (
+          {logs.map((logEntry) => (
             <li key={logEntry.Timestamp}>{logEntry.Message}</li>
           ))}
         </ul>

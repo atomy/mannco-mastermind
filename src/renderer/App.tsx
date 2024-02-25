@@ -32,12 +32,14 @@ function Main() {
   };
 
   const addRconClientLogMessage = (logEntry: RconAppLogEntry) => {
-    const updatedLogs = rconClientLogs.slice();
-    updatedLogs.push(logEntry);
+    const updatedLogs = [...rconClientLogs, logEntry];
 
-    // Ensure the array length does not exceed 100
-    if (updatedLogs.length > 100) {
-      updatedLogs.splice(0, updatedLogs.length - 100);
+    // Sort the array by logEntry.Timestamp in descending order
+    updatedLogs.sort((a, b) => b.Timestamp - a.Timestamp);
+
+    // Ensure the array length does not exceed 1000
+    if (updatedLogs.length > 1000) {
+      updatedLogs.splice(1000);
     }
 
     setRconClientLogs(updatedLogs);
