@@ -9,7 +9,7 @@ const containerStyle = {
   height: '200px',
   border: '1px solid #ccc',
   borderRadius: '5px',
-  'overflow-y': 'scroll', // Add this to enable scrolling if the content exceeds the box height
+  overflowY: 'scroll', // Add this to enable scrolling if the content exceeds the box height
   color: 'black',
   paddingLeft: '10px',
 } as React.CSSProperties;
