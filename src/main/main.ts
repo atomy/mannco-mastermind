@@ -38,7 +38,7 @@ class AppUpdater {
 let mainWindow: BrowserWindow | null = null;
 let tf2rconChild: ChildProcessWithoutNullStreams | null = null;
 let tf2rconWs: WebSocket | null = null;
-let shouldRestartTF2Rcon = false; // %TODO
+let shouldRestartTF2Rcon = true;
 let currentPlayerCollection: PlayerInfo[] = [];
 // eslint-disable-next-line no-undef
 let steamProfileUpdateTimer: NodeJS.Timeout | null = null;
