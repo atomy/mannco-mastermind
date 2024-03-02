@@ -6,6 +6,18 @@ Frontend for [TF2-RCON-MISC](https://github.com/algo7/tf2_rcon_misc) CLI-Tool, s
 
 Work in progress. If you are a dev, you may be able to get it running, there's no release-pack available for now.
 
+## Features
+- Show all players from current TF2-Session
+- Show Team of player
+- Display Steam-Avatar of every player
+- Provide link to steam-profile of players
+- Show connection-stats for player, ping, loss
+- Display steam playtime and account age of player
+- Warnings-functionality, display a warning about players on your blacklist or players having VAC bans
+- Reputation system for players, you can mark players as *bots*, *hackers*, *general-warning* or *+reputation* (local database)
+- Show country flag of players
+
+
 ## Requirements
 - NodeJS (I got 18.18.1)
 
@@ -37,7 +49,7 @@ npm start
 
 Note: Don't kill the program with CTL+C on windows, cause the sub-process (tf2-rcon) will still be running and not being able to start on next startup cause of blocked listening port.
 (https://github.com/electron/electron/issues/5273)
-You have to first close the electron window and then you can CTL+C.
+You have to first close the electron window and then you can CTL+C. If you did kill the app by accident and tf2-rcon is still running and you actually need to restart tf2-rcon (which you probably dont even need) use something like TCPView to kill the process.
 
 ### Team Fortress 2 Color Palette
 
