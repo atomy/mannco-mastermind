@@ -54,6 +54,10 @@ function Row(props: {
       return '#ef9849';
     }
 
+    if (['plusrep'].includes(row.PlayerWarningType)) {
+      return '#008000';
+    }
+
     return 'transparent';
   };
 

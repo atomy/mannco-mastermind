@@ -32,6 +32,13 @@ function Main() {
   };
 
   const addRconClientLogMessage = (logEntry: RconAppLogEntry) => {
+    const uniqueKey = () => {
+      const randomPart = Math.random().toString(36).substr(2, 9); // Using a random string
+      const timestampPart = new Date().getTime(); // Using a timestamp
+      return `${randomPart}-${timestampPart}`;
+    };
+    logEntry.Key = uniqueKey();
+
     const updatedLogs = [...rconClientLogs, logEntry];
 
     // Sort the array by logEntry.Timestamp in descending order

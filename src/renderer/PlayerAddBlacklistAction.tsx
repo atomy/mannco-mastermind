@@ -53,7 +53,7 @@ export default function PlayerAddBlacklistAction({
     >
       <Box sx={style}>
         <Typography id="modal-modal-title" variant="h6" component="h2">
-          Add player `{player.Name}` to blacklist
+          Add marker to player `{player.Name}`
         </Typography>
         <Typography component="h4">(Steam: {player.SteamID})</Typography>
         <FormControl fullWidth>
@@ -70,6 +70,7 @@ export default function PlayerAddBlacklistAction({
             <MenuItem value="bot">Bot</MenuItem>
             <MenuItem value="cheat">Cheat</MenuItem>
             <MenuItem value="warn">Warn</MenuItem>
+            <MenuItem value="plusrep">+Rep</MenuItem>
           </Select>
           <TextField
             label="Reason"

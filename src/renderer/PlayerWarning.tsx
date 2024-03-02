@@ -14,13 +14,14 @@ export default function PlayerWarning(props: { player: PlayerInfo }) {
         number={player.SteamBanDaysSinceLastBan}
       />
     )) ||
-    (typeof player.PlayerWarningType !== 'undefined' && (
-      <img
-        width="20px"
-        title={`Type: '${player.PlayerWarningType}' Reason: '${player.PlayerWarningReason}'`}
-        src={Blacklist}
-        alt={`Type: '${player.PlayerWarningType}' Reason: '${player.PlayerWarningReason}'`}
-      />
-    ))
+    (player.PlayerWarningType &&
+      ['cheat', 'bot', 'warn'].includes(player.PlayerWarningType) && (
+        <img
+          width="20px"
+          title={`Type: '${player.PlayerWarningType}' Reason: '${player.PlayerWarningReason}'`}
+          src={Blacklist}
+          alt={`Type: '${player.PlayerWarningType}' Reason: '${player.PlayerWarningReason}'`}
+        />
+      ))
   );
 }

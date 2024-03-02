@@ -22,7 +22,7 @@ export default function RconClientLogs(props: { logs: RconAppLogEntry[] }) {
       {logs.length > 0 ? (
         <ul style={{ paddingLeft: '10px' }}>
           {logs.map((logEntry) => (
-            <li key={logEntry.Timestamp}>{logEntry.Message}</li>
+            <li key={logEntry.Key}>{logEntry.Message}</li>
           ))}
         </ul>
       ) : (
