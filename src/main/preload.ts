@@ -33,6 +33,10 @@ const electronHandler = {
         ipcRenderer.removeListener(channel, subscription);
       };
     },
+    // Add your custom removeListener functionality
+    removeListener(channel: string, func: (args: any) => void) {
+      ipcRenderer.removeListener(channel, func);
+    },
   },
 };
 

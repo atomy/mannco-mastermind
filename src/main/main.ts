@@ -56,8 +56,8 @@ let playerWarnings: PlayerWarning[] = [];
 const playerWarningsFilepath = './doc/players.json';
 const tf2RconFilepath = './tf2-rcon.exe';
 const tf2RconDownloadSite =
-  'https://github.com/atomy/TF2-RCON-MISC/releases/download/1.0.0/main-windows-amd64.exe';
-const tf2RconExpectedFilehash = 'f52642415a752c55d9f787e58a4dc3e9a2a2295a';
+  'https://github.com/atomy/TF2-RCON-MISC/releases/download/10.0.0/main-windows-amd64.exe';
+const tf2RconExpectedFilehash = 'e88fbbc05b304fe3eb9b77f7dcc233e6d32fac60';
 
 const currentSteamProfileInformation: PlayerInfo[] = [];
 const currentSteamTF2Information: PlayerInfo[] = [];
@@ -186,11 +186,11 @@ const sendPlayerData = () => {
   // Get all window instances
   const windows = BrowserWindow.getAllWindows();
 
-  currentPlayerCollection.forEach((player) => {
-    if (!player.Team) {
-      console.log(`Sending players: ${player.Name} -- ${player.Team}`);
-    }
-  });
+  // currentPlayerCollection.forEach((player) => {
+  //   if (!player.Team) {
+  //     console.log(`Sending players: ${player.Name} -- ${player.Team}`);
+  //   }
+  // });
 
   // Send data to each window
   windows.forEach((w) => {
@@ -526,9 +526,16 @@ const connectTf2rconWebsocket = () => {
         updatePlayerWarns();
         sendPlayerData();
       } else if (incommingJson.type === 'application-log') {
+        const uniqueKey = () => {
+          const randomPart = Math.random().toString(36).substr(2, 9); // Using a random string
+          const timestampPart = new Date().getTime(); // Using a timestamp
+          return `${randomPart}-${timestampPart}`;
+        };
+
         const logEntry: RconAppLogEntry = {
           Timestamp: Date.now(), // Set the timestamp to the current time
           Message: incommingJson.message,
+          Key: uniqueKey(),
         };
         sendApplicationLogData(logEntry);
       } else {
@@ -672,16 +679,22 @@ const startTF2Rcon = () => {
       console.log('TF2RCON not found, unable to start!');
     } else {
       console.log('Starting TF2RCON...');
-      // tf2rconChild = childProcess.spawn('.\\\\tf2-rcon.exe"', [''], {
-      //   shell: true,
-      // });
-      tf2rconChild = childProcess.spawn(
-        'cmd /c "cd D:\\\\git\\\\TF2-RCON-MISC && .\\\\runDev.bat"',
-        [''],
-        {
+      if (
+        process.env.ENVIRONMENT &&
+        process.env.ENVIRONMENT === 'development'
+      ) {
+        tf2rconChild = childProcess.spawn(
+          'cmd /c "cd D:\\\\git\\\\TF2-RCON-MISC && .\\\\runDev.bat"',
+          [''],
+          {
+            shell: true,
+          },
+        );
+      } else {
+        tf2rconChild = childProcess.spawn('.\\\\tf2-rcon.exe"', [''], {
           shell: true,
-        },
-      );
+        });
+      }
 
       // You can also use a variable to save the output for when the script closes later
       tf2rconChild.on('error', (error) => {

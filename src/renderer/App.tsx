@@ -19,26 +19,10 @@ function Main() {
       return currentTime - playerInfo.LastSeen <= 60;
     });
 
-    let foundMe = false;
-
-    filteredPlayerCollection.forEach((player) => {
-      // console.log(`Setting player: ${JSON.stringify(player)}`);
-      if (player.IsMe) {
-        foundMe = true;
-      }
-    });
-
     setPlayers(filteredPlayerCollection);
   };
 
   const addRconClientLogMessage = (logEntry: RconAppLogEntry) => {
-    const uniqueKey = () => {
-      const randomPart = Math.random().toString(36).substr(2, 9); // Using a random string
-      const timestampPart = new Date().getTime(); // Using a timestamp
-      return `${randomPart}-${timestampPart}`;
-    };
-    logEntry.Key = uniqueKey();
-
     const updatedLogs = [...rconClientLogs, logEntry];
 
     // Sort the array by logEntry.Timestamp in descending order
@@ -85,7 +69,19 @@ function Main() {
       'rcon-applog',
       rconAppLogListener,
     );
-  }); // Empty dependency array means this effect will run once, similar to componentDidMount
+
+    // Cleanup when the component is unmounted
+    return () => {
+      window.electron.ipcRenderer.removeListener(
+        'player-data',
+        playerDataListener,
+      );
+      window.electron.ipcRenderer.removeListener(
+        'rcon-applog',
+        rconAppLogListener,
+      );
+    };
+  }); // Empty dependency array means this effect runs once on mount and cleans up on unmount
 
   return (
     <div className="content">
