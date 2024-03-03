@@ -91,7 +91,6 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.4",
     "@mui/material": "^5.15.4",
-    "@types/websocket": "^1.0.10",
     "canvas": "^2.11.2",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
@@ -171,7 +170,7 @@
     "webpack-merge": "^5.10.0"
   },
   "build": {
-    "productName": "ElectronReact",
+    "productName": "MannCoMastermind",
     "appId": "org.erb.ElectronReact",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
