@@ -2,7 +2,6 @@
   "description": "Frontend app for tf2-rcon-misc",
   "keywords": [
     "electron",
-    "boilerplate",
     "react",
     "typescript",
     "ts",
@@ -229,8 +228,8 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "atomy",
+      "repo": "mannco-mastermind"
     }
   },
   "devEngines": {
