@@ -17,6 +17,20 @@ Work in progress. If you are a dev, you may be able to get it running, there's n
 - Reputation system for players, you can mark players as *bots*, *hackers*, *general-warning* or *+reputation* (local database)
 - Show country flag of players
 
+# Installation
+
+- Configure your TF2 to enable rcon and output log to console.log (see: https://github.com/algo7/tf2_rcon_misc?tab=readme-ov-file#required-launch-options)
+- Download latest release and run installer MannCoMastermind.Setup.x.y.z.exe.
+- Get into your Windows environment settings and set the path to your console.log file into the variable *TF2_LOGPATH*
+-- You may also want to acquire a steam web api key from https://steamcommunity.com/dev and set it as variable *STEAM_KEY*
+- You may need to relog into windows for environment variables to take effect
+- There should be a link to the installed app on your desktop, run it
+
+## Windows env settings
+They look like this:
+![Windows environment settings](https://github.com/atomy/mannco-mastermind/blob/main/doc/windows-env.png)
+
+# Development
 
 ## Requirements
 - NodeJS (I got 18.18.1)
@@ -25,9 +39,7 @@ Work in progress. If you are a dev, you may be able to get it running, there's n
 1) Tweak environment vars in `run.bat` to fit your setup.
 2) Run `run.bat`, this should do the trick, better use console to see if it works or if there are issues.
 
-Note: This program is using a sub-module called "tf2-rcon.exe", if it is not present, it will automatically download it from github.
-
-# Development
+Note: This program is using a submodule called "tf2-rcon.exe", if it is not present, it will automatically download it from github.
 
 ## Install
 
