@@ -4,7 +4,7 @@ Frontend for [TF2-RCON-MISC](https://github.com/algo7/tf2_rcon_misc) CLI-Tool, s
 
 ![App overview](https://github.com/atomy/mannco-mastermind/blob/main/doc/app.png)
 
-Work in progress. If you are a dev, you may be able to get it running, there's no release-pack available for now.
+Work in progress. There is a release-package available for download and run, it needs a bunch of ENV variables to be set to work.
 
 ## Features
 - Show all players from current TF2-Session
