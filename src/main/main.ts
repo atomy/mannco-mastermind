@@ -63,8 +63,8 @@ const playerTF2Classes: PlayerTF2ClassInfo[] = [];
 const playerWarningsFilepath = './doc/players.json';
 const tf2RconFilepath = './tf2-rcon.exe';
 const tf2RconDownloadSite =
-  'https://github.com/atomy/TF2-RCON-MISC/releases/download/10.0.0/main-windows-amd64.exe';
-const tf2RconExpectedFilehash = 'e88fbbc05b304fe3eb9b77f7dcc233e6d32fac60';
+  'https://github.com/atomy/TF2-RCON-MISC/releases/download/10.1.0/main-windows-amd64.exe';
+const tf2RconExpectedFilehash = '03463795becf55e1aa22fd648967209329758eb8';
 
 const currentSteamProfileInformation: PlayerInfo[] = [];
 const currentSteamTF2Information: PlayerInfo[] = [];
