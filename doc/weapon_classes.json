@@ -21,7 +21,8 @@
         {"weaponId": "telefrag", "weaponName": "Telefrag"},
         {"weaponId": "maxgun", "weaponName": "Lugermorph"},
         {"weaponId": "southern_hospitality", "weaponName": "Southern Hospitality"},
-        {"weaponId": "wrench_jag", "weaponName": "Jag"}
+        {"weaponId": "wrench_jag", "weaponName": "Jag"},
+        {"weaponId": "eureka_effect", "weaponName": "Eureka Effect"}
       ]
     },
     {
@@ -49,7 +50,8 @@
         {"weaponId": "boston_basher", "weaponName": "Boston Basher"},
         {"weaponId": "freedom_staff", "weaponName": "Freedom Staff"},
         {"weaponId": "maxgun", "weaponName": "Lugermorph"},
-        {"weaponId": "the_winger", "weaponName": "Winger"}
+        {"weaponId": "the_winger", "weaponName": "Winger"},
+        {"weaponId": "atomizer", "weaponName": "Atomizer"}
       ]
     },
     {
@@ -137,7 +139,9 @@
         {"weaponId": "loch_n_load", "weaponName": "Loch-n-Load"},
         {"weaponId": "telefrag", "weaponName": "Telefrag"},
         {"weaponId": "freedom_staff", "weaponName": "Freedom Staff"},
-        {"weaponId": "loose_cannon_impact", "weaponName": "Loose Cannon (Impact)"}
+        {"weaponId": "loose_cannon_impact", "weaponName": "Loose Cannon (Impact)"},
+        {"weaponId": "headtaker", "weaponName": "Horseless Headless Horsemann's Headtaker"},
+        {"weaponId": "ullapool_caber", "weaponName": "Ullapool Caber"}
       ]
     },
     {
@@ -163,7 +167,8 @@
         {"weaponId": "freedom_staff", "weaponName": "Freedom Staff"},
         {"weaponId": "pro_smg", "weaponName": "Cleaner's Carbine"},
         {"weaponId": "smg", "weaponName": "SMG"},
-        {"weaponId": "the_classic", "weaponName": "Classic"}
+        {"weaponId": "the_classic", "weaponName": "Classic"},
+        {"weaponId": "pro_rifle", "weaponName": ""}
       ]
     },
     {
@@ -219,7 +224,9 @@
         {"weaponId": "revolver", "weaponName": "Revolver"},
         {"weaponId": "enforcer", "weaponName": "Enforcer"},
         {"weaponId": "sharp_dresser", "weaponName": "Sharp Dresser"},
-        {"weaponId": "telefrag", "weaponName": "Telefrag"}
+        {"weaponId": "telefrag", "weaponName": "Telefrag"},
+        {"weaponId": "black_rose", "weaponName": "Black Rose"},
+        {"weaponId": "voodoo_pin", "weaponName": "Wanga Prick"}
       ]
     }
   ]
