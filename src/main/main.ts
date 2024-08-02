@@ -27,6 +27,7 @@ import { RconAppLogEntry } from '../renderer/RconAppLogEntry';
 import { RconAppFragEntry } from '../renderer/RconAppFragEntry';
 
 const SteamApi = require('steam-web');
+const { mapEntityToClass } = require('./mapEntityToClass');
 
 class AppUpdater {
   constructor() {
@@ -216,6 +217,19 @@ const sendApplicationFragData = (fragMessage: RconAppFragEntry) => {
   const windows = BrowserWindow.getAllWindows();
 
   // console.log(`Sending log-message: ${logMessage}`);
+  const tfClass = mapEntityToClass(fragMessage.Weapon);
+
+  if (tfClass == null) {
+    console.log(
+      `FAILED to map frag of entity-name ${fragMessage.Weapon} to class!!!`,
+    );
+  } else {
+    // console.log(
+    //   `Mapped frag of entity-name ${fragMessage.Weapon} to class ${tfClass}`,
+    // );
+  }
+
+  fragMessage.KillerClass = tfClass;
 
   // Send data to each window
   windows.forEach((w) => {
@@ -571,6 +585,7 @@ const connectTf2rconWebsocket = () => {
           Weapon: incommingJson.frag.Weapon,
           Crit: incommingJson.frag.Crit === true,
           Key: uniqueKey(),
+          KillerClass: '',
         };
 
         // console.log(

@@ -72,9 +72,9 @@ function Main() {
     };
 
     const rconAppFragListener = (fragMessage: RconAppFragEntry) => {
-      console.log(
-        `rconAppFragListener() received: ${JSON.stringify(fragMessage)}`,
-      );
+      // console.log(
+      //   `rconAppFragListener() received: ${JSON.stringify(fragMessage)}`,
+      // );
       addRconClientFragMessage(fragMessage);
     };
 

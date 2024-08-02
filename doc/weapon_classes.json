@@ -1,0 +1,180 @@
+{
+  "classes": [
+    {
+      "className": "Engineer",
+      "weapons": [
+        {"weaponId": "frontier_justice", "weaponName": "Frontier Justice"},
+        {"weaponId": "obj_sentrygun", "weaponName": "Sentry Gun"},
+        {"weaponId": "obj_sentrygun2", "weaponName": "Sentry Gun (Level 2)"},
+        {"weaponId": "obj_sentrygun3", "weaponName": "Sentry Gun (Level 3)"},
+        {"weaponId": "world", "weaponName": ""},
+        {"weaponId": "rescue_ranger", "weaponName": "Rescue Ranger"},
+        {"weaponId": "bleed_kill", "weaponName": ""},
+        {"weaponId": "shotgun_primary", "weaponName": "Shotgun"},
+        {"weaponId": "obj_minisentry", "weaponName": "Mini-Sentry"},
+        {"weaponId": "pistol", "weaponName": "Pistol"},
+        {"weaponId": "panic_attack", "weaponName": "Panic Attack"},
+        {"weaponId": "player", "weaponName": ""},
+        {"weaponId": "wrangler_kill", "weaponName": "Wrangler"},
+        {"weaponId": "wrench", "weaponName": "Wrench"}
+      ]
+    },
+    {
+      "className": "Scout",
+      "weapons": [
+        {"weaponId": "force_a_nature", "weaponName": "Force-A-Nature"},
+        {"weaponId": "scattergun", "weaponName": "Scattergun"},
+        {"weaponId": "soda_popper", "weaponName": "Soda Popper"},
+        {"weaponId": "world", "weaponName": ""},
+        {"weaponId": "bleed_kill", "weaponName": ""},
+        {"weaponId": "pep_pistol", "weaponName": "Pretty Boy's Pocket Pistol"},
+        {"weaponId": "back_scatter", "weaponName": "Back Scatter"},
+        {"weaponId": "holymackerel", "weaponName": "Holy Mackerel"},
+        {"weaponId": "ham_shank", "weaponName": "Ham Shank"},
+        {"weaponId": "fryingpan", "weaponName": "Frying Pan"},
+        {"weaponId": "nonnonviolent_protest", "weaponName": ""},
+        {"weaponId": "pistol_scout", "weaponName": "Pistol"},
+        {"weaponId": "bat", "weaponName": "Bat"},
+        {"weaponId": "guillotine", "weaponName": "The Flying Guillotine"},
+        {"weaponId": "pep_brawlerblaster", "weaponName": ""},
+        {"weaponId": "player", "weaponName": ""},
+        {"weaponId": "shortstop", "weaponName": "Shortstop"}
+      ]
+    },
+    {
+      "className": "Pyro",
+      "weapons": [
+        {"weaponId": "degreaser", "weaponName": "Degreaser"},
+        {"weaponId": "flamethrower", "weaponName": "Flamethrower"},
+        {"weaponId": "world", "weaponName": ""},
+        {"weaponId": "shotgun_pyro", "weaponName": "Shotgun"},
+        {"weaponId": "backburner", "weaponName": "Backburner"},
+        {"weaponId": "phlogistinator", "weaponName": "Phlogistinator"},
+        {"weaponId": "lava_axe", "weaponName": ""},
+        {"weaponId": "ham_shank", "weaponName": "Ham Shank"},
+        {"weaponId": "fryingpan", "weaponName": "Frying Pan"},
+        {"weaponId": "dragons_fury_bonus", "weaponName": "Dragon's Fury"},
+        {"weaponId": "dragons_fury", "weaponName": "Dragon's Fury"},
+        {"weaponId": "powerjack", "weaponName": "Powerjack"},
+        {"weaponId": "scorch_shot", "weaponName": "Scorch Shot"},
+        {"weaponId": "shotgun_primary", "weaponName": "Shotgun"},
+        {"weaponId": "nonnonviolent_protest", "weaponName": ""},
+        {"weaponId": "deflect_rocket", "weaponName": ""},
+        {"weaponId": "detonator", "weaponName": "Detonator"},
+        {"weaponId": "axtinguisher", "weaponName": "Axtinguisher"},
+        {"weaponId": "flaregun", "weaponName": "Flare Gun"},
+        {"weaponId": "back_scratcher", "weaponName": "Back Scratcher"},
+        {"weaponId": "player", "weaponName": ""},
+        {"weaponId": "taunt_pyro", "weaponName": ""}
+      ]
+    },
+    {
+      "className": "Soldier",
+      "weapons": [
+        {"weaponId": "tf_projectile_rocket", "weaponName": "Rocket Launcher"},
+        {"weaponId": "world", "weaponName": ""},
+        {"weaponId": "blackbox", "weaponName": "Black Box"},
+        {"weaponId": "quake_rl", "weaponName": ""},
+        {"weaponId": "rocketlauncher_directhit", "weaponName": "Direct Hit"},
+        {"weaponId": "shotgun_soldier", "weaponName": "Shotgun"},
+        {"weaponId": "ham_shank", "weaponName": "Ham Shank"},
+        {"weaponId": "fryingpan", "weaponName": "Frying Pan"},
+        {"weaponId": "shotgun_primary", "weaponName": "Shotgun"},
+        {"weaponId": "nonnonviolent_protest", "weaponName": ""},
+        {"weaponId": "market_gardener", "weaponName": "Market Gardener"},
+        {"weaponId": "airstrike", "weaponName": "Air Strike"},
+        {"weaponId": "player", "weaponName": ""},
+        {"weaponId": "taunt_soldier", "weaponName": ""}
+      ]
+    },
+    {
+      "className": "Demoman",
+      "weapons": [
+        {"weaponId": "tf_projectile_pipe_remote", "weaponName": "Stickybomb Launcher"},
+        {"weaponId": "tf_projectile_pipe", "weaponName": "Grenade Launcher"},
+        {"weaponId": "world", "weaponName": ""},
+        {"weaponId": "demokatana", "weaponName": "Half-Zatoichi"},
+        {"weaponId": "ham_shank", "weaponName": "Ham Shank"},
+        {"weaponId": "fryingpan", "weaponName": "Frying Pan"},
+        {"weaponId": "sword", "weaponName": ""},
+        {"weaponId": "persian_persuader", "weaponName": "Persian Persuader"},
+        {"weaponId": "ullapool_caber_explosion", "weaponName": "Ullapool Caber"},
+        {"weaponId": "splendid_screen", "weaponName": "Splendid Screen"},
+        {"weaponId": "iron_bomber", "weaponName": "Iron Bomber"},
+        {"weaponId": "nonnonviolent_protest", "weaponName": ""},
+        {"weaponId": "scotland_shard", "weaponName": "Scottish Handshake"},
+        {"weaponId": "claidheamohmor", "weaponName": "Claidheamh Mòr"},
+        {"weaponId": "loose_cannon", "weaponName": "Loose Cannon"},
+        {"weaponId": "battleaxe", "weaponName": ""},
+        {"weaponId": "nessieclub", "weaponName": ""},
+        {"weaponId": "player", "weaponName": ""},
+        {"weaponId": "sticky_resistance", "weaponName": "Stickybomb Launcher (Sticky Jumper)"}
+      ]
+    },
+    {
+      "className": "Sniper",
+      "weapons": [
+        {"weaponId": "sniperrifle", "weaponName": "Sniper Rifle"},
+        {"weaponId": "world", "weaponName": ""},
+        {"weaponId": "tf_projectile_arrow", "weaponName": "Huntsman"},
+        {"weaponId": "bleed_kill", "weaponName": ""},
+        {"weaponId": "bazaar_bargain", "weaponName": "Bazaar Bargain"},
+        {"weaponId": "shahanshah", "weaponName": "Shahanshah"},
+        {"weaponId": "ham_shank", "weaponName": "Ham Shank"},
+        {"weaponId": "fryingpan", "weaponName": "Frying Pan"},
+        {"weaponId": "compound_bow", "weaponName": "Fortified Compound"},
+        {"weaponId": "awper_hand", "weaponName": "AWPer Hand"},
+        {"weaponId": "nonnonviolent_protest", "weaponName": ""},
+        {"weaponId": "bushwacka", "weaponName": "Bushwacka"},
+        {"weaponId": "machina", "weaponName": "Machina"},
+        {"weaponId": "club", "weaponName": ""},
+        {"weaponId": "player", "weaponName": ""}
+      ]
+    },
+    {
+      "className": "Medic",
+      "weapons": [
+        {"weaponId": "crusaders_crossbow", "weaponName": "Crusader's Crossbow"},
+        {"weaponId": "solemn_vow", "weaponName": "Solemn Vow"},
+        {"weaponId": "world", "weaponName": ""},
+        {"weaponId": "ham_shank", "weaponName": "Ham Shank"},
+        {"weaponId": "fryingpan", "weaponName": "Frying Pan"},
+        {"weaponId": "bonesaw", "weaponName": "Bonesaw"},
+        {"weaponId": "nonnonviolent_protest", "weaponName": ""},
+        {"weaponId": "player", "weaponName": ""},
+        {"weaponId": "ubersaw", "weaponName": "Übersaw"}
+      ]
+    },
+    {
+      "className": "Heavy",
+      "weapons": [
+        {"weaponId": "tomislav", "weaponName": "Tomislav"},
+        {"weaponId": "world", "weaponName": ""},
+        {"weaponId": "ham_shank", "weaponName": "Ham Shank"},
+        {"weaponId": "fryingpan", "weaponName": "Frying Pan"},
+        {"weaponId": "warrior_spirit", "weaponName": "Warrior's Spirit"},
+        {"weaponId": "long_heatmaker", "weaponName": "Huo-Long Heater"},
+        {"weaponId": "shotgun_primary", "weaponName": "Shotgun"},
+        {"weaponId": "nonnonviolent_protest", "weaponName": ""},
+        {"weaponId": "brass_beast", "weaponName": "Brass Beast"},
+        {"weaponId": "minigun", "weaponName": "Minigun"},
+        {"weaponId": "player", "weaponName": ""}
+      ]
+    },
+    {
+      "className": "Spy",
+      "weapons": [
+        {"weaponId": "kunai", "weaponName": "Conniver's Kunai"},
+        {"weaponId": "world", "weaponName": ""},
+        {"weaponId": "knife", "weaponName": "Knife"},
+        {"weaponId": "spy_cicle", "weaponName": "Spy-cicle"},
+        {"weaponId": "big_earner", "weaponName": "Big Earner"},
+        {"weaponId": "ambassador", "weaponName": "Ambassador"},
+        {"weaponId": "eternal_reward", "weaponName": "Your Eternal Reward"},
+        {"weaponId": "letranger", "weaponName": "L'Etranger"},
+        {"weaponId": "player", "weaponName": ""},
+        {"weaponId": "revolver", "weaponName": "Revolver"}
+      ]
+    }
+  ]
+}

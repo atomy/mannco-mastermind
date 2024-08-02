@@ -7,4 +7,5 @@ export interface RconAppFragEntry {
   Crit: boolean;
   Weapon: string;
   Key: string;
+  KillerClass: string;
 }
