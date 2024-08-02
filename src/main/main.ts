@@ -94,24 +94,30 @@ ipcMain.on('ipc-example', async (event, arg) => {
 
 // assign given class to given player's steam-id
 const assignPlayerClass = (steamID: string, playerClass: string) => {
-  console.log(`[main.ts] setting class ${playerClass} for player ${steamID}`);
+  // console.log(`[main.ts] setting class ${playerClass} for player ${steamID}`);
 
   // Check if the player already exists in the array
   let playerExists = false;
   playerTF2Classes.forEach((player) => {
     if (steamID === player.steamid) {
+      // this should never happen, if it does there may be an error in the weapon<->class database
+      if (player.tf2class !== playerClass) {
+        console.log(
+          `[main.ts] CHANGED!!! player-class from ${player.tf2class} to ${playerClass} on player ${player.steamid}!`,
+        );
+      }
       player.tf2class = playerClass;
       playerExists = true;
-      console.log(
-        `[main.ts] setting class ${playerClass} for player ${steamID} succeeded!`,
-      );
+      // console.log(
+      //   `[main.ts] setting class ${playerClass} for player ${steamID} succeeded!`,
+      // );
     }
   });
 
   // If the player does not exist, add a new entry
   if (!playerExists) {
     playerTF2Classes.push({ steamid: steamID, tf2class: playerClass });
-    console.log(`[main.ts] added new player with steamID ${steamID} and class ${playerClass}`);
+    // console.log(`[main.ts] added new player with steamID ${steamID} and class ${playerClass}`);
   }
 };
 
