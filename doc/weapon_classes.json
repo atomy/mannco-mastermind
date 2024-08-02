@@ -17,7 +17,11 @@
         {"weaponId": "player", "weaponName": ""},
         {"weaponId": "wrangler_kill", "weaponName": "Wrangler"},
         {"weaponId": "wrench", "weaponName": "Wrench"},
-        {"weaponId": "widowmaker", "weaponName": "Widowmaker"}
+        {"weaponId": "widowmaker", "weaponName": "Widowmaker"},
+        {"weaponId": "telefrag", "weaponName": "Telefrag"},
+        {"weaponId": "maxgun", "weaponName": "Lugermorph"},
+        {"weaponId": "southern_hospitality", "weaponName": "Southern Hospitality"},
+        {"weaponId": "wrench_jag", "weaponName": "Jag"}
       ]
     },
     {
@@ -40,7 +44,12 @@
         {"weaponId": "pep_brawlerblaster", "weaponName": ""},
         {"weaponId": "player", "weaponName": ""},
         {"weaponId": "shortstop", "weaponName": "Shortstop"},
-        {"weaponId": "piranha", "weaponName": ""}
+        {"weaponId": "piranha", "weaponName": ""},
+        {"weaponId": "telefrag", "weaponName": "Telefrag"},
+        {"weaponId": "boston_basher", "weaponName": "Boston Basher"},
+        {"weaponId": "freedom_staff", "weaponName": "Freedom Staff"},
+        {"weaponId": "maxgun", "weaponName": "Lugermorph"},
+        {"weaponId": "the_winger", "weaponName": "Winger"}
       ]
     },
     {
@@ -69,7 +78,10 @@
         {"weaponId": "player", "weaponName": ""},
         {"weaponId": "taunt_pyro", "weaponName": ""},
         {"weaponId": "ai_flamethrower", "weaponName": ""},
-        {"weaponId": "reserve_shooter", "weaponName": "Reserve Shooter"}
+        {"weaponId": "reserve_shooter", "weaponName": "Reserve Shooter"},
+        {"weaponId": "telefrag", "weaponName": "Telefrag"},
+        {"weaponId": "freedom_staff", "weaponName": "Freedom Staff"},
+        {"weaponId": "rainblower", "weaponName": "Rainblower"}
       ]
     },
     {
@@ -91,7 +103,11 @@
         {"weaponId": "taunt_soldier", "weaponName": ""},
         {"weaponId": "cow_mangler", "weaponName": ""},
         {"weaponId": "dumpster_device", "weaponName": "Beggar's Bazooka"},
-        {"weaponId": "reserve_shooter", "weaponName": "Reserve Shooter"}
+        {"weaponId": "reserve_shooter", "weaponName": "Reserve Shooter"},
+        {"weaponId": "telefrag", "weaponName": "Telefrag"},
+        {"weaponId": "disciplinary_action", "weaponName": "Disciplinary Action"},
+        {"weaponId": "freedom_staff", "weaponName": "Freedom Staff"},
+        {"weaponId": "liberty_launcher", "weaponName": "Liberty Launcher"}
       ]
     },
     {
@@ -118,7 +134,10 @@
         {"weaponId": "sticky_resistance", "weaponName": "Stickybomb Launcher (Sticky Jumper)"},
         {"weaponId": "quickiebomb_launcher", "weaponName": ""},
         {"weaponId": "bottle", "weaponName": "Bottle"},
-        {"weaponId": "loch_n_load", "weaponName": "Loch-n-Load"}
+        {"weaponId": "loch_n_load", "weaponName": "Loch-n-Load"},
+        {"weaponId": "telefrag", "weaponName": "Telefrag"},
+        {"weaponId": "freedom_staff", "weaponName": "Freedom Staff"},
+        {"weaponId": "loose_cannon_impact", "weaponName": "Loose Cannon (Impact)"}
       ]
     },
     {
@@ -139,7 +158,12 @@
         {"weaponId": "machina", "weaponName": "Machina"},
         {"weaponId": "club", "weaponName": ""},
         {"weaponId": "player", "weaponName": ""},
-        {"weaponId": "sydney_sleeper", "weaponName": ""}
+        {"weaponId": "sydney_sleeper", "weaponName": ""},
+        {"weaponId": "telefrag", "weaponName": "Telefrag"},
+        {"weaponId": "freedom_staff", "weaponName": "Freedom Staff"},
+        {"weaponId": "pro_smg", "weaponName": "Cleaner's Carbine"},
+        {"weaponId": "smg", "weaponName": "SMG"},
+        {"weaponId": "the_classic", "weaponName": "Classic"}
       ]
     },
     {
@@ -153,7 +177,11 @@
         {"weaponId": "bonesaw", "weaponName": "Bonesaw"},
         {"weaponId": "nonnonviolent_protest", "weaponName": ""},
         {"weaponId": "player", "weaponName": ""},
-        {"weaponId": "ubersaw", "weaponName": "Übersaw"}
+        {"weaponId": "ubersaw", "weaponName": "Übersaw"},
+        {"weaponId": "amputator", "weaponName": "Amputator"},
+        {"weaponId": "blutsauger", "weaponName": "Blutsauger"},
+        {"weaponId": "telefrag", "weaponName": "Telefrag"},
+        {"weaponId": "freedom_staff", "weaponName": "Freedom Staff"}
       ]
     },
     {
@@ -170,7 +198,10 @@
         {"weaponId": "brass_beast", "weaponName": "Brass Beast"},
         {"weaponId": "minigun", "weaponName": "Minigun"},
         {"weaponId": "player", "weaponName": ""},
-        {"weaponId": "natascha", "weaponName": "Natascha"}
+        {"weaponId": "natascha", "weaponName": "Natascha"},
+        {"weaponId": "telefrag", "weaponName": "Telefrag"},
+        {"weaponId": "freedom_staff", "weaponName": "Freedom Staff"},
+        {"weaponId": "iron_curtain", "weaponName": "Iron Curtain"}
       ]
     },
     {
@@ -187,7 +218,8 @@
         {"weaponId": "player", "weaponName": ""},
         {"weaponId": "revolver", "weaponName": "Revolver"},
         {"weaponId": "enforcer", "weaponName": "Enforcer"},
-        {"weaponId": "sharp_dresser", "weaponName": "Sharp Dresser"}
+        {"weaponId": "sharp_dresser", "weaponName": "Sharp Dresser"},
+        {"weaponId": "telefrag", "weaponName": "Telefrag"}
       ]
     }
   ]

@@ -15,7 +15,7 @@ function BottomBoxFrags({ frags }: { frags: RconAppFragEntry[] }) {
   };
 
   // Helper function to pad names to 64 characters
-  const padName = (name: string) => name.padEnd(64, ' ');
+  const padName = (name: string, len: number) => name.padEnd(len, ' ');
 
   return (
     <div style={{ paddingLeft: '10px' }}>
@@ -23,7 +23,7 @@ function BottomBoxFrags({ frags }: { frags: RconAppFragEntry[] }) {
         <ul style={{ paddingLeft: '0', whiteSpace: 'pre', fontFamily: 'monospace' }}>
           {frags.map((fragEntry) => (
             <li key={fragEntry.Key}>
-              {formatTimestamp(fragEntry.Timestamp)} {padName(fragEntry.KillerName)} ⚔ {padName(fragEntry.VictimName)} {padName(fragEntry.Weapon)} {fragEntry.Crit ? '★★★' : ''}
+              {formatTimestamp(fragEntry.Timestamp)} {padName(fragEntry.KillerName, 50)} ⚔ {padName(fragEntry.VictimName, 50)} {padName(fragEntry.Weapon, 32)} {fragEntry.Crit ? '★★★' : ''}
             </li>
           ))}
         </ul>

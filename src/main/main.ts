@@ -92,8 +92,22 @@ ipcMain.on('ipc-example', async (event, arg) => {
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
+const getPlayerNameForSteam = (steamID: string) => {
+  currentPlayerCollection.forEach((player) => {
+    if (steamID === player.SteamID) {
+      return player.Name;
+    }
+
+    return '???';
+  });
+};
+
 // assign given class to given player's steam-id
-const assignPlayerClass = (steamID: string, playerClass: string) => {
+const assignPlayerClass = (
+  steamID: string,
+  playerClass: string,
+  weaponName: string,
+) => {
   // console.log(`[main.ts] setting class ${playerClass} for player ${steamID}`);
 
   // Check if the player already exists in the array
@@ -103,7 +117,7 @@ const assignPlayerClass = (steamID: string, playerClass: string) => {
       // this should never happen, if it does there may be an error in the weapon<->class database
       if (player.tf2class !== playerClass) {
         console.log(
-          `[main.ts] CHANGED!!! player-class from ${player.tf2class} to ${playerClass} on player ${player.steamid}!`,
+          `[main.ts] CHANGED!!! player-class from ${player.tf2class} to ${playerClass} on player ${getPlayerNameForSteam(player.steamid)} after weapon ${weaponName}!`,
         );
       }
       player.tf2class = playerClass;
@@ -222,11 +236,11 @@ const sendPlayerData = () => {
   // Get all window instances
   const windows = BrowserWindow.getAllWindows();
 
-  // currentPlayerCollection.forEach((player) => {
-  //   if (!player.Team) {
-  //     console.log(`Sending players: ${player.Name} -- ${player.Team}`);
-  //   }
-  // });
+  currentPlayerCollection.forEach((player) => {
+    if (!player.Team) {
+      console.log(`Sending players: ${player.Name} -- ${player.Team}`);
+    }
+  });
 
   // Send data to each window
   windows.forEach((w) => {
@@ -265,7 +279,11 @@ const sendApplicationFragData = (fragMessage: RconAppFragEntry) => {
     // console.log(
     //   `Mapped frag of entity-name ${fragMessage.Weapon} to class ${tfClass}`,
     // );
-    assignPlayerClass(fragMessage.KillerSteamID, tfClass[0]);
+    assignPlayerClass(
+      fragMessage.KillerSteamID,
+      tfClass[0],
+      fragMessage.Weapon,
+    );
   }
 
   fragMessage.KillerClass = tfClass;
