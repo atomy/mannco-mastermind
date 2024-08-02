@@ -8,6 +8,11 @@ export interface PlayerWarning {
   type: string;
 }
 
+export interface PlayerTF2ClassInfo {
+  steamid: string;
+  tf2class: string;
+}
+
 // Define the structure for the JSON data in players.json
 interface PlayersData {
   players: PlayerWarning[];

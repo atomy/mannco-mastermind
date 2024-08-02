@@ -21,7 +21,11 @@ import * as https from 'https';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { PlayerInfo } from '../renderer/PlayerInfo';
-import { loadPlayerWarnings, PlayerWarning } from './playerWarnings';
+import {
+  loadPlayerWarnings,
+  PlayerTF2ClassInfo,
+  PlayerWarning,
+} from './playerWarnings';
 import { SteamGamePlayerstats } from '../renderer/SteamGamePlayerstats';
 import { RconAppLogEntry } from '../renderer/RconAppLogEntry';
 import { RconAppFragEntry } from '../renderer/RconAppFragEntry';
@@ -54,6 +58,7 @@ let steamProfileUpdatePlayerList: string[] = [];
 let steamTF2UpdatePlayerList: string[] = [];
 let steamBanUpdatePlayerList: string[] = [];
 let playerWarnings: PlayerWarning[] = [];
+const playerTF2Classes: PlayerTF2ClassInfo[] = [];
 
 const playerWarningsFilepath = './doc/players.json';
 const tf2RconFilepath = './tf2-rcon.exe';
@@ -86,6 +91,29 @@ ipcMain.on('ipc-example', async (event, arg) => {
   console.log(`[main.ts][IPC][*ipc-example*] ${msgTemplate(arg)}`);
   event.reply('ipc-example', msgTemplate('pong'));
 });
+
+// assign given class to given player's steam-id
+const assignPlayerClass = (steamID: string, playerClass: string) => {
+  console.log(`[main.ts] setting class ${playerClass} for player ${steamID}`);
+
+  // Check if the player already exists in the array
+  let playerExists = false;
+  playerTF2Classes.forEach((player) => {
+    if (steamID === player.steamid) {
+      player.tf2class = playerClass;
+      playerExists = true;
+      console.log(
+        `[main.ts] setting class ${playerClass} for player ${steamID} succeeded!`,
+      );
+    }
+  });
+
+  // If the player does not exist, add a new entry
+  if (!playerExists) {
+    playerTF2Classes.push({ steamid: steamID, tf2class: playerClass });
+    console.log(`[main.ts] added new player with steamID ${steamID} and class ${playerClass}`);
+  }
+};
 
 // addPlayerBlacklist add entry to blacklist
 const addPlayerBlacklist = (
@@ -219,14 +247,19 @@ const sendApplicationFragData = (fragMessage: RconAppFragEntry) => {
   // console.log(`Sending log-message: ${logMessage}`);
   const tfClass = mapEntityToClass(fragMessage.Weapon);
 
-  if (tfClass == null) {
+  if (tfClass == null || tfClass.length <= 0) {
     console.log(
       `FAILED to map frag of entity-name ${fragMessage.Weapon} to class!!!`,
     );
+  } else if (tfClass.length > 1) {
+    // console.log(
+    //   `Entity-name ${fragMessage.Weapon} matches multiple classes: ${tfClass}`,
+    // );
   } else {
     // console.log(
     //   `Mapped frag of entity-name ${fragMessage.Weapon} to class ${tfClass}`,
     // );
+    assignPlayerClass(fragMessage.KillerSteamID, tfClass[0]);
   }
 
   fragMessage.KillerClass = tfClass;
@@ -527,6 +560,18 @@ const updatePlayerWarns = () => {
   });
 };
 
+// updateTF2ClassInfo updates players with class-info
+const updateTF2ClassInfo = () => {
+  // Enrich current players with class-cache-data if available.
+  currentPlayerCollection.forEach((player) => {
+    playerTF2Classes.forEach((playerTF2Class) => {
+      if (player.SteamID === playerTF2Class.steamid) {
+        player.TF2Class = playerTF2Class.tf2class;
+      }
+    });
+  });
+};
+
 // Establish connection to tf2-rcon websocket.
 const connectTf2rconWebsocket = () => {
   tf2rconWs = new WebSocket('ws://127.0.0.1:27689/websocket');
@@ -551,6 +596,7 @@ const connectTf2rconWebsocket = () => {
 
         updateSteamInfo();
         updatePlayerWarns();
+        updateTF2ClassInfo();
         sendPlayerData();
       } else if (incommingJson.type === 'application-log') {
         const uniqueKey = () => {

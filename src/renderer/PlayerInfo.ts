@@ -10,6 +10,7 @@ export interface PlayerInfo {
   Type: string;
   Team: string;
   IsMe: boolean;
+  TF2Class: string;
   SteamProfileDataLoaded: string;
   SteamTF2DataLoaded: string;
   SteamBanDataLoaded: string;

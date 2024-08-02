@@ -15,6 +15,28 @@ import PlayerAction from './PlayerAction';
 import PlayerWarning from './PlayerWarning';
 import SteamAccountAge from './SteamAccountAge';
 import Playtime from './Playtime';
+import Demoman from '../../assets/icons/classes/demoman.png';
+import Scout from '../../assets/icons/classes/scout.png';
+import Soldier from '../../assets/icons/classes/soldier.png';
+import Pyro from '../../assets/icons/classes/pyro.png';
+import Heavy from '../../assets/icons/classes/heavy.png';
+import Engineer from '../../assets/icons/classes/engineer.png';
+import Medic from '../../assets/icons/classes/medic.png';
+import Sniper from '../../assets/icons/classes/sniper.png';
+import Spy from '../../assets/icons/classes/spy.png';
+import AllClass from '../../assets/icons/classes/allclass.png';
+
+const classIconMap = {
+  demoman: Demoman,
+  scout: Scout,
+  soldier: Soldier,
+  pyro: Pyro,
+  heavy: Heavy,
+  engineer: Engineer,
+  medic: Medic,
+  sniper: Sniper,
+  spy: Spy,
+};
 
 interface PlayerTableComponentProps {
   players: PlayerInfo[];
@@ -61,6 +83,11 @@ function Row(props: {
     return 'transparent';
   };
 
+  const getClassIcon = (className: string): string => {
+    // @ts-ignore
+    return classIconMap[className.toLowerCase()] || '';
+  };
+
   // @ts-ignore
   return (
     <TableRow
@@ -81,6 +108,22 @@ function Row(props: {
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Flag_of_None.svg/2560px-Flag_of_None.svg.png"
             style={{ paddingRight: '4px' }}
             alt="Players country: Unknown"
+          />
+        )}
+        {row.TF2Class && (
+          <img
+            width="26px"
+            style={{ paddingLeft: '6px', paddingRight: '6px' }}
+            src={getClassIcon(row.TF2Class)}
+            alt="Class"
+          />
+        )}
+        {!row.TF2Class && (
+          <img
+            width="26px"
+            style={{ paddingLeft: '6px', paddingRight: '6px' }}
+            src={AllClass}
+            alt="Class"
           />
         )}
         {row.SteamAvatarSmall && (
@@ -145,9 +188,9 @@ export default function PlayerTableComponent({
 
       return players.filter((element) => element.Team !== mePlayer.Team);
     }
-    console.error(
-      `getTeamPlayers() Unable to find myself! (current-player-count: ${players.length})`,
-    );
+    // console.error(
+    //   `getTeamPlayers() Unable to find myself! (current-player-count: ${players.length})`,
+    // );
 
     return [];
   };

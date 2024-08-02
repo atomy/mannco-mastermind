@@ -16,7 +16,8 @@
         {"weaponId": "panic_attack", "weaponName": "Panic Attack"},
         {"weaponId": "player", "weaponName": ""},
         {"weaponId": "wrangler_kill", "weaponName": "Wrangler"},
-        {"weaponId": "wrench", "weaponName": "Wrench"}
+        {"weaponId": "wrench", "weaponName": "Wrench"},
+        {"weaponId": "widowmaker", "weaponName": "Widowmaker"}
       ]
     },
     {
@@ -38,7 +39,8 @@
         {"weaponId": "guillotine", "weaponName": "The Flying Guillotine"},
         {"weaponId": "pep_brawlerblaster", "weaponName": ""},
         {"weaponId": "player", "weaponName": ""},
-        {"weaponId": "shortstop", "weaponName": "Shortstop"}
+        {"weaponId": "shortstop", "weaponName": "Shortstop"},
+        {"weaponId": "piranha", "weaponName": ""}
       ]
     },
     {
@@ -65,7 +67,9 @@
         {"weaponId": "flaregun", "weaponName": "Flare Gun"},
         {"weaponId": "back_scratcher", "weaponName": "Back Scratcher"},
         {"weaponId": "player", "weaponName": ""},
-        {"weaponId": "taunt_pyro", "weaponName": ""}
+        {"weaponId": "taunt_pyro", "weaponName": ""},
+        {"weaponId": "ai_flamethrower", "weaponName": ""},
+        {"weaponId": "reserve_shooter", "weaponName": "Reserve Shooter"}
       ]
     },
     {
@@ -84,7 +88,10 @@
         {"weaponId": "market_gardener", "weaponName": "Market Gardener"},
         {"weaponId": "airstrike", "weaponName": "Air Strike"},
         {"weaponId": "player", "weaponName": ""},
-        {"weaponId": "taunt_soldier", "weaponName": ""}
+        {"weaponId": "taunt_soldier", "weaponName": ""},
+        {"weaponId": "cow_mangler", "weaponName": ""},
+        {"weaponId": "dumpster_device", "weaponName": "Beggar's Bazooka"},
+        {"weaponId": "reserve_shooter", "weaponName": "Reserve Shooter"}
       ]
     },
     {
@@ -108,7 +115,10 @@
         {"weaponId": "battleaxe", "weaponName": ""},
         {"weaponId": "nessieclub", "weaponName": ""},
         {"weaponId": "player", "weaponName": ""},
-        {"weaponId": "sticky_resistance", "weaponName": "Stickybomb Launcher (Sticky Jumper)"}
+        {"weaponId": "sticky_resistance", "weaponName": "Stickybomb Launcher (Sticky Jumper)"},
+        {"weaponId": "quickiebomb_launcher", "weaponName": ""},
+        {"weaponId": "bottle", "weaponName": "Bottle"},
+        {"weaponId": "loch_n_load", "weaponName": "Loch-n-Load"}
       ]
     },
     {
@@ -128,7 +138,8 @@
         {"weaponId": "bushwacka", "weaponName": "Bushwacka"},
         {"weaponId": "machina", "weaponName": "Machina"},
         {"weaponId": "club", "weaponName": ""},
-        {"weaponId": "player", "weaponName": ""}
+        {"weaponId": "player", "weaponName": ""},
+        {"weaponId": "sydney_sleeper", "weaponName": ""}
       ]
     },
     {
@@ -158,7 +169,8 @@
         {"weaponId": "nonnonviolent_protest", "weaponName": ""},
         {"weaponId": "brass_beast", "weaponName": "Brass Beast"},
         {"weaponId": "minigun", "weaponName": "Minigun"},
-        {"weaponId": "player", "weaponName": ""}
+        {"weaponId": "player", "weaponName": ""},
+        {"weaponId": "natascha", "weaponName": "Natascha"}
       ]
     },
     {
@@ -173,7 +185,9 @@
         {"weaponId": "eternal_reward", "weaponName": "Your Eternal Reward"},
         {"weaponId": "letranger", "weaponName": "L'Etranger"},
         {"weaponId": "player", "weaponName": ""},
-        {"weaponId": "revolver", "weaponName": "Revolver"}
+        {"weaponId": "revolver", "weaponName": "Revolver"},
+        {"weaponId": "enforcer", "weaponName": "Enforcer"},
+        {"weaponId": "sharp_dresser", "weaponName": "Sharp Dresser"}
       ]
     }
   ]
