@@ -24,6 +24,7 @@ import { PlayerInfo } from '../renderer/PlayerInfo';
 import { loadPlayerWarnings, PlayerWarning } from './playerWarnings';
 import { SteamGamePlayerstats } from '../renderer/SteamGamePlayerstats';
 import { RconAppLogEntry } from '../renderer/RconAppLogEntry';
+import { RconAppFragEntry } from '../renderer/RconAppFragEntry';
 
 const SteamApi = require('steam-web');
 
@@ -207,6 +208,18 @@ const sendApplicationLogData = (logMessage: RconAppLogEntry) => {
   // Send data to each window
   windows.forEach((w) => {
     w.webContents.send('rcon-applog', logMessage);
+  });
+};
+
+const sendApplicationFragData = (fragMessage: RconAppFragEntry) => {
+  // Get all window instances
+  const windows = BrowserWindow.getAllWindows();
+
+  // console.log(`Sending log-message: ${logMessage}`);
+
+  // Send data to each window
+  windows.forEach((w) => {
+    w.webContents.send('rcon-appfrag', fragMessage);
   });
 };
 
@@ -538,13 +551,38 @@ const connectTf2rconWebsocket = () => {
           Key: uniqueKey(),
         };
         sendApplicationLogData(logEntry);
+      } else if (incommingJson.type === 'frag') {
+        const uniqueKey = () => {
+          const randomPart = Math.random().toString(36).substr(2, 9); // Using a random string
+          const timestampPart = new Date().getTime(); // Using a timestamp
+          return `${randomPart}-${timestampPart}`;
+        };
+
+        // console.log(
+        //   `[main.ts] Dump: *${JSON.stringify(incommingJson)}*!`,
+        // );
+
+        const fragEntry: RconAppFragEntry = {
+          Timestamp: Date.now(), // Set the timestamp to the current time
+          KillerName: incommingJson.frag.KillerName,
+          VictimName: incommingJson.frag.VictimName,
+          KillerSteamID: incommingJson.frag.KillerSteamID,
+          VictimSteamID: incommingJson.frag.VictimSteamID,
+          Weapon: incommingJson.frag.Weapon,
+          Crit: incommingJson.frag.Crit === true,
+          Key: uniqueKey(),
+        };
+
+        // console.log(
+        //   `[main.ts] Dump2: *${JSON.stringify(fragEntry)}*!`,
+        // );
+
+        sendApplicationFragData(fragEntry);
       } else {
         console.log(
           `[main.ts] Discarding unconfigured type *${incommingJson.type}*!`,
         );
       }
-
-      // const playerCollection: PlayerInfo[] = JSON.parse(incommingJson);
     });
 
     tf2rconWs.on('close', function close() {
@@ -674,6 +712,14 @@ const downloadTF2Rcon = (callback: CallbackFunction) => {
 
 // start TF2-Rcon-Subprocess
 const startTF2Rcon = () => {
+  if (
+    process.env.TF2_RCON_AUTOSTART &&
+    Number(process.env.TF2_RCON_AUTOSTART) === 0
+  ) {
+    console.log('Omitting start of TF2RCON cause of TF2_RCON_AUTOSTART==0!');
+    return;
+  }
+
   fs.access(tf2RconFilepath, fs.constants.F_OK, (err) => {
     if (err) {
       console.log('TF2RCON not found, unable to start!');
