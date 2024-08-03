@@ -242,5 +242,14 @@
       "src/main/**"
     ],
     "logLevel": "quiet"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "extraResource": [
+          "./doc/weapon_classes.json"
+        ]
+      }
+    }
   }
 }

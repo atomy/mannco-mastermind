@@ -265,7 +265,7 @@ const sendApplicationFragData = (fragMessage: RconAppFragEntry) => {
   const windows = BrowserWindow.getAllWindows();
 
   // console.log(`Sending log-message: ${logMessage}`);
-  const tfClass = mapEntityToClass(fragMessage.Weapon);
+  const tfClass = mapEntityToClass(__dirname + '/../../', fragMessage.Weapon);
 
   if (tfClass == null || tfClass.length <= 0) {
     console.log(
