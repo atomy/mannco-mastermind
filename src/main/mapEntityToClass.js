@@ -1,22 +1,29 @@
 const fs = require('fs');
 const path = require('path');
 
-const weaponClassesPath = path.join(__dirname, '../../doc', 'weapon_classes.json');
-const missingEntitiesDir = path.join(__dirname, '../../doc/missing_weapons');
-
-function addToMissing(entityName) {
+function addToMissing(missingEntitiesDir, entityName) {
   if (!fs.existsSync(missingEntitiesDir)) {
     fs.mkdirSync(missingEntitiesDir);
   }
 
-  const missingFilePath = path.join(missingEntitiesDir, `missing_${entityName}.json`);
+  const missingFilePath = path.join(
+    missingEntitiesDir,
+    `missing_${entityName}.json`,
+  );
 
   if (!fs.existsSync(missingFilePath)) {
     fs.writeFileSync(missingFilePath, JSON.stringify({ entityName }, null, 2));
   }
 }
 
-function mapEntityToClass(weaponId) {
+function mapEntityToClass(appPath, weaponId) {
+  const weaponClassesPath = path.join(appPath, 'assets', 'weapon_classes.json');
+  const missingEntitiesDir = path.join(appPath, 'assets', 'missing_weapons');
+
+  if (!fs.existsSync(weaponClassesPath)) {
+    throw new Error(`File not found: ${weaponClassesPath}`);
+  }
+
   const weaponClasses = JSON.parse(fs.readFileSync(weaponClassesPath, 'utf-8'));
   const classNames = [];
 
@@ -30,10 +37,9 @@ function mapEntityToClass(weaponId) {
 
   if (classNames.length > 0) {
     return classNames;
-  } else {
-    addToMissing(weaponId);
-    return null;
   }
+  addToMissing(missingEntitiesDir, weaponId);
+  return null;
 }
 
 module.exports = { mapEntityToClass };

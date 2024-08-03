@@ -40,6 +40,9 @@ class AppUpdater {
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
+const appPath = app.isPackaged
+  ? path.join(process.resourcesPath)
+  : path.join(__dirname, '../../');
 
 let mainWindow: BrowserWindow | null = null;
 let tf2rconChild: ChildProcessWithoutNullStreams | null = null;
@@ -265,7 +268,7 @@ const sendApplicationFragData = (fragMessage: RconAppFragEntry) => {
   const windows = BrowserWindow.getAllWindows();
 
   // console.log(`Sending log-message: ${logMessage}`);
-  const tfClass = mapEntityToClass(__dirname + '/../../', fragMessage.Weapon);
+  const tfClass = mapEntityToClass(appPath, fragMessage.Weapon);
 
   if (tfClass == null || tfClass.length <= 0) {
     console.log(

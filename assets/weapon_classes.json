@@ -186,7 +186,8 @@
         {"weaponId": "amputator", "weaponName": "Amputator"},
         {"weaponId": "blutsauger", "weaponName": "Blutsauger"},
         {"weaponId": "telefrag", "weaponName": "Telefrag"},
-        {"weaponId": "freedom_staff", "weaponName": "Freedom Staff"}
+        {"weaponId": "freedom_staff", "weaponName": "Freedom Staff"},
+        {"weaponId": "syringegun_medic", "weaponName": "Syringe Gun"}
       ]
     },
     {

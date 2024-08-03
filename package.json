@@ -176,7 +176,8 @@
     "files": [
       "dist",
       "node_modules",
-      "package.json"
+      "package.json",
+      "assets/weapon_classes.json"
     ],
     "afterSign": ".erb/scripts/notarize.js",
     "mac": {
@@ -242,14 +243,5 @@
       "src/main/**"
     ],
     "logLevel": "quiet"
-  },
-  "config": {
-    "forge": {
-      "packagerConfig": {
-        "extraResource": [
-          "./doc/weapon_classes.json"
-        ]
-      }
-    }
   }
 }
