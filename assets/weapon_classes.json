@@ -68,7 +68,8 @@
         {"weaponId": "taunt_scout", "weaponName": "Home Run (Sandman Taunt kill)"},
         {"weaponId": "tf_pumpkin_bomb", "weaponName": "Pumpkin bombs"},
         {"weaponId": "crossing_guard", "weaponName": "Crossing Guard"},
-        {"weaponId": "the_capper", "weaponName": "C.A.P.P.E.R"}
+        {"weaponId": "the_capper", "weaponName": "C.A.P.P.E.R"},
+        {"weaponId": "batsaber", "weaponName": "Batsaber"}
       ]
     },
     {
@@ -101,7 +102,6 @@
         {"weaponId": "telefrag", "weaponName": "Telefrag"},
         {"weaponId": "freedom_staff", "weaponName": "Freedom Staff"},
         {"weaponId": "rainblower", "weaponName": "Rainblower"},
-        {"weaponId": "deflect_promode", "weaponName": "Deflected grenade"},
         {"weaponId": "deflect_arrow", "weaponName": "Deflected arrow"},
         {"weaponId": "deflect_huntsman_flyingburn", "weaponName": "Deflected flaming arrow"},
         {"weaponId": "deflect_flare", "weaponName": "Deflected flare"},
@@ -110,7 +110,10 @@
         {"weaponId": "fireaxe", "weaponName": "Fire Axe"},
         {"weaponId": "sledgehammer", "weaponName": "Homewrecker"},
         {"weaponId": "tf_pumpkin_bomb", "weaponName": "Pumpkin bombs"},
-        {"weaponId": "crossing_guard", "weaponName": "Crossing Guard"}
+        {"weaponId": "crossing_guard", "weaponName": "Crossing Guard"},
+        {"weaponId": "annihilator", "weaponName": "Neon Annihilator"},
+        {"weaponId": "deflect_promode", "weaponName": "Deflected sticky"},
+        {"weaponId": "gas_blast", "weaponName": "Gas Blast"}
       ]
     },
     {
@@ -266,7 +269,8 @@
         {"weaponId": "tf_pumpkin_bomb", "weaponName": "Pumpkin bombs"},
         {"weaponId": "apocofists", "weaponName": "Apoco-Fists"},
         {"weaponId": "bread_bite", "weaponName": "Bread Bite"},
-        {"weaponId": "crossing_guard", "weaponName": "Crossing Guard"}
+        {"weaponId": "crossing_guard", "weaponName": "Crossing Guard"},
+        {"weaponId": "eviction_notice", "weaponName": "Eviction Notice"}
       ]
     },
     {
