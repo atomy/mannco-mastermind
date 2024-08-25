@@ -1,0 +1,95 @@
+{
+  "name": "mannco-mastermind",
+  "productName": "MannCo Mastermind",
+  "version": "2.0.0",
+  "description": "Frontend app for tf2-rcon-misc",
+  "main": ".webpack/main",
+  "homepage": "https://github.com/atomy/mannco-mastermind#readme",
+  "bugs": {
+    "url": "https://github.com/atomy/mannco-mastermind/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atomy/mannco-mastermind"
+  },
+  "author": {
+    "name": "Marcel Lamm",
+    "email": "info@marcel-lamm.de"
+  },
+  "scripts": {
+    "start": "cross-env NODE_ENV=development electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx"
+  },
+  "license": "MIT",
+  "config": {
+    "forge": "./tools/forge/forge.config.js"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "7.4.0",
+    "@electron-forge/maker-deb": "7.4.0",
+    "@electron-forge/maker-rpm": "7.4.0",
+    "@electron-forge/maker-squirrel": "7.4.0",
+    "@electron-forge/maker-zip": "7.4.0",
+    "@electron-forge/plugin-webpack": "7.4.0",
+    "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
+    "@types/node": "^20.14.11",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/webpack-env": "^1.18.5",
+    "@typescript-eslint/eslint-plugin": "^8.2.0",
+    "@typescript-eslint/parser": "^8.2.0",
+    "@vercel/webpack-asset-relocator-loader": "1.7.3",
+    "classnames": "^2.5.1",
+    "cross-env": "^7.0.3",
+    "css-loader": "^7.1.2",
+    "electron": "^31.2.1",
+    "eslint": "^8",
+    "eslint-config-erb": "^4.1.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jest": "^28.8.0",
+    "eslint-plugin-react": "^7.34.4",
+    "file-loader": "^6.2.0",
+    "fork-ts-checker-webpack-plugin": "^9.0.2",
+    "node-loader": "^2.0.0",
+    "react-refresh": "^0.14.2",
+    "sass": "^1.77.8",
+    "sass-loader": "^14.2.1",
+    "style-loader": "^4.0.0",
+    "ts-loader": "9.5.1",
+    "typescript": "^5.5.3",
+    "webpack": "^5.93.0"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@firebase/remote-config": "^0.4.8",
+    "@mui/icons-material": "^5.16.7",
+    "@mui/material": "^5.16.7",
+    "@types/webpack-bundle-analyzer": "^4.7.0",
+    "electron-squirrel-startup": "^1.0.1",
+    "eslint-import-resolver-webpack": "^0.13.8",
+    "firebase": "^10.13.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.1"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": [
+          ".prettierrc",
+          ".eslintrc"
+        ],
+        "options": {
+          "parser": "json"
+        }
+      }
+    ]
+  }
+}
