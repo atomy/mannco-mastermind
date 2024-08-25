@@ -1,0 +1,78 @@
+{
+  "name": "mannco-mastermind",
+  "productName": "mannco-mastermind",
+  "version": "2.0.0",
+  "description": "Frontend app for tf2-rcon-misc",
+  "main": ".webpack/main",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "eslint --ext .ts,.tsx ."
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.4.0",
+    "@electron-forge/maker-deb": "^7.4.0",
+    "@electron-forge/maker-rpm": "^7.4.0",
+    "@electron-forge/maker-squirrel": "^7.4.0",
+    "@electron-forge/maker-zip": "^7.4.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
+    "@electron-forge/plugin-fuses": "^7.4.0",
+    "@electron-forge/plugin-webpack": "^7.4.0",
+    "@electron/fuses": "^1.8.0",
+    "@types/react": "^18.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "@vercel/webpack-asset-relocator-loader": "^1.7.3",
+    "css-loader": "^6.11.0",
+    "electron": "32.0.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-import": "^2.29.1",
+    "fork-ts-checker-webpack-plugin": "^7.3.0",
+    "node-loader": "^2.0.0",
+    "prettier": "^3.3.3",
+    "style-loader": "^3.3.4",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "~4.5.4"
+  },
+  "keywords": [
+    "electron",
+    "react",
+    "typescript"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1",
+    "react": "^18.3.1",
+    "steam-web": "^0.7.0",
+    "websocket": "^1.0.35"
+  },
+  "homepage": "https://github.com/atomy/mannco-mastermind#readme",
+  "bugs": {
+    "url": "https://github.com/atomy/mannco-mastermind/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atomy/mannco-mastermind"
+  },
+  "author": {
+    "name": "Marcel Lamm",
+    "email": "info@marcel-lamm.de"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": [
+          ".prettierrc",
+          ".eslintrc"
+        ],
+        "options": {
+          "parser": "json"
+        }
+      }
+    ]
+  }
+}
