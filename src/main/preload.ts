@@ -8,6 +8,8 @@ import { RconAppFragEntry } from '../renderer/RconAppFragEntry';
 export type PlayerDataChannel = 'player-data';
 export type RconAppLogChannel = 'rcon-applog';
 export type RconAppFragChannel = 'rcon-appfrag';
+export type Tf2ClassRequestChannel = 'get-tf2-class';
+export type Tf2ClassResponseChannel = 'tf2-class-response';
 
 const electronHandler = {
   ipcRenderer: {
@@ -22,6 +24,14 @@ const electronHandler = {
     },
     sendBlacklist(args: { steamid: string; type: string; reason: string }) {
       ipcRenderer.send('blacklist-player', args);
+    },
+    // Send TF2 class response
+    sendTf2ClassResponse(data: {
+      error: boolean;
+      classNames: string[];
+      errorMessage?: unknown;
+    }) {
+      ipcRenderer.send('tf2-class-response', data);
     },
     onApplicationLogMessage(
       channel: RconAppLogChannel,
@@ -47,9 +57,26 @@ const electronHandler = {
         ipcRenderer.removeListener(channel, subscription);
       };
     },
-    // Add your custom removeListener functionality
+    // Listener for TF2 class request
+    onTf2ClassRequest(
+      channel: Tf2ClassRequestChannel,
+      func: (args: string) => void,
+    ) {
+      const subscription = (_event: IpcRendererEvent, args: string) =>
+        func(args);
+      ipcRenderer.on(channel, subscription);
+
+      return () => {
+        ipcRenderer.removeListener(channel, subscription);
+      };
+    },
+    // Add custom removeListener functionality
     removeListener(channel: string, func: (args: any) => void) {
       ipcRenderer.removeListener(channel, func);
+    },
+    // Add custom removeListener functionality
+    removeAllListeners(channel: string) {
+      ipcRenderer.removeAllListeners(channel);
     },
   },
 };

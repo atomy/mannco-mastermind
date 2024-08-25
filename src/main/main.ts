@@ -31,7 +31,6 @@ import { RconAppLogEntry } from '../renderer/RconAppLogEntry';
 import { RconAppFragEntry } from '../renderer/RconAppFragEntry';
 
 const SteamApi = require('steam-web');
-const { mapEntityToClass } = require('./mapEntityToClass');
 
 class AppUpdater {
   constructor() {
@@ -40,9 +39,6 @@ class AppUpdater {
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
-const appPath = app.isPackaged
-  ? path.join(process.resourcesPath)
-  : path.join(__dirname, '../../');
 
 let mainWindow: BrowserWindow | null = null;
 let tf2rconChild: ChildProcessWithoutNullStreams | null = null;
@@ -75,6 +71,7 @@ const currentSteamBanInformation: PlayerInfo[] = [];
 
 // Define the callback type
 type CallbackFunction = (error?: string | null) => void;
+type Tf2ClassCallback = (error: boolean, className: string[]) => void;
 
 // Signal handler.
 function handleExit(): void {
@@ -103,6 +100,8 @@ const getPlayerNameForSteam = (steamID: string) => {
 
     return '???';
   });
+
+  return '???';
 };
 
 // assign given class to given player's steam-id
@@ -263,37 +262,64 @@ const sendApplicationLogData = (logMessage: RconAppLogEntry) => {
   });
 };
 
+// Function to request the TF2 class for a given weapon entity name
+const mapWeaponEntityToTFClass = (
+  weaponEntityName: string,
+  callback: Tf2ClassCallback,
+) => {
+  const windows = BrowserWindow.getAllWindows();
+
+  // Send request to renderer
+  // console.log(
+  //   `mapWeaponEntityToTFClass() sending request *get-tf2-class* to frontend with weaponEntityName ${weaponEntityName}`,
+  // );
+  // Send data to each window
+  windows.forEach((w) => {
+    w.webContents.send('get-tf2-class', weaponEntityName);
+  });
+
+  // Set up one-time listener for the response
+  ipcMain.once('tf2-class-response', (event, result) => {
+    // console.log(`result is: ${JSON.stringify(result)}`);
+
+    if (result.error) {
+      callback(true, []);
+    } else {
+      callback(false, result.classNames);
+    }
+  });
+};
+
 const sendApplicationFragData = (fragMessage: RconAppFragEntry) => {
   // Get all window instances
   const windows = BrowserWindow.getAllWindows();
 
-  // console.log(`Sending log-message: ${logMessage}`);
-  const tfClass = mapEntityToClass(appPath, fragMessage.Weapon);
+  mapWeaponEntityToTFClass(fragMessage.Weapon, (error, tfClasses) => {
+    if (error) {
+      console.log(
+        `FAILED to map frag of entity-name ${fragMessage.Weapon} to class!!!`,
+      );
+    } else if (tfClasses.length > 1) {
+      // console.log(
+      //   `Entity-name ${fragMessage.Weapon} matches multiple classes: ${JSON.stringify(tfClasses)}`,
+      // );
+    } else {
+      // console.log(
+      //   `Mapped frag of entity-name ${fragMessage.Weapon} to class ${tfClasses[0]}`,
+      // );
+      assignPlayerClass(
+        fragMessage.KillerSteamID,
+        tfClasses[0],
+        fragMessage.Weapon,
+      );
+    }
 
-  if (tfClass == null || tfClass.length <= 0) {
-    console.log(
-      `FAILED to map frag of entity-name ${fragMessage.Weapon} to class!!!`,
-    );
-  } else if (tfClass.length > 1) {
-    // console.log(
-    //   `Entity-name ${fragMessage.Weapon} matches multiple classes: ${tfClass}`,
-    // );
-  } else {
-    // console.log(
-    //   `Mapped frag of entity-name ${fragMessage.Weapon} to class ${tfClass}`,
-    // );
-    assignPlayerClass(
-      fragMessage.KillerSteamID,
-      tfClass[0],
-      fragMessage.Weapon,
-    );
-  }
+    [fragMessage.KillerClass] = tfClasses;
 
-  fragMessage.KillerClass = tfClass;
-
-  // Send data to each window
-  windows.forEach((w) => {
-    w.webContents.send('rcon-appfrag', fragMessage);
+    // Send data to each window
+    windows.forEach((w) => {
+      w.webContents.send('rcon-appfrag', fragMessage);
+    });
   });
 };
 
@@ -692,8 +718,8 @@ function computeFileSHA1Sync(filePath: string): string {
   const fileBuffer = fs.readFileSync(filePath);
   const hashSum = crypto.createHash('sha1');
   hashSum.update(fileBuffer);
-  const hex = hashSum.digest('hex');
-  return hex;
+
+  return hashSum.digest('hex');
 }
 
 // downloadFile function to download a file

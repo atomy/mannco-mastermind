@@ -1,13 +1,11 @@
 import { createRoot } from 'react-dom/client';
 import App from './App';
+import { RemoteConfigProvider } from './RemoteConfigContext';
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
-root.render(<App />);
-
-// calling IPC exposed from preload script
-// window.electron.ipcRenderer.on("player-data", (arg) => {
-//   // eslint-disable-next-line no-console
-//   console.log(`STUFF: ${arg}`);
-// });
-// window.electron.ipcRenderer.sendMessage('ipc-example', ['ping']);
+root.render(
+  <RemoteConfigProvider>
+    <App />
+  </RemoteConfigProvider>,
+);

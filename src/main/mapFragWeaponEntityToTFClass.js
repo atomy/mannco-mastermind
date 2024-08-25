@@ -16,7 +16,7 @@ function addToMissing(missingEntitiesDir, entityName) {
   }
 }
 
-function mapEntityToClass(appPath, weaponId) {
+function mapFragWeaponEntityToTFClass(appPath, weaponId) {
   const weaponClassesPath = path.join(appPath, 'assets', 'weapon_classes.json');
   const missingEntitiesDir = path.join(appPath, 'assets', 'missing_weapons');
 
@@ -42,4 +42,4 @@ function mapEntityToClass(appPath, weaponId) {
   return null;
 }
 
-module.exports = { mapEntityToClass };
+module.exports = { mapEntityToClass: mapFragWeaponEntityToTFClass };

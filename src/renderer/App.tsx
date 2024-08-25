@@ -1,3 +1,5 @@
+/* eslint no-console: off */
+
 import { MemoryRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import { useEffect, useState, useCallback } from 'react';
@@ -6,8 +8,11 @@ import { PlayerInfo } from './PlayerInfo';
 import { RconAppLogEntry } from './RconAppLogEntry';
 import BottomBox from './BottomBox/BottomBox';
 import { RconAppFragEntry } from './RconAppFragEntry';
+import useRemoteConfigHook from './useRemoteConfigHook';
 
 function Main() {
+  const { weaponsDbConfig, isWeaponsDbConfigLoading, weaponDbConfigError } =
+    useRemoteConfigHook();
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
   const [rconClientLogs, setRconClientLogs] = useState<RconAppLogEntry[]>([]);
   const [rconClientFrags, setRconClientFrags] = useState<RconAppFragEntry[]>(
@@ -21,6 +26,34 @@ function Main() {
     });
     setPlayers(filteredPlayerCollection);
   }, []);
+
+  // Function to determine the TF2 classes based on weapon entity name and Remote Config data
+  const determineClassesFromWeaponEntityName = (
+    weaponEntityName: string,
+    config: any,
+  ): string[] => {
+    const matchingClasses: string[] = [];
+
+    // Loop through each class in the config
+    // eslint-disable-next-line
+    for (const weaponClass of config.classes) {
+      // Loop through each weapon in the class
+      // eslint-disable-next-line
+      for (const weapon of weaponClass.weapons) {
+        if (weapon.weaponId === weaponEntityName) {
+          matchingClasses.push(weaponClass.className);
+        }
+      }
+    }
+
+    // Check if no matching classes were found and log an error
+    if (matchingClasses.length === 0) {
+      console.error(`Error: Unknown weaponEntityName '${weaponEntityName}'`);
+      return ['Unknown'];
+    }
+
+    return matchingClasses;
+  };
 
   const addRconClientLogMessage = useCallback((logEntry: RconAppLogEntry) => {
     setRconClientLogs((prevLogs) => {
@@ -104,6 +137,52 @@ function Main() {
       );
     };
   }, [refreshPlayers, addRconClientLogMessage, addRconClientFragMessage]); // Add dependencies to ensure proper behavior
+
+  useEffect(() => {
+    if (isWeaponsDbConfigLoading) {
+      return;
+    }
+
+    const handleTf2ClassRequest = (weaponEntityName: string) => {
+      // console.log(
+      //   `handleTf2ClassRequest() in: ${weaponEntityName} - isWeaponsDbConfigLoading: ${isWeaponsDbConfigLoading} - weaponDbConfigError: ${weaponDbConfigError}`,
+      // );
+
+      if (isWeaponsDbConfigLoading || weaponDbConfigError) {
+        window.electron.ipcRenderer.sendTf2ClassResponse({
+          error: true,
+          classNames: [],
+          errorMessage: weaponDbConfigError,
+        });
+      } else {
+        const weaponsData = JSON.parse(weaponsDbConfig);
+        const classNames = determineClassesFromWeaponEntityName(
+          weaponEntityName,
+          weaponsData,
+        );
+        // console.log(
+        //   `Determined className ${JSON.stringify(classNames)} for weaponEntityName ${weaponEntityName}`,
+        // );
+        window.electron.ipcRenderer.sendTf2ClassResponse({
+          error: false,
+          classNames,
+        });
+      }
+    };
+
+    // Set up IPC listener
+    window.electron.ipcRenderer.onTf2ClassRequest(
+      'get-tf2-class',
+      handleTf2ClassRequest,
+    );
+
+    // Cleanup function to remove the listener when component unmounts
+    // eslint-disable-next-line consistent-return
+    return () => {
+      console.log('remove all listeners on *get-tf2-class*');
+      window.electron.ipcRenderer.removeAllListeners('get-tf2-class');
+    };
+  }, [isWeaponsDbConfigLoading, weaponDbConfigError, weaponsDbConfig]); // Add dependencies to ensure proper behavior
 
   return (
     <div className="content">
