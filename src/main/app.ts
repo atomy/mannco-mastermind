@@ -19,7 +19,7 @@ import { WebSocket } from 'ws';
 let tf2rconChild: ChildProcessWithoutNullStreams | null = null;
 let tf2rconWs: WebSocket | null = null;
 let shouldRestartTF2Rcon = true;
-const currentPlayerCollection: PlayerInfo[] = [];
+let currentPlayerCollection: PlayerInfo[] = [];
 // eslint-disable-next-line no-undef
 let steamProfileUpdateTimer: NodeJS.Timeout | null = null;
 // eslint-disable-next-line no-undef

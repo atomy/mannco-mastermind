@@ -7,6 +7,7 @@ import BottomBox from './footer/BottomBox';
 import { RconAppFragEntry } from './RconAppFragEntry';
 import useRemoteConfigHook from './hooks/useRemoteConfigHook';
 import '@styles/app.scss';
+import { ipcRenderer } from 'electron';
 
 function Main() {
   const { weaponsDbConfig, isWeaponsDbConfigLoading, weaponDbConfigError } =
@@ -94,25 +95,24 @@ function Main() {
     [players],
   );
 
+  const playerDataListener = (event: Electron.IpcRendererEvent, playerInfoCollection: PlayerInfo[]) => {
+    refreshPlayers(playerInfoCollection);
+  }
+
+  const rconAppLogListener = (logMessage: RconAppLogEntry) => {
+    addRconClientLogMessage(logMessage);
+  };
+
+  const rconAppFragListener = (fragMessage: RconAppFragEntry) => {
+    // console.log(
+    //   `rconAppFragListener() received: ${JSON.stringify(fragMessage)}`,
+    // );
+    addRconClientFragMessage(fragMessage);
+  };
+
   useEffect(() => {
-    const playerDataListener = (playerInfoCollection: PlayerInfo[]) => {
-      refreshPlayers(playerInfoCollection);
-    };
-
-    const rconAppLogListener = (logMessage: RconAppLogEntry) => {
-      addRconClientLogMessage(logMessage);
-    };
-
-    const rconAppFragListener = (fragMessage: RconAppFragEntry) => {
-      // console.log(
-      //   `rconAppFragListener() received: ${JSON.stringify(fragMessage)}`,
-      // );
-      addRconClientFragMessage(fragMessage);
-    };
-
-    // %TODO
-    // window.electron.ipcRenderer.on('player-data', playerDataListener);
-    // window.electron.ipcRenderer.onApplicationLogMessage(
+    // window.electron.ipcRenderer.on('player-data', playerDataListener); // %TODO, fix this
+    // ipcRenderer.onApplicationLogMessage(
     //   'rcon-applog',
     //   rconAppLogListener,
     // );
@@ -124,7 +124,7 @@ function Main() {
     // Cleanup when the component is unmounted
     return () => {
       // %TODO
-      // window.electron.ipcRenderer.removeListener(
+      // ipcRenderer.removeListener(
       //   'player-data',
       //   playerDataListener,
       // );
