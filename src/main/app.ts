@@ -109,7 +109,7 @@ const mapWeaponEntityToTFClass = (
 
   // Set up one-time listener for the response
   ipcMain.once('tf2-class-response', (event: Electron.Event, result: any) => {
-    console.log(`*tf2-class-response* result is: ${JSON.stringify(result)}`);
+    // console.log(`*tf2-class-response* result is: ${JSON.stringify(result)}`);
 
     if (result.error) {
       callback(true, []);

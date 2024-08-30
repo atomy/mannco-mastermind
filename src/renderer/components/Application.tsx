@@ -115,9 +115,9 @@ function Main() {
   const tf2ClassRequestListener: Tf2ClassRequestListener = (
     weaponEntityName: string,
   ) => {
-    console.log(
-      `handleTf2ClassRequest() in: ${weaponEntityName} - isWeaponsDbConfigLoading: ${isWeaponsDbConfigLoading} - weaponDbConfigError: ${weaponDbConfigError}`,
-    );
+    // console.log(
+    //   `handleTf2ClassRequest() in: ${weaponEntityName} - isWeaponsDbConfigLoading: ${isWeaponsDbConfigLoading} - weaponDbConfigError: ${weaponDbConfigError}`,
+    // );
 
     if (isWeaponsDbConfigLoading || weaponDbConfigError) {
       (window as any).electronAPI.sendTf2ClassResponse({
@@ -131,9 +131,9 @@ function Main() {
         weaponEntityName,
         weaponsData,
       );
-      console.log(
-        `Determined className ${JSON.stringify(classNames)} for weaponEntityName ${weaponEntityName}`,
-      );
+      // console.log(
+      //   `Determined className ${JSON.stringify(classNames)} for weaponEntityName ${weaponEntityName}`,
+      // );
       (window as any).electronAPI.sendTf2ClassResponse({
         error: false,
         classNames,
@@ -149,11 +149,10 @@ function Main() {
 
     // Cleanup when the component is unmounted
     return () => {
-      (window as any).electronAPI.onPlayerData(() => {});
-      (window as any).electronAPI.onRconAppLog(() => {});
-      (window as any).electronAPI.onRconAppFrag(() => {});
-      (window as any).electronAPI.onTf2ClassRequest(() => {});
       (window as any).electronAPI.removeAllListeners('get-tf2-class');
+      (window as any).electronAPI.removeAllListeners('player-data');
+      (window as any).electronAPI.removeAllListeners('rcon-applog');
+      (window as any).electronAPI.removeAllListeners('rcon-appfrag');
     };
   }, [
     playerDataListener,
@@ -170,9 +169,9 @@ function Main() {
     const handleTf2ClassRequest: Tf2ClassRequestListener = (
       weaponEntityName: string,
     ) => {
-      console.log(
-        `handleTf2ClassRequest() in: ${weaponEntityName} - isWeaponsDbConfigLoading: ${isWeaponsDbConfigLoading} - weaponDbConfigError: ${weaponDbConfigError}`,
-      );
+      // console.log(
+      //   `handleTf2ClassRequest() in: ${weaponEntityName} - isWeaponsDbConfigLoading: ${isWeaponsDbConfigLoading} - weaponDbConfigError: ${weaponDbConfigError}`,
+      // );
 
       if (isWeaponsDbConfigLoading || weaponDbConfigError) {
         // %TODO
@@ -187,9 +186,9 @@ function Main() {
           weaponEntityName,
           weaponsData,
         );
-        console.log(
-          `Determined className ${JSON.stringify(classNames)} for weaponEntityName ${weaponEntityName}`,
-        );
+        // console.log(
+        //   `Determined className ${JSON.stringify(classNames)} for weaponEntityName ${weaponEntityName}`,
+        // );
 
         (window as any).electronAPI.sendTf2ClassResponse({
           error: false,

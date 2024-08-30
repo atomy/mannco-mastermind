@@ -25,13 +25,16 @@ function registerMainIPC() {
  */
 export function createAppWindow(): BrowserWindow {
   const displays = screen.getAllDisplays();
-  displays.forEach((display) => {
-    console.log(`display-id is: ${display.id}`);
-  });
+  // Criteria to find the external display based on bounds
+  const targetBounds = { x: -247, y: -1086, width: 1920, height: 1080 };
   const externalDisplay = displays.find((display) => {
+    // %TODO, make configurable
+    const { bounds } = display;
     return (
-      display.id === 1402268924 && // %TODO, make configurable
-      (display.bounds.x !== 0 || display.bounds.y !== 0)
+      bounds.x === targetBounds.x &&
+      bounds.y === targetBounds.y &&
+      bounds.width === targetBounds.width &&
+      bounds.height === targetBounds.height
     );
   });
 
