@@ -61,4 +61,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   removeAllListeners: (channel: string) => {
     ipcRenderer.removeAllListeners(channel);
   },
+  sendBlacklist: (steamid: string, type: string, reason: string) => {
+    ipcRenderer.send('blacklist-player', steamid, type, reason);
+  },
 });

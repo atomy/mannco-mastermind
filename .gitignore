@@ -37,3 +37,4 @@ tf2-rcon.*
 /release/app/package-lock.json
 /.webpack/
 out/
+playerWarnings.json

@@ -34,7 +34,7 @@ let steamBanUpdatePlayerList: string[] = [];
 let playerWarnings: PlayerWarning[] = [];
 const playerTF2Classes: PlayerTF2ClassInfo[] = [];
 
-const playerWarningsFilepath = './doc/players.json';
+const playerWarningsFilepath = './playerWarnings.json';
 const tf2RconFilepath = './tf2-rcon.exe';
 const tf2RconDownloadSite =
   'https://github.com/atomy/TF2-RCON-MISC/releases/download/10.1.0/main-windows-amd64.exe';
@@ -118,6 +118,91 @@ const mapWeaponEntityToTFClass = (
     }
   });
 };
+
+// addPlayerBlacklist add entry to blacklist
+const addPlayerBlacklist = (
+  steamid: string,
+  type: string,
+  reason: string,
+): void => {
+  console.log(
+    `[main.ts] addPlayerBlacklist() ${steamid} -- ${type} -- ${reason}`,
+  );
+
+  // Check if the file exists, and if not, create an empty file
+  if (!fs.existsSync(playerWarningsFilepath)) {
+    console.log('[main.ts] File does not exist. Creating a new file...');
+    fs.writeFileSync(
+      playerWarningsFilepath,
+      JSON.stringify({ players: [] }, null, 2),
+      'utf8',
+    );
+  }
+
+  fs.readFile(playerWarningsFilepath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('[main.ts] addPlayerBlacklist() Error reading file: ', err);
+      return;
+    }
+
+    try {
+      const json = JSON.parse(data);
+
+      // check if players exists and is greater than 0
+      if (json.players && json.players.length > 0) {
+        // Check for duplicate steamid
+        const index = json.players.findIndex(
+          (player: PlayerWarning) => player.steamid === steamid,
+        );
+
+        if (index !== -1) {
+          console.log(
+            `[main.ts] addPlayerBlacklist() Error - Player with steamid ${steamid} already exists.`,
+          );
+          return; // Exit if duplicate is found
+        }
+      }
+
+      // Add the new player entry
+      json.players.push({ steamid, type, reason });
+
+      fs.writeFile(
+        playerWarningsFilepath,
+        JSON.stringify(json, null, 2),
+        'utf8',
+        (error) => {
+          if (error) {
+            console.error(
+              '[main.ts] addPlayerBlacklist() Error writing file: ',
+              error,
+            );
+          } else {
+            console.log(
+              '[main.ts] addPlayerBlacklist() Successfully added player entry.',
+            );
+          }
+        },
+      );
+    } catch (error) {
+      console.error(
+        '[main.ts] addPlayerBlacklist() Error parsing JSON: ',
+        error,
+      );
+    }
+  });
+};
+
+// Listen for *blacklist-player* messages over IPC.
+ipcMain.on('blacklist-player', async (event: Electron.Event, arg) => {
+  console.log(`[main.ts][IPC][*blacklist-player*] ${JSON.stringify(arg)}`);
+  playerWarnings.push({
+    steamid: arg.steamid,
+    reason: arg.reason,
+    type: arg.type,
+  });
+
+  addPlayerBlacklist(arg.steamid, arg.type, arg.reason);
+});
 
 const getPlayerNameForSteam = (steamID: string) => {
   currentPlayerCollection.forEach((player) => {
@@ -245,6 +330,9 @@ const updatePlayerWarningData = () => {
     } else if (players) {
       // Handle success
       playerWarnings = players;
+      console.log(
+        `updatePlayerWarningData(): Loaded '${playerWarnings.length}' player-warnings from file!`,
+      );
     }
   });
 };
@@ -517,9 +605,9 @@ const connectTf2rconWebsocket = () => {
       if (incommingJson.type === 'player-update') {
         const playerJson = JSON.stringify(incommingJson['current-players']);
         currentPlayerCollection = JSON.parse(playerJson);
-        console.log(
-          `play-update coming in, len: ${currentPlayerCollection.length}`,
-        );
+        // console.log(
+        //   `play-update coming in, len: ${currentPlayerCollection.length}`,
+        // );
 
         updateSteamInfo();
         updatePlayerWarns();
@@ -676,22 +764,22 @@ const downloadTF2Rcon = (callback: CallbackFunction) => {
   // Use fs.access to check if the file exists
   fs.access(tf2RconFilepath, fs.constants.F_OK, (err) => {
     if (err) {
-      console.log('File does not exist, downloading...');
+      console.log('downloadTF2Rcon() File does not exist, downloading...');
       downloadFile(
         tf2RconDownloadSite,
         tf2RconFilepath,
         tf2RconExpectedFilehash,
         (error) => {
           if (error) {
-            console.error('Error downloading the file:', error);
+            console.error('downloadTF2Rcon() Error downloading the file:', error);
           } else {
-            console.log('File downloaded successfully');
+            console.log('downloadTF2Rcon() File downloaded successfully');
             callback();
           }
         },
       );
     } else {
-      console.log('File already exists');
+      console.log('downloadTF2Rcon() File already exists');
       callback();
     }
   });

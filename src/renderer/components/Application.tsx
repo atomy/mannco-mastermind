@@ -89,12 +89,11 @@ function Main() {
       const blacklistedPlayer = players.find((pl) => pl.SteamID === steamid);
       if (blacklistedPlayer) {
         console.log(`Blacklisting ${steamid} -- ${type} -- ${reason}`);
-        // %TODO
-        // window.electron.ipcRenderer.sendBlacklist({
-        //   steamid,
-        //   type,
-        //   reason,
-        // });
+        (window as any).electronAPI.sendBlacklist({
+          steamid,
+          type,
+          reason,
+        });
       }
     },
     [players],

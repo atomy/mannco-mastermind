@@ -37,6 +37,9 @@ export default function PlayerAction(props: {
         aria-label="delete"
         size="small"
         onClick={handlePlayerAddBlacklistActionOpen}
+        sx={{
+          minWidth: 24,
+        }}
       >
         <AddCircleIcon sx={{ color: iconColor }} />
       </IconButton>
