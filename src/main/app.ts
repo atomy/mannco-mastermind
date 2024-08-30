@@ -13,8 +13,8 @@ import childProcess from 'child_process';
 import { RconAppFragEntry } from '@components/RconAppFragEntry';
 import { RconAppLogEntry } from '@components/RconAppLogEntry';
 import { SteamGamePlayerstats } from '@main/steamGamePlayerstats';
-import { createAppWindow } from './appWindow';
 import { WebSocket } from 'ws';
+import { createAppWindow } from './appWindow';
 
 let tf2rconChild: ChildProcessWithoutNullStreams | null = null;
 let tf2rconWs: WebSocket | null = null;
@@ -108,8 +108,8 @@ const mapWeaponEntityToTFClass = (
   });
 
   // Set up one-time listener for the response
-  ipcMain.once('tf2-class-response', (event: any, result: any) => {
-    // console.log(`result is: ${JSON.stringify(result)}`);
+  ipcMain.once('tf2-class-response', (event: Electron.Event, result: any) => {
+    console.log(`*tf2-class-response* result is: ${JSON.stringify(result)}`);
 
     if (result.error) {
       callback(true, []);
@@ -511,7 +511,7 @@ const connectTf2rconWebsocket = () => {
     });
 
     tf2rconWs.on('message', function incoming(data: string) {
-      console.log(`[main.ts] Received: ${String(data)}`);
+      // console.log(`[main.ts] Received: ${String(data)}`);
       const incommingJson = JSON.parse(String(data));
 
       if (incommingJson.type === 'player-update') {

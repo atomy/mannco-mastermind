@@ -25,6 +25,9 @@ function registerMainIPC() {
  */
 export function createAppWindow(): BrowserWindow {
   const displays = screen.getAllDisplays();
+  displays.forEach((display) => {
+    console.log(`display-id is: ${display.id}`);
+  });
   const externalDisplay = displays.find((display) => {
     return (
       display.id === 1402268924 && // %TODO, make configurable
@@ -79,6 +82,20 @@ export function createAppWindow(): BrowserWindow {
   // Create new window instance with the combined options
   appWindow.maximize();
 
+  // Set Content Security Policy
+  appWindow.webContents.session.webRequest.onHeadersReceived(
+    (details, callback) => {
+      callback({
+        responseHeaders: {
+          ...details.responseHeaders,
+          'Content-Security-Policy': [
+            "default-src 'self'; connect-src 'self' https://firebaseinstallations.googleapis.com https://firebaseremoteconfig.googleapis.com https://firestore.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://*.firebaseio.com; img-src 'self' data: https: https://upload.wikimedia.org; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';",
+          ],
+        },
+      });
+    },
+  );
+
   // Load the index.html of the app window.
   appWindow.loadURL(APP_WINDOW_WEBPACK_ENTRY);
 
@@ -99,6 +116,10 @@ export function createAppWindow(): BrowserWindow {
     appWindow = null;
     app.quit();
   });
+
+  if (process.env.AUTO_OPEN_DEVTOOLS) {
+    appWindow.webContents.openDevTools();
+  }
 
   return appWindow;
 }

@@ -7,7 +7,12 @@ import BottomBox from './footer/BottomBox';
 import { RconAppFragEntry } from './RconAppFragEntry';
 import useRemoteConfigHook from './hooks/useRemoteConfigHook';
 import '@styles/app.scss';
-import { ipcRenderer } from 'electron';
+import {
+  PlayerDataListener,
+  RconAppFragListener,
+  RconAppLogListener,
+  Tf2ClassRequestListener,
+} from '@main/window/listenerInterfaces';
 
 function Main() {
   const { weaponsDbConfig, isWeaponsDbConfigLoading, weaponDbConfigError } =
@@ -95,59 +100,79 @@ function Main() {
     [players],
   );
 
-  const playerDataListener = (event: Electron.IpcRendererEvent, playerInfoCollection: PlayerInfo[]) => {
+  const playerDataListener: PlayerDataListener = (playerInfoCollection) => {
     refreshPlayers(playerInfoCollection);
-  }
+  };
 
-  const rconAppLogListener = (logMessage: RconAppLogEntry) => {
+  const rconAppLogListener: RconAppLogListener = (logMessage) => {
     addRconClientLogMessage(logMessage);
   };
 
-  const rconAppFragListener = (fragMessage: RconAppFragEntry) => {
-    // console.log(
-    //   `rconAppFragListener() received: ${JSON.stringify(fragMessage)}`,
-    // );
+  const rconAppFragListener: RconAppFragListener = (fragMessage) => {
     addRconClientFragMessage(fragMessage);
   };
 
+  const tf2ClassRequestListener: Tf2ClassRequestListener = (
+    weaponEntityName: string,
+  ) => {
+    console.log(
+      `handleTf2ClassRequest() in: ${weaponEntityName} - isWeaponsDbConfigLoading: ${isWeaponsDbConfigLoading} - weaponDbConfigError: ${weaponDbConfigError}`,
+    );
+
+    if (isWeaponsDbConfigLoading || weaponDbConfigError) {
+      (window as any).electronAPI.sendTf2ClassResponse({
+        error: true,
+        classNames: [],
+        errorMessage: weaponDbConfigError,
+      });
+    } else {
+      const weaponsData = JSON.parse(weaponsDbConfig);
+      const classNames = determineClassesFromWeaponEntityName(
+        weaponEntityName,
+        weaponsData,
+      );
+      console.log(
+        `Determined className ${JSON.stringify(classNames)} for weaponEntityName ${weaponEntityName}`,
+      );
+      (window as any).electronAPI.sendTf2ClassResponse({
+        error: false,
+        classNames,
+      });
+    }
+  };
+
   useEffect(() => {
-    // window.electron.ipcRenderer.on('player-data', playerDataListener); // %TODO, fix this
-    // ipcRenderer.onApplicationLogMessage(
-    //   'rcon-applog',
-    //   rconAppLogListener,
-    // );
-    // window.electron.ipcRenderer.onApplicationFragMessage(
-    //   'rcon-appfrag',
-    //   rconAppFragListener,
-    // );
+    (window as any).electronAPI.onPlayerData(playerDataListener);
+    (window as any).electronAPI.onRconAppLog(rconAppLogListener);
+    (window as any).electronAPI.onRconAppFrag(rconAppFragListener);
+    (window as any).electronAPI.onTf2ClassRequest(tf2ClassRequestListener);
 
     // Cleanup when the component is unmounted
     return () => {
-      // %TODO
-      // ipcRenderer.removeListener(
-      //   'player-data',
-      //   playerDataListener,
-      // );
-      // window.electron.ipcRenderer.removeListener(
-      //   'rcon-applog',
-      //   rconAppLogListener,
-      // );
-      // window.electron.ipcRenderer.removeListener(
-      //   'rcon-appfrag',
-      //   rconAppFragListener,
-      // );
+      (window as any).electronAPI.onPlayerData(() => {});
+      (window as any).electronAPI.onRconAppLog(() => {});
+      (window as any).electronAPI.onRconAppFrag(() => {});
+      (window as any).electronAPI.onTf2ClassRequest(() => {});
+      (window as any).electronAPI.removeAllListeners('get-tf2-class');
     };
-  }, [refreshPlayers, addRconClientLogMessage, addRconClientFragMessage]); // Add dependencies to ensure proper behavior
+  }, [
+    playerDataListener,
+    rconAppLogListener,
+    rconAppFragListener,
+    tf2ClassRequestListener,
+  ]);
 
   useEffect(() => {
     if (isWeaponsDbConfigLoading) {
       return;
     }
 
-    const handleTf2ClassRequest = (weaponEntityName: string) => {
-      // console.log(
-      //   `handleTf2ClassRequest() in: ${weaponEntityName} - isWeaponsDbConfigLoading: ${isWeaponsDbConfigLoading} - weaponDbConfigError: ${weaponDbConfigError}`,
-      // );
+    const handleTf2ClassRequest: Tf2ClassRequestListener = (
+      weaponEntityName: string,
+    ) => {
+      console.log(
+        `handleTf2ClassRequest() in: ${weaponEntityName} - isWeaponsDbConfigLoading: ${isWeaponsDbConfigLoading} - weaponDbConfigError: ${weaponDbConfigError}`,
+      );
 
       if (isWeaponsDbConfigLoading || weaponDbConfigError) {
         // %TODO
@@ -162,23 +187,19 @@ function Main() {
           weaponEntityName,
           weaponsData,
         );
-        // console.log(
-        //   `Determined className ${JSON.stringify(classNames)} for weaponEntityName ${weaponEntityName}`,
-        // );
-        // %TODO
-        // window.electron.ipcRenderer.sendTf2ClassResponse({
-        //   error: false,
-        //   classNames,
-        // });
+        console.log(
+          `Determined className ${JSON.stringify(classNames)} for weaponEntityName ${weaponEntityName}`,
+        );
+
+        (window as any).electronAPI.sendTf2ClassResponse({
+          error: false,
+          classNames,
+        });
       }
     };
 
     // Set up IPC listener
-    // %TODO
-    // window.electron.ipcRenderer.onTf2ClassRequest(
-    //   'get-tf2-class',
-    //   handleTf2ClassRequest,
-    // );
+    (window as any).electronAPI.onTf2ClassRequest(handleTf2ClassRequest);
 
     // Cleanup function to remove the listener when component unmounts
     // eslint-disable-next-line consistent-return
@@ -186,6 +207,7 @@ function Main() {
       console.log('remove all listeners on *get-tf2-class*');
       // %TODO
       // window.electron.ipcRenderer.removeAllListeners('get-tf2-class');
+      (window as any).electronAPI.onTf2ClassRequest(() => {});
     };
   }, [isWeaponsDbConfigLoading, weaponDbConfigError, weaponsDbConfig]); // Add dependencies to ensure proper behavior
 
