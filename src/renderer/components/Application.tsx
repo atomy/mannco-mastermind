@@ -100,48 +100,48 @@ function Main() {
     [players],
   );
 
-  const playerDataListener: PlayerDataListener = (playerInfoCollection) => {
-    refreshPlayers(playerInfoCollection);
-  };
-
-  const rconAppLogListener: RconAppLogListener = (logMessage) => {
-    addRconClientLogMessage(logMessage);
-  };
-
-  const rconAppFragListener: RconAppFragListener = (fragMessage) => {
-    addRconClientFragMessage(fragMessage);
-  };
-
-  const tf2ClassRequestListener: Tf2ClassRequestListener = (
-    weaponEntityName: string,
-  ) => {
-    // console.log(
-    //   `handleTf2ClassRequest() in: ${weaponEntityName} - isWeaponsDbConfigLoading: ${isWeaponsDbConfigLoading} - weaponDbConfigError: ${weaponDbConfigError}`,
-    // );
-
-    if (isWeaponsDbConfigLoading || weaponDbConfigError) {
-      (window as any).electronAPI.sendTf2ClassResponse({
-        error: true,
-        classNames: [],
-        errorMessage: weaponDbConfigError,
-      });
-    } else {
-      const weaponsData = JSON.parse(weaponsDbConfig);
-      const classNames = determineClassesFromWeaponEntityName(
-        weaponEntityName,
-        weaponsData,
-      );
-      // console.log(
-      //   `Determined className ${JSON.stringify(classNames)} for weaponEntityName ${weaponEntityName}`,
-      // );
-      (window as any).electronAPI.sendTf2ClassResponse({
-        error: false,
-        classNames,
-      });
-    }
-  };
-
   useEffect(() => {
+    const playerDataListener: PlayerDataListener = (playerInfoCollection) => {
+      refreshPlayers(playerInfoCollection);
+    };
+
+    const rconAppLogListener: RconAppLogListener = (logMessage) => {
+      addRconClientLogMessage(logMessage);
+    };
+
+    const rconAppFragListener: RconAppFragListener = (fragMessage) => {
+      addRconClientFragMessage(fragMessage);
+    };
+
+    const tf2ClassRequestListener: Tf2ClassRequestListener = (
+      weaponEntityName: string,
+    ) => {
+      // console.log(
+      //   `handleTf2ClassRequest() in: ${weaponEntityName} - isWeaponsDbConfigLoading: ${isWeaponsDbConfigLoading} - weaponDbConfigError: ${weaponDbConfigError}`,
+      // );
+
+      if (isWeaponsDbConfigLoading || weaponDbConfigError) {
+        (window as any).electronAPI.sendTf2ClassResponse({
+          error: true,
+          classNames: [],
+          errorMessage: weaponDbConfigError,
+        });
+      } else {
+        const weaponsData = JSON.parse(weaponsDbConfig);
+        const classNames = determineClassesFromWeaponEntityName(
+          weaponEntityName,
+          weaponsData,
+        );
+        // console.log(
+        //   `Determined className ${JSON.stringify(classNames)} for weaponEntityName ${weaponEntityName}`,
+        // );
+        (window as any).electronAPI.sendTf2ClassResponse({
+          error: false,
+          classNames,
+        });
+      }
+    };
+
     (window as any).electronAPI.onPlayerData(playerDataListener);
     (window as any).electronAPI.onRconAppLog(rconAppLogListener);
     (window as any).electronAPI.onRconAppFrag(rconAppFragListener);
@@ -155,10 +155,12 @@ function Main() {
       (window as any).electronAPI.removeAllListeners('rcon-appfrag');
     };
   }, [
-    playerDataListener,
-    rconAppLogListener,
-    rconAppFragListener,
-    tf2ClassRequestListener,
+    addRconClientFragMessage,
+    addRconClientLogMessage,
+    isWeaponsDbConfigLoading,
+    refreshPlayers,
+    weaponDbConfigError,
+    weaponsDbConfig,
   ]);
 
   useEffect(() => {
