@@ -1,4 +1,4 @@
-import { app, BrowserWindow, screen } from 'electron';
+import { app, BrowserWindow, screen, shell } from 'electron';
 import path from 'path';
 import { registerTitlebarIpc } from '@main/window/titlebarIpc';
 
@@ -102,6 +102,12 @@ export function createAppWindow(): BrowserWindow {
   // Load the index.html of the app window.
   appWindow.loadURL(APP_WINDOW_WEBPACK_ENTRY);
 
+  // Intercept new-window events (links with target="_blank")
+  appWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' }; // Prevent Electron from handling it
+  });
+
   // Show window when its ready to
   appWindow.on('ready-to-show', () => appWindow.show());
 
@@ -120,7 +126,10 @@ export function createAppWindow(): BrowserWindow {
     app.quit();
   });
 
-  if (process.env.AUTO_OPEN_DEVTOOLS) {
+  if (
+    process.env.AUTO_OPEN_DEVTOOLS &&
+    process.env.AUTO_OPEN_DEVTOOLS === '1'
+  ) {
     appWindow.webContents.openDevTools();
   }
 

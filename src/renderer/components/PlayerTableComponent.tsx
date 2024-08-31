@@ -84,6 +84,9 @@ function Row(props: {
   };
 
   const getClassIcon = (className: string): string => {
+    if (!classIconMap[className.toLowerCase()]) {
+      console.error(`Unable to locate class '${className.toLowerCase()}' in classIconMap!`);
+    }
     // @ts-ignore
     return classIconMap[className.toLowerCase()] || '';
   };
