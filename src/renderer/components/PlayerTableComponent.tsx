@@ -38,6 +38,9 @@ const classIconMap = {
   spy: Spy,
 };
 
+// Define the keys of the classIconMap
+type ClassNames = keyof typeof classIconMap;
+
 interface PlayerTableComponentProps {
   players: PlayerInfo[];
   handleAddBlacklistSave: (
@@ -84,11 +87,14 @@ function Row(props: {
   };
 
   const getClassIcon = (className: string): string => {
-    if (!classIconMap[className.toLowerCase()]) {
-      console.error(`Unable to locate class '${className.toLowerCase()}' in classIconMap!`);
+    const classLowerCaseName = className.toLowerCase() as ClassNames;
+
+    if (!classIconMap[classLowerCaseName]) {
+      console.error(
+        `Unable to locate class '${classLowerCaseName}' in classIconMap!`,
+      );
     }
-    // @ts-ignore
-    return classIconMap[className.toLowerCase()] || '';
+    return classIconMap[classLowerCaseName] || '';
   };
 
   // @ts-ignore
@@ -121,7 +127,7 @@ function Row(props: {
             alt="Class"
           />
         )}
-        {!row.TF2Class && (
+        {(!row.TF2Class || row.TF2Class === 'unknown') && (
           <img
             width="26px"
             style={{ paddingLeft: '6px', paddingRight: '6px' }}

@@ -67,11 +67,11 @@ const sendPlayerData = () => {
   // Get all window instances
   const windows = BrowserWindow.getAllWindows();
 
-  currentPlayerCollection.forEach((player) => {
-    if (!player.Team) {
-      console.log(`Sending players: ${player.Name} -- ${player.Team}`);
-    }
-  });
+  // currentPlayerCollection.forEach((player) => {
+  //   if (!player.Team) {
+  //      console.log(`Sending player without a team: ${player.Name} -- ${player.Team}`);
+  //   }
+  // });
 
   // Send data to each window
   windows.forEach((w) => {
@@ -771,7 +771,10 @@ const downloadTF2Rcon = (callback: CallbackFunction) => {
         tf2RconExpectedFilehash,
         (error) => {
           if (error) {
-            console.error('downloadTF2Rcon() Error downloading the file:', error);
+            console.error(
+              'downloadTF2Rcon() Error downloading the file:',
+              error,
+            );
           } else {
             console.log('downloadTF2Rcon() File downloaded successfully');
             callback();
