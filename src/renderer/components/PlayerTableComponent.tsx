@@ -119,7 +119,7 @@ function Row(props: {
             alt="Players country: Unknown"
           />
         )}
-        {row.TF2Class && (
+        {row.TF2Class && row.TF2Class !== 'Unknown' && (
           <img
             width="26px"
             style={{ paddingLeft: '6px', paddingRight: '6px' }}
@@ -127,7 +127,7 @@ function Row(props: {
             alt="Class"
           />
         )}
-        {(!row.TF2Class || row.TF2Class === 'unknown') && (
+        {(!row.TF2Class || row.TF2Class === 'Unknown') && (
           <img
             width="26px"
             style={{ paddingLeft: '6px', paddingRight: '6px' }}
