@@ -10,45 +10,15 @@ import Link from '@mui/material/Link';
 import WarningIcon from '@mui/icons-material/Warning';
 import { Grid } from '@mui/material';
 import { styled } from '@mui/system';
-import Demoman from '@assets/icons/classes/demoman.png';
-import Scout from '@assets/icons/classes/scout.png';
-import Soldier from '@assets/icons/classes/soldier.png';
-import Pyro from '@assets/icons/classes/pyro.png';
-import Heavy from '@assets/icons/classes/heavy.png';
-import Engineer from '@assets/icons/classes/engineer.png';
-import Medic from '@assets/icons/classes/medic.png';
-import Sniper from '@assets/icons/classes/sniper.png';
-import Spy from '@assets/icons/classes/spy.png';
 import AllClass from '@assets/icons/classes/allclass.png';
+import getCountryName from '@components/GetCountryName';
+import classIconMap, { ClassNames } from '@components/classIconMap';
+import PlayerTableComponentProps from '@components/PlayerTableComponentProps';
 import Playtime from './Playtime';
 import SteamAccountAge from './SteamAccountAge';
 import PlayerWarning from './PlayerWarning';
 import PlayerAction from './PlayerAction';
 import { PlayerInfo } from './PlayerInfo';
-
-const classIconMap = {
-  demoman: Demoman,
-  scout: Scout,
-  soldier: Soldier,
-  pyro: Pyro,
-  heavy: Heavy,
-  engineer: Engineer,
-  medic: Medic,
-  sniper: Sniper,
-  spy: Spy,
-};
-
-// Define the keys of the classIconMap
-type ClassNames = keyof typeof classIconMap;
-
-interface PlayerTableComponentProps {
-  players: PlayerInfo[];
-  handleAddBlacklistSave: (
-    steamid: string,
-    type: string,
-    reason: string,
-  ) => void;
-}
 
 const StyledTableCell = styled(TableCell)({
   paddingTop: '4px',
@@ -110,6 +80,7 @@ function Row(props: {
             src={`https://flagcdn.com/h40/${row.SteamCountryCode.toLowerCase()}.png`}
             style={{ paddingRight: '4px' }}
             alt={`Players Country: ${row.SteamCountryCode}`}
+            title={getCountryName(row.SteamCountryCode)} // Tooltip with country name
           />
         ) : (
           <img
@@ -117,6 +88,7 @@ function Row(props: {
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Flag_of_None.svg/2560px-Flag_of_None.svg.png"
             style={{ paddingRight: '4px' }}
             alt="Players country: Unknown"
+            title="Country information unavailable"
           />
         )}
         {row.TF2Class && row.TF2Class !== 'Unknown' && (
