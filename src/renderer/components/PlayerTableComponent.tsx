@@ -86,7 +86,7 @@ function Row(props: {
     : AllClass;
 
   // For the Steam Avatar logic
-  const avatarSrc = row.SteamAvatarSmall ? row.SteamAvatarSmall : '';
+  const avatarSrc = row.SteamAvatarSmall ? row.SteamAvatarSmall : 'https://avatars.akamai.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg';
 
   // @ts-ignore
   return (
