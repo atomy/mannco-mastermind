@@ -1,5 +1,5 @@
 import React, { useState, useEffect, CSSProperties } from 'react';
-import './AnimatedImage.css';
+import '@styles/animatedImage.css';
 
 interface AnimatedImageProps {
   src: string;
@@ -9,6 +9,7 @@ interface AnimatedImageProps {
   style?: CSSProperties;
 }
 
+// Component *AnimatedImage* describing an animated image that fades-in and out on change
 const AnimatedImage: React.FC<AnimatedImageProps> = ({ src, alt = 'image', title, width, style }) => {
   const [currentSrc, setCurrentSrc] = useState<string>(src);
   const [isLoaded, setIsLoaded] = useState<boolean>(true); // Initially set to true
