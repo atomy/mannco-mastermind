@@ -19,6 +19,7 @@ import SteamAccountAge from './SteamAccountAge';
 import PlayerWarning from './PlayerWarning';
 import PlayerAction from './PlayerAction';
 import { PlayerInfo } from './PlayerInfo';
+import AnimatedImage from './AnimatedImage';
 
 const StyledTableCell = styled(TableCell)({
   paddingTop: '4px',
@@ -67,6 +68,26 @@ function Row(props: {
     return classIconMap[classLowerCaseName] || '';
   };
 
+  const countryFlagSrc = row.SteamCountryCode
+    ? `https://flagcdn.com/h40/${row.SteamCountryCode.toLowerCase()}.png`
+    : 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Flag_of_None.svg/2560px-Flag_of_None.svg.png';
+
+  const altText = row.SteamCountryCode
+    ? `Players Country: ${row.SteamCountryCode}`
+    : 'Players country: Unknown';
+
+  const titleText = row.SteamCountryCode
+    ? getCountryName(row.SteamCountryCode)
+    : 'Country information unavailable';
+
+  // For the TF2 class icon logic
+  const classIconSrc = row.TF2Class && row.TF2Class !== 'Unknown'
+    ? getClassIcon(row.TF2Class)
+    : AllClass;
+
+  // For the Steam Avatar logic
+  const avatarSrc = row.SteamAvatarSmall ? row.SteamAvatarSmall : '';
+
   // @ts-ignore
   return (
     <TableRow
@@ -74,41 +95,29 @@ function Row(props: {
       style={{ backgroundColor: rowBackgroundColor() }}
     >
       <StyledTableCell component="th" scope="row">
-        {row.SteamCountryCode ? (
-          <img
-            width="30px"
-            src={`https://flagcdn.com/h40/${row.SteamCountryCode.toLowerCase()}.png`}
-            style={{ paddingRight: '4px' }}
-            alt={`Players Country: ${row.SteamCountryCode}`}
-            title={getCountryName(row.SteamCountryCode)} // Tooltip with country name
+        {/* Animated Country Flag */}
+        <AnimatedImage
+          src={countryFlagSrc}
+          alt={altText}
+          title={titleText}
+          width="30px"
+          style={{ paddingRight: '4px' }}
+        />
+        {/* Animated TF2 Class Icon */}
+        <AnimatedImage
+          src={classIconSrc}
+          alt="Class"
+          width="26px"
+          style={{ paddingLeft: '6px', paddingRight: '6px' }}
+        />
+        {/* Animated Steam Avatar - No borderRadius, keep square */}
+        {avatarSrc && (
+          <AnimatedImage
+            src={avatarSrc}
+            alt="Avatar"
+            width="32px" // Assuming 32px is the desired size
+            style={{ paddingLeft: '6px', paddingRight: '6px' }} // No borderRadius here
           />
-        ) : (
-          <img
-            width="30px"
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Flag_of_None.svg/2560px-Flag_of_None.svg.png"
-            style={{ paddingRight: '4px' }}
-            alt="Players country: Unknown"
-            title="Country information unavailable"
-          />
-        )}
-        {row.TF2Class && row.TF2Class !== 'Unknown' && (
-          <img
-            width="26px"
-            style={{ paddingLeft: '6px', paddingRight: '6px' }}
-            src={getClassIcon(row.TF2Class)}
-            alt="Class"
-          />
-        )}
-        {(!row.TF2Class || row.TF2Class === 'Unknown') && (
-          <img
-            width="26px"
-            style={{ paddingLeft: '6px', paddingRight: '6px' }}
-            src={AllClass}
-            alt="Class"
-          />
-        )}
-        {row.SteamAvatarSmall && (
-          <img src={row.SteamAvatarSmall} alt="Avatar" />
         )}
         <span style={{ paddingLeft: '10px' }}>{row.Name}</span>
       </StyledTableCell>

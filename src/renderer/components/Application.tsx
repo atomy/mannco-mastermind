@@ -1,5 +1,11 @@
 import { MemoryRouter as Router, Route, Routes } from 'react-router-dom';
 import React, { useEffect, useState, useCallback } from 'react';
+import {
+  PlayerDataListener,
+  RconAppFragListener,
+  RconAppLogListener,
+  Tf2ClassRequestListener,
+} from '@main/window/listenerInterfaces';
 import PlayerTableComponent from './PlayerTableComponent';
 import { PlayerInfo } from './PlayerInfo';
 import { RconAppLogEntry } from './RconAppLogEntry';
@@ -7,12 +13,6 @@ import BottomBox from './footer/BottomBox';
 import { RconAppFragEntry } from './RconAppFragEntry';
 import useRemoteConfigHook from './hooks/useRemoteConfigHook';
 import '@styles/app.scss';
-import {
-  PlayerDataListener,
-  RconAppFragListener,
-  RconAppLogListener,
-  Tf2ClassRequestListener,
-} from '@main/window/listenerInterfaces';
 
 function Main() {
   const { weaponsDbConfig, isWeaponsDbConfigLoading, weaponDbConfigError } =
@@ -52,7 +52,10 @@ function Main() {
 
     // Check if no matching classes were found and log an error
     if (matchingClasses.length === 0) {
-      console.error(`Error: Unknown weaponEntityName '${weaponEntityName}'`);
+      const errorMessage = `Error: Unknown weaponEntityName '${weaponEntityName}'\n`;
+
+      console.error(errorMessage);
+
       return ['Unknown'];
     }
 
@@ -114,9 +117,10 @@ function Main() {
 
     const tf2ClassRequestListener: Tf2ClassRequestListener = (
       weaponEntityName: string,
+      killerSteamID: string,
     ) => {
       // console.log(
-      //   `handleTf2ClassRequest() in: ${weaponEntityName} - isWeaponsDbConfigLoading: ${isWeaponsDbConfigLoading} - weaponDbConfigError: ${weaponDbConfigError}`,
+      //   `handleTf2ClassRequest() in: ${weaponEntityName} - isWeaponsDbConfigLoading: ${isWeaponsDbConfigLoading} - weaponDbConfigError: ${weaponDbConfigError} - killerSteamID: ${killerSteamID}`,
       // );
 
       if (isWeaponsDbConfigLoading || weaponDbConfigError) {
@@ -124,6 +128,8 @@ function Main() {
           error: true,
           classNames: [],
           errorMessage: weaponDbConfigError,
+          weaponEntityName: '',
+          killerSteamID: ''
         });
       } else {
         const weaponsData = JSON.parse(weaponsDbConfig);
@@ -136,7 +142,10 @@ function Main() {
         // );
         (window as any).electronAPI.sendTf2ClassResponse({
           error: false,
-          classNames,
+          classNames: classNames,
+          errorMessage: '',
+          weaponEntityName: weaponEntityName,
+          killerSteamID: killerSteamID
         });
       }
     };
@@ -161,55 +170,6 @@ function Main() {
     weaponDbConfigError,
     weaponsDbConfig,
   ]);
-
-  useEffect(() => {
-    if (isWeaponsDbConfigLoading) {
-      return;
-    }
-
-    const handleTf2ClassRequest: Tf2ClassRequestListener = (
-      weaponEntityName: string,
-    ) => {
-      // console.log(
-      //   `handleTf2ClassRequest() in: ${weaponEntityName} - isWeaponsDbConfigLoading: ${isWeaponsDbConfigLoading} - weaponDbConfigError: ${weaponDbConfigError}`,
-      // );
-
-      if (isWeaponsDbConfigLoading || weaponDbConfigError) {
-        // %TODO
-        // window.electron.ipcRenderer.sendTf2ClassResponse({
-        //   error: true,
-        //   classNames: [],
-        //   errorMessage: weaponDbConfigError,
-        // });
-      } else {
-        const weaponsData = JSON.parse(weaponsDbConfig);
-        const classNames = determineClassesFromWeaponEntityName(
-          weaponEntityName,
-          weaponsData,
-        );
-        // console.log(
-        //   `Determined className ${JSON.stringify(classNames)} for weaponEntityName ${weaponEntityName}`,
-        // );
-
-        (window as any).electronAPI.sendTf2ClassResponse({
-          error: false,
-          classNames,
-        });
-      }
-    };
-
-    // Set up IPC listener
-    (window as any).electronAPI.onTf2ClassRequest(handleTf2ClassRequest);
-
-    // Cleanup function to remove the listener when component unmounts
-    // eslint-disable-next-line consistent-return
-    return () => {
-      console.log('remove all listeners on *get-tf2-class*');
-      // %TODO
-      // window.electron.ipcRenderer.removeAllListeners('get-tf2-class');
-      (window as any).electronAPI.onTf2ClassRequest(() => {});
-    };
-  }, [isWeaponsDbConfigLoading, weaponDbConfigError, weaponsDbConfig]); // Add dependencies to ensure proper behavior
 
   return (
     <div id="content">

@@ -50,8 +50,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on(
       'get-tf2-class',
       // eslint-disable-next-line no-undef
-      (event: Electron.Event, weaponEntityName: string) => {
-        func(weaponEntityName);
+      (event: Electron.Event, weaponEntityName: string, killerSteamID: string) => {
+        func(weaponEntityName, killerSteamID);
       },
     );
   },

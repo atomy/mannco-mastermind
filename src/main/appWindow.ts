@@ -52,7 +52,7 @@ export function createAppWindow(): BrowserWindow {
       titleBarStyle: 'hidden',
       icon: path.resolve('assets/images/appIcon.ico'),
       webPreferences: {
-        nodeIntegration: false,
+        nodeIntegration: true,
         contextIsolation: true,
         nodeIntegrationInWorker: false,
         nodeIntegrationInSubFrames: false,
@@ -72,7 +72,7 @@ export function createAppWindow(): BrowserWindow {
       titleBarStyle: 'hidden',
       icon: path.resolve('assets/images/appIcon.ico'),
       webPreferences: {
-        nodeIntegration: false,
+        nodeIntegration: true,
         contextIsolation: true,
         nodeIntegrationInWorker: false,
         nodeIntegrationInSubFrames: false,

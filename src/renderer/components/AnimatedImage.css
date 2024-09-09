@@ -1,0 +1,33 @@
+/* ImageAnimation.css */
+
+/* Base style */
+img {
+  transition: filter 0.2s ease-in-out; /* Adding transition for the flash effect */
+}
+
+/* Fade-out animation */
+.fade-out {
+  opacity: 0;
+  transition: opacity 2000ms ease-out;
+}
+
+/* Fade-in animation */
+.fade-in {
+  opacity: 1;
+  transition: opacity 2000ms ease-in;
+}
+
+/* Flash effect - briefly increase brightness */
+.flash {
+  filter: brightness(1.5);
+  animation: flash 0.2s ease-in-out;
+}
+
+@keyframes flash {
+  0% {
+    filter: brightness(1.5);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}

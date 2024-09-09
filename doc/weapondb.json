@@ -1,0 +1,1057 @@
+{
+  "classes": [
+    {
+      "className": "Engineer",
+      "weapons": [
+        {
+          "weaponId": "frontier_justice",
+          "weaponName": "Frontier Justice"
+        },
+        {
+          "weaponId": "obj_sentrygun",
+          "weaponName": "Sentry Gun"
+        },
+        {
+          "weaponId": "obj_sentrygun2",
+          "weaponName": "Sentry Gun (Level 2)"
+        },
+        {
+          "weaponId": "obj_sentrygun3",
+          "weaponName": "Sentry Gun (Level 3)"
+        },
+        {
+          "weaponId": "world",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "rescue_ranger",
+          "weaponName": "Rescue Ranger"
+        },
+        {
+          "weaponId": "bleed_kill",
+          "weaponName": "Bleed"
+        },
+        {
+          "weaponId": "shotgun_primary",
+          "weaponName": "Shotgun"
+        },
+        {
+          "weaponId": "obj_minisentry",
+          "weaponName": "Mini-Sentry"
+        },
+        {
+          "weaponId": "pistol",
+          "weaponName": "Pistol"
+        },
+        {
+          "weaponId": "panic_attack",
+          "weaponName": "Panic Attack"
+        },
+        {
+          "weaponId": "player",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "wrangler_kill",
+          "weaponName": "Wrangler"
+        },
+        {
+          "weaponId": "wrench",
+          "weaponName": "Wrench"
+        },
+        {
+          "weaponId": "widowmaker",
+          "weaponName": "Widowmaker"
+        },
+        {
+          "weaponId": "telefrag",
+          "weaponName": "Telefrag"
+        },
+        {
+          "weaponId": "maxgun",
+          "weaponName": "Lugermorph"
+        },
+        {
+          "weaponId": "southern_hospitality",
+          "weaponName": "Southern Hospitality"
+        },
+        {
+          "weaponId": "wrench_jag",
+          "weaponName": "Jag"
+        },
+        {
+          "weaponId": "eureka_effect",
+          "weaponName": "Eureka Effect"
+        },
+        {
+          "weaponId": "giger_counter",
+          "weaponName": "Giger Counter"
+        },
+        {
+          "weaponId": "robot_arm_combo_kill",
+          "weaponName": "Gunslinger (Triple Punch)"
+        },
+        {
+          "weaponId": "robot_arm",
+          "weaponName": "Gunslinger"
+        },
+        {
+          "weaponId": "taunt_guitar_kill",
+          "weaponName": "Dischord (Taunt kill)"
+        },
+        {
+          "weaponId": "robot_arm_blender_kill",
+          "weaponName": "Organ Grinder (Taunt kill)"
+        },
+        {
+          "weaponId": "tf_pumpkin_bomb",
+          "weaponName": "Pumpkin bombs"
+        },
+        {
+          "weaponId": "the_capper",
+          "weaponName": "C.A.P.P.E.R"
+        }
+      ]
+    },
+    {
+      "className": "Scout",
+      "weapons": [
+        {
+          "weaponId": "force_a_nature",
+          "weaponName": "Force-A-Nature"
+        },
+        {
+          "weaponId": "scattergun",
+          "weaponName": "Scattergun"
+        },
+        {
+          "weaponId": "soda_popper",
+          "weaponName": "Soda Popper"
+        },
+        {
+          "weaponId": "world",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "bleed_kill",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "pep_pistol",
+          "weaponName": "Pretty Boy's Pocket Pistol"
+        },
+        {
+          "weaponId": "back_scatter",
+          "weaponName": "Back Scatter"
+        },
+        {
+          "weaponId": "holymackerel",
+          "weaponName": "Holy Mackerel"
+        },
+        {
+          "weaponId": "ham_shank",
+          "weaponName": "Ham Shank"
+        },
+        {
+          "weaponId": "fryingpan",
+          "weaponName": "Frying Pan"
+        },
+        {
+          "weaponId": "nonnonviolent_protest",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "pistol_scout",
+          "weaponName": "Pistol"
+        },
+        {
+          "weaponId": "bat",
+          "weaponName": "Bat"
+        },
+        {
+          "weaponId": "guillotine",
+          "weaponName": "The Flying Guillotine"
+        },
+        {
+          "weaponId": "pep_brawlerblaster",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "player",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "shortstop",
+          "weaponName": "Shortstop"
+        },
+        {
+          "weaponId": "piranha",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "telefrag",
+          "weaponName": "Telefrag"
+        },
+        {
+          "weaponId": "boston_basher",
+          "weaponName": "Boston Basher"
+        },
+        {
+          "weaponId": "freedom_staff",
+          "weaponName": "Freedom Staff"
+        },
+        {
+          "weaponId": "maxgun",
+          "weaponName": "Lugermorph"
+        },
+        {
+          "weaponId": "the_winger",
+          "weaponName": "Winger"
+        },
+        {
+          "weaponId": "atomizer",
+          "weaponName": "Atomizer"
+        },
+        {
+          "weaponId": "ball",
+          "weaponName": "Sandman ball"
+        },
+        {
+          "weaponId": "wrap_assassin",
+          "weaponName": "Wrap Assassin"
+        },
+        {
+          "weaponId": "candy_cane",
+          "weaponName": "Candy Cane"
+        },
+        {
+          "weaponId": "holy_mackerel",
+          "weaponName": "Holy Mackerel"
+        },
+        {
+          "weaponId": "sandman",
+          "weaponName": "Sandman"
+        },
+        {
+          "weaponId": "short_stop",
+          "weaponName": "Shortstop"
+        },
+        {
+          "weaponId": "taunt_scout",
+          "weaponName": "Home Run (Sandman Taunt kill)"
+        },
+        {
+          "weaponId": "tf_pumpkin_bomb",
+          "weaponName": "Pumpkin bombs"
+        },
+        {
+          "weaponId": "crossing_guard",
+          "weaponName": "Crossing Guard"
+        },
+        {
+          "weaponId": "the_capper",
+          "weaponName": "C.A.P.P.E.R"
+        },
+        {
+          "weaponId": "batsaber",
+          "weaponName": "Batsaber"
+        }
+      ]
+    },
+    {
+      "className": "Pyro",
+      "weapons": [
+        {
+          "weaponId": "degreaser",
+          "weaponName": "Degreaser"
+        },
+        {
+          "weaponId": "flamethrower",
+          "weaponName": "Flamethrower"
+        },
+        {
+          "weaponId": "world",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "shotgun_pyro",
+          "weaponName": "Shotgun"
+        },
+        {
+          "weaponId": "backburner",
+          "weaponName": "Backburner"
+        },
+        {
+          "weaponId": "phlogistinator",
+          "weaponName": "Phlogistinator"
+        },
+        {
+          "weaponId": "lava_axe",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "ham_shank",
+          "weaponName": "Ham Shank"
+        },
+        {
+          "weaponId": "fryingpan",
+          "weaponName": "Frying Pan"
+        },
+        {
+          "weaponId": "dragons_fury_bonus",
+          "weaponName": "Dragon's Fury"
+        },
+        {
+          "weaponId": "dragons_fury",
+          "weaponName": "Dragon's Fury"
+        },
+        {
+          "weaponId": "powerjack",
+          "weaponName": "Powerjack"
+        },
+        {
+          "weaponId": "scorch_shot",
+          "weaponName": "Scorch Shot"
+        },
+        {
+          "weaponId": "shotgun_primary",
+          "weaponName": "Shotgun"
+        },
+        {
+          "weaponId": "nonnonviolent_protest",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "deflect_rocket",
+          "weaponName": "Deflected rocket"
+        },
+        {
+          "weaponId": "detonator",
+          "weaponName": "Detonator"
+        },
+        {
+          "weaponId": "axtinguisher",
+          "weaponName": "Axtinguisher"
+        },
+        {
+          "weaponId": "flaregun",
+          "weaponName": "Flare Gun"
+        },
+        {
+          "weaponId": "back_scratcher",
+          "weaponName": "Back Scratcher"
+        },
+        {
+          "weaponId": "player",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "taunt_pyro",
+          "weaponName": "Hadouken (Taunt kill)"
+        },
+        {
+          "weaponId": "ai_flamethrower",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "reserve_shooter",
+          "weaponName": "Reserve Shooter"
+        },
+        {
+          "weaponId": "telefrag",
+          "weaponName": "Telefrag"
+        },
+        {
+          "weaponId": "freedom_staff",
+          "weaponName": "Freedom Staff"
+        },
+        {
+          "weaponId": "rainblower",
+          "weaponName": "Rainblower"
+        },
+        {
+          "weaponId": "deflect_arrow",
+          "weaponName": "Deflected arrow"
+        },
+        {
+          "weaponId": "deflect_huntsman_flyingburn",
+          "weaponName": "Deflected flaming arrow"
+        },
+        {
+          "weaponId": "deflect_flare",
+          "weaponName": "Deflected flare"
+        },
+        {
+          "weaponId": "deflect_sticky",
+          "weaponName": "Deflected sticky"
+        },
+        {
+          "weaponId": "suicided",
+          "weaponName": "Deflected Sandman ball"
+        },
+        {
+          "weaponId": "fireaxe",
+          "weaponName": "Fire Axe"
+        },
+        {
+          "weaponId": "sledgehammer",
+          "weaponName": "Homewrecker"
+        },
+        {
+          "weaponId": "tf_pumpkin_bomb",
+          "weaponName": "Pumpkin bombs"
+        },
+        {
+          "weaponId": "crossing_guard",
+          "weaponName": "Crossing Guard"
+        },
+        {
+          "weaponId": "annihilator",
+          "weaponName": "Neon Annihilator"
+        },
+        {
+          "weaponId": "deflect_promode",
+          "weaponName": "Deflected sticky"
+        },
+        {
+          "weaponId": "gas_blast",
+          "weaponName": "Gas Blast"
+        }
+      ]
+    },
+    {
+      "className": "Soldier",
+      "weapons": [
+        {
+          "weaponId": "tf_projectile_rocket",
+          "weaponName": "Rocket Launcher"
+        },
+        {
+          "weaponId": "world",
+          "weaponName": "World"
+        },
+        {
+          "weaponId": "blackbox",
+          "weaponName": "Black Box"
+        },
+        {
+          "weaponId": "quake_rl",
+          "weaponName": "Original"
+        },
+        {
+          "weaponId": "rocketlauncher_directhit",
+          "weaponName": "Direct Hit"
+        },
+        {
+          "weaponId": "shotgun_soldier",
+          "weaponName": "Shotgun"
+        },
+        {
+          "weaponId": "ham_shank",
+          "weaponName": "Ham Shank"
+        },
+        {
+          "weaponId": "fryingpan",
+          "weaponName": "Frying Pan"
+        },
+        {
+          "weaponId": "shotgun_primary",
+          "weaponName": "Shotgun"
+        },
+        {
+          "weaponId": "nonnonviolent_protest",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "market_gardener",
+          "weaponName": "Market Gardener"
+        },
+        {
+          "weaponId": "airstrike",
+          "weaponName": "Air Strike"
+        },
+        {
+          "weaponId": "player",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "taunt_soldier",
+          "weaponName": "Kamikaze"
+        },
+        {
+          "weaponId": "cow_mangler",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "dumpster_device",
+          "weaponName": "Beggar's Bazooka"
+        },
+        {
+          "weaponId": "reserve_shooter",
+          "weaponName": "Reserve Shooter"
+        },
+        {
+          "weaponId": "telefrag",
+          "weaponName": "Telefrag"
+        },
+        {
+          "weaponId": "disciplinary_action",
+          "weaponName": "Disciplinary Action"
+        },
+        {
+          "weaponId": "freedom_staff",
+          "weaponName": "Freedom Staff"
+        },
+        {
+          "weaponId": "liberty_launcher",
+          "weaponName": "Liberty Launcher"
+        },
+        {
+          "weaponId": "shovel",
+          "weaponName": "Shovel"
+        },
+        {
+          "weaponId": "unique_pickaxe",
+          "weaponName": "Equalizer"
+        },
+        {
+          "weaponId": "unique_pickaxe_escape",
+          "weaponName": "Equalizer"
+        },
+        {
+          "weaponId": "paintrain",
+          "weaponName": "Pain Train"
+        },
+        {
+          "weaponId": "tf_pumpkin_bomb",
+          "weaponName": "Pumpkin bombs"
+        },
+        {
+          "weaponId": "crossing_guard",
+          "weaponName": "Crossing Guard"
+        }
+      ]
+    },
+    {
+      "className": "Demoman",
+      "weapons": [
+        {
+          "weaponId": "tf_projectile_pipe_remote",
+          "weaponName": "Stickybomb Launcher"
+        },
+        {
+          "weaponId": "tf_projectile_pipe",
+          "weaponName": "Grenade Launcher"
+        },
+        {
+          "weaponId": "world",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "demokatana",
+          "weaponName": "Half-Zatoichi"
+        },
+        {
+          "weaponId": "ham_shank",
+          "weaponName": "Ham Shank"
+        },
+        {
+          "weaponId": "fryingpan",
+          "weaponName": "Frying Pan"
+        },
+        {
+          "weaponId": "sword",
+          "weaponName": "Eyelander"
+        },
+        {
+          "weaponId": "persian_persuader",
+          "weaponName": "Persian Persuader"
+        },
+        {
+          "weaponId": "ullapool_caber_explosion",
+          "weaponName": "Ullapool Caber (Explosion)"
+        },
+        {
+          "weaponId": "splendid_screen",
+          "weaponName": "Splendid Screen"
+        },
+        {
+          "weaponId": "iron_bomber",
+          "weaponName": "Iron Bomber"
+        },
+        {
+          "weaponId": "nonnonviolent_protest",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "scotland_shard",
+          "weaponName": "Scottish Handshake"
+        },
+        {
+          "weaponId": "claidheamohmor",
+          "weaponName": "Claidheamh Mòr"
+        },
+        {
+          "weaponId": "loose_cannon",
+          "weaponName": "Loose Cannon"
+        },
+        {
+          "weaponId": "battleaxe",
+          "weaponName": "Scotsman's Skullcutter"
+        },
+        {
+          "weaponId": "nessieclub",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "player",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "sticky_resistance",
+          "weaponName": "Scottish Resistance"
+        },
+        {
+          "weaponId": "quickiebomb_launcher",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "bottle",
+          "weaponName": "Bottle"
+        },
+        {
+          "weaponId": "loch_n_load",
+          "weaponName": "Loch-n-Load"
+        },
+        {
+          "weaponId": "telefrag",
+          "weaponName": "Telefrag"
+        },
+        {
+          "weaponId": "freedom_staff",
+          "weaponName": "Freedom Staff"
+        },
+        {
+          "weaponId": "loose_cannon_impact",
+          "weaponName": "Loose Cannon (Impact)"
+        },
+        {
+          "weaponId": "headtaker",
+          "weaponName": "Horseless Headless Horsemann's Headtaker"
+        },
+        {
+          "weaponId": "ullapool_caber",
+          "weaponName": "Ullapool Caber"
+        },
+        {
+          "weaponId": "demoshield",
+          "weaponName": "Chargin' Targe"
+        },
+        {
+          "weaponId": "claidheamhmor",
+          "weaponName": "Claidheamh Mòr"
+        },
+        {
+          "weaponId": "taunt_demoman",
+          "weaponName": "Decapitation (Taunt kill)"
+        },
+        {
+          "weaponId": "paintrain",
+          "weaponName": "Pain Train"
+        },
+        {
+          "weaponId": "tf_pumpkin_bomb",
+          "weaponName": "Pumpkin bombs"
+        },
+        {
+          "weaponId": "crossing_guard",
+          "weaponName": "Crossing Guard"
+        }
+      ]
+    },
+    {
+      "className": "Sniper",
+      "weapons": [
+        {
+          "weaponId": "sniperrifle",
+          "weaponName": "Sniper Rifle"
+        },
+        {
+          "weaponId": "world",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "tf_projectile_arrow",
+          "weaponName": "Huntsman"
+        },
+        {
+          "weaponId": "bleed_kill",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "bazaar_bargain",
+          "weaponName": "Bazaar Bargain"
+        },
+        {
+          "weaponId": "shahanshah",
+          "weaponName": "Shahanshah"
+        },
+        {
+          "weaponId": "ham_shank",
+          "weaponName": "Ham Shank"
+        },
+        {
+          "weaponId": "fryingpan",
+          "weaponName": "Frying Pan"
+        },
+        {
+          "weaponId": "compound_bow",
+          "weaponName": "Fortified Compound"
+        },
+        {
+          "weaponId": "awper_hand",
+          "weaponName": "AWPer Hand"
+        },
+        {
+          "weaponId": "nonnonviolent_protest",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "bushwacka",
+          "weaponName": "Bushwacka"
+        },
+        {
+          "weaponId": "machina",
+          "weaponName": "Machina"
+        },
+        {
+          "weaponId": "club",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "player",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "sydney_sleeper",
+          "weaponName": "Sydney Sleeper"
+        },
+        {
+          "weaponId": "telefrag",
+          "weaponName": "Telefrag"
+        },
+        {
+          "weaponId": "freedom_staff",
+          "weaponName": "Freedom Staff"
+        },
+        {
+          "weaponId": "pro_smg",
+          "weaponName": "Cleaner's Carbine"
+        },
+        {
+          "weaponId": "smg",
+          "weaponName": "SMG"
+        },
+        {
+          "weaponId": "the_classic",
+          "weaponName": "Classic"
+        },
+        {
+          "weaponId": "pro_rifle",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "tribalkukri",
+          "weaponName": "Tribal kukri"
+        },
+        {
+          "weaponId": "kukri",
+          "weaponName": "Kukri"
+        },
+        {
+          "weaponId": "tribal_kukri",
+          "weaponName": "Tribalman's Shiv"
+        },
+        {
+          "weaponId": "taunt_sniper",
+          "weaponName": "Skewer (Taunt kill)"
+        },
+        {
+          "weaponId": "tf_pumpkin_bomb",
+          "weaponName": "Pumpkin bombs"
+        },
+        {
+          "weaponId": "crossing_guard",
+          "weaponName": "Crossing Guard"
+        }
+      ]
+    },
+    {
+      "className": "Medic",
+      "weapons": [
+        {
+          "weaponId": "crusaders_crossbow",
+          "weaponName": "Crusader's Crossbow"
+        },
+        {
+          "weaponId": "solemn_vow",
+          "weaponName": "Solemn Vow"
+        },
+        {
+          "weaponId": "world",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "ham_shank",
+          "weaponName": "Ham Shank"
+        },
+        {
+          "weaponId": "fryingpan",
+          "weaponName": "Frying Pan"
+        },
+        {
+          "weaponId": "bonesaw",
+          "weaponName": "Bonesaw"
+        },
+        {
+          "weaponId": "nonnonviolent_protest",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "player",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "ubersaw",
+          "weaponName": "Übersaw"
+        },
+        {
+          "weaponId": "amputator",
+          "weaponName": "Amputator"
+        },
+        {
+          "weaponId": "blutsauger",
+          "weaponName": "Blutsauger"
+        },
+        {
+          "weaponId": "telefrag",
+          "weaponName": "Telefrag"
+        },
+        {
+          "weaponId": "freedom_staff",
+          "weaponName": "Freedom Staff"
+        },
+        {
+          "weaponId": "syringegun_medic",
+          "weaponName": "Syringe Gun"
+        },
+        {
+          "weaponId": "battleneedle",
+          "weaponName": "Vita-Saw"
+        },
+        {
+          "weaponId": "taunt_medic",
+          "weaponName": "Spinal Tap (Taunt kill)"
+        },
+        {
+          "weaponId": "tf_pumpkin_bomb",
+          "weaponName": "Pumpkin bombs"
+        },
+        {
+          "weaponId": "crossing_guard",
+          "weaponName": "Crossing Guard"
+        }
+      ]
+    },
+    {
+      "className": "Heavy",
+      "weapons": [
+        {
+          "weaponId": "tomislav",
+          "weaponName": "Tomislav"
+        },
+        {
+          "weaponId": "world",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "ham_shank",
+          "weaponName": "Ham Shank"
+        },
+        {
+          "weaponId": "fryingpan",
+          "weaponName": "Frying Pan"
+        },
+        {
+          "weaponId": "warrior_spirit",
+          "weaponName": "Warrior's Spirit"
+        },
+        {
+          "weaponId": "long_heatmaker",
+          "weaponName": "Huo-Long Heater"
+        },
+        {
+          "weaponId": "shotgun_hwg",
+          "weaponName": "Shotgun"
+        },
+        {
+          "weaponId": "nonnonviolent_protest",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "brass_beast",
+          "weaponName": "Brass Beast"
+        },
+        {
+          "weaponId": "minigun",
+          "weaponName": "Minigun"
+        },
+        {
+          "weaponId": "player",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "natascha",
+          "weaponName": "Natascha"
+        },
+        {
+          "weaponId": "telefrag",
+          "weaponName": "Telefrag"
+        },
+        {
+          "weaponId": "freedom_staff",
+          "weaponName": "Freedom Staff"
+        },
+        {
+          "weaponId": "iron_curtain",
+          "weaponName": "Iron Curtain"
+        },
+        {
+          "weaponId": "family_business",
+          "weaponName": "Family Business"
+        },
+        {
+          "weaponId": "fists",
+          "weaponName": "Fists"
+        },
+        {
+          "weaponId": "steel_fists",
+          "weaponName": "Fists of Steel"
+        },
+        {
+          "weaponId": "gloves_running_urgently",
+          "weaponName": "G.R.U."
+        },
+        {
+          "weaponId": "gloves",
+          "weaponName": "K.G.B."
+        },
+        {
+          "weaponId": "taunt_heavy",
+          "weaponName": "Showdown (Taunt kill)"
+        },
+        {
+          "weaponId": "tf_pumpkin_bomb",
+          "weaponName": "Pumpkin bombs"
+        },
+        {
+          "weaponId": "apocofists",
+          "weaponName": "Apoco-Fists"
+        },
+        {
+          "weaponId": "bread_bite",
+          "weaponName": "Bread Bite"
+        },
+        {
+          "weaponId": "crossing_guard",
+          "weaponName": "Crossing Guard"
+        },
+        {
+          "weaponId": "eviction_notice",
+          "weaponName": "Eviction Notice"
+        }
+      ]
+    },
+    {
+      "className": "Spy",
+      "weapons": [
+        {
+          "weaponId": "kunai",
+          "weaponName": "Conniver's Kunai"
+        },
+        {
+          "weaponId": "world",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "knife",
+          "weaponName": "Knife"
+        },
+        {
+          "weaponId": "spy_cicle",
+          "weaponName": "Spy-cicle"
+        },
+        {
+          "weaponId": "big_earner",
+          "weaponName": "Big Earner"
+        },
+        {
+          "weaponId": "ambassador",
+          "weaponName": "Ambassador"
+        },
+        {
+          "weaponId": "eternal_reward",
+          "weaponName": "Your Eternal Reward"
+        },
+        {
+          "weaponId": "letranger",
+          "weaponName": "L'Etranger"
+        },
+        {
+          "weaponId": "player",
+          "weaponName": ""
+        },
+        {
+          "weaponId": "revolver",
+          "weaponName": "Revolver"
+        },
+        {
+          "weaponId": "enforcer",
+          "weaponName": "Enforcer"
+        },
+        {
+          "weaponId": "sharp_dresser",
+          "weaponName": "Sharp Dresser"
+        },
+        {
+          "weaponId": "telefrag",
+          "weaponName": "Telefrag"
+        },
+        {
+          "weaponId": "black_rose",
+          "weaponName": "Black Rose"
+        },
+        {
+          "weaponId": "voodoo_pin",
+          "weaponName": "Wanga Prick"
+        },
+        {
+          "weaponId": "diamondback",
+          "weaponName": "Diamondback"
+        },
+        {
+          "weaponId": "samrevolver",
+          "weaponName": "Sam revolver"
+        },
+        {
+          "weaponId": "taunt_spy",
+          "weaponName": "Fencing (Taunt kill)"
+        },
+        {
+          "weaponId": "tf_pumpkin_bomb",
+          "weaponName": "Pumpkin bombs"
+        }
+      ]
+    }
+  ]
+}

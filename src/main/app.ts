@@ -16,6 +16,8 @@ import { SteamGamePlayerstats } from '@main/steamGamePlayerstats';
 import { WebSocket } from 'ws';
 import { createAppWindow } from './appWindow';
 
+const path = require('path');
+
 let tf2rconChild: ChildProcessWithoutNullStreams | null = null;
 let tf2rconWs: WebSocket | null = null;
 let shouldRestartTF2Rcon = true;
@@ -46,9 +48,11 @@ const currentSteamBanInformation: PlayerInfo[] = [];
 
 // Define the callback type
 type CallbackFunction = (error?: string | null) => void;
-type Tf2ClassCallback = (error: boolean, className: string[]) => void;
+type Tf2ClassCallback = (error: boolean, className: string[], weaponEntityName: string, killerSteamID: string) => void;
 
 const SteamApi = require('steam-web');
+
+const logFilePath = path.join(__dirname, 'weapon_mapping_failures.log');
 
 // Signal handler.
 function handleExit(): void {
@@ -91,9 +95,19 @@ const sendApplicationLogData = (logMessage: RconAppLogEntry) => {
   });
 };
 
+// Function to log just the entity names to a file
+const logEntityNameToFile = (weaponEntityName: string) => {
+  try {
+    fs.appendFileSync(logFilePath, `${weaponEntityName}\n`, 'utf8');
+  } catch (err) {
+    console.error(`Failed to write to log file: ${err.message}`);
+  }
+};
+
 // Function to request the TF2 class for a given weapon entity name
 const mapWeaponEntityToTFClass = (
   weaponEntityName: string,
+  killerSteamID: string,
   callback: Tf2ClassCallback,
 ) => {
   const windows = BrowserWindow.getAllWindows();
@@ -104,7 +118,7 @@ const mapWeaponEntityToTFClass = (
   // );
   // Send data to each window
   windows.forEach((w) => {
-    w.webContents.send('get-tf2-class', weaponEntityName);
+    w.webContents.send('get-tf2-class', weaponEntityName, killerSteamID);
   });
 
   // Set up one-time listener for the response
@@ -112,9 +126,11 @@ const mapWeaponEntityToTFClass = (
     // console.log(`*tf2-class-response* result is: ${JSON.stringify(result)}`);
 
     if (result.error) {
-      callback(true, []);
+      callback(true, [], '', '');
+      logEntityNameToFile(weaponEntityName);
     } else {
-      callback(false, result.classNames);
+      // console.log(`callback: ${result.classNames}, ${result.weaponEntityName}, ${result.killerSteamID}`)
+      callback(false, result.classNames, result.weaponEntityName, result.killerSteamID);
     }
   });
 };
@@ -205,14 +221,15 @@ ipcMain.on('blacklist-player', async (event: Electron.Event, arg) => {
 });
 
 const getPlayerNameForSteam = (steamID: string) => {
-  currentPlayerCollection.forEach((player) => {
-    if (steamID === player.SteamID) {
-      return player.Name;
-    }
+  const player = currentPlayerCollection.find(
+    (player) => steamID === player.SteamID,
+  );
 
-    return '???';
-  });
+  if (player) {
+    return player.Name;
+  }
 
+  console.error(`Error: unable to find steamID ${steamID} in playerCollection`);
   return '???';
 };
 
@@ -222,7 +239,9 @@ const assignPlayerClass = (
   playerClass: string,
   weaponName: string,
 ) => {
-  // console.log(`[main.ts] setting class ${playerClass} for player ${steamID}`);
+  // console.log(
+  //   `[main.ts] CLASS-ASSIGNMENT [${steamID}][${getPlayerNameForSteam(steamID)}] Setting class ${playerClass}`,
+  // );
 
   // Check if the player already exists in the array
   let playerExists = false;
@@ -231,7 +250,7 @@ const assignPlayerClass = (
       // this should never happen, if it does there may be an error in the weapon<->class database
       if (player.tf2class !== playerClass) {
         console.log(
-          `[main.ts] CHANGED!!! player-class from ${player.tf2class} to ${playerClass} on player ${getPlayerNameForSteam(player.steamid)} after weapon ${weaponName}!`,
+          `[main.ts] CHANGED!!! [${player.steamid}][${getPlayerNameForSteam(player.steamid)}] player-class from "${player.tf2class}" to "${playerClass}" after weapon "${weaponName}"!`,
         );
       }
       player.tf2class = playerClass;
@@ -245,7 +264,9 @@ const assignPlayerClass = (
   // If the player does not exist, add a new entry
   if (!playerExists) {
     playerTF2Classes.push({ steamid: steamID, tf2class: playerClass });
-    // console.log(`[main.ts] added new player with steamID ${steamID} and class ${playerClass}`);
+    // console.log(
+    //   `[main.ts] CLASS-ASSIGNMENT [${steamID}][${getPlayerNameForSteam(steamID)}] added new player with class ${playerClass}`,
+    // );
   }
 };
 
@@ -253,23 +274,24 @@ const sendApplicationFragData = (fragMessage: RconAppFragEntry) => {
   // Get all window instances
   const windows = BrowserWindow.getAllWindows();
 
-  mapWeaponEntityToTFClass(fragMessage.Weapon, (error, tfClasses) => {
+  // Call func and supply callback, we have to work with a more extensive payload here cause else we may run into race-conditions leading to falsely data
+  mapWeaponEntityToTFClass(fragMessage.Weapon, fragMessage.KillerSteamID, (error, tfClasses, weaponEntityName, killerSteamID) => {
     if (error) {
       console.log(
-        `FAILED to map frag of entity-name ${fragMessage.Weapon} to class!!!`,
+        `FAILED to map frag of entity-name ${weaponEntityName} to class!!!`,
       );
     } else if (tfClasses.length > 1) {
       // console.log(
-      //   `Entity-name ${fragMessage.Weapon} matches multiple classes: ${JSON.stringify(tfClasses)}`,
+      //   `Entity-name ${weaponEntityName} matches multiple classes: ${JSON.stringify(tfClasses)}`,
       // );
     } else {
       // console.log(
-      //   `Mapped frag of entity-name ${fragMessage.Weapon} to class ${tfClasses[0]}`,
+      //   `[${killerSteamID}][${getPlayerNameForSteam(killerSteamID)}] Mapped frag of entity-name ${weaponEntityName} to class ${tfClasses[0]}`,
       // );
       assignPlayerClass(
-        fragMessage.KillerSteamID,
+        killerSteamID,
         tfClasses[0],
-        fragMessage.Weapon,
+        weaponEntityName,
       );
     }
 

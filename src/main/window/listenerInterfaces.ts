@@ -18,5 +18,5 @@ export interface RconAppFragListener {
 
 // Define the interface for the tf2 class request listener function
 export interface Tf2ClassRequestListener {
-  (weaponEntityName: string): void;
+  (weaponEntityName: string, killerSteamID: string): void;
 }
