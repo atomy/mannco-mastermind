@@ -22,7 +22,7 @@ function BottomBoxTeamClassFeedback() {
     .filter(
       (teamClass) =>
         teamClassFeedback[teamClass.countKey] === 0 ||
-        teamClassFeedback[teamClass.countKey] > 2,
+        teamClassFeedback[teamClass.countKey] > 3,
     )
     .map((teamClass) => {
       const count = teamClassFeedback[teamClass.countKey];
