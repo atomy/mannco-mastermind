@@ -193,6 +193,7 @@ function Main() {
             consoleContent={rconClientLogs}
             chatContent={rconClientLogs}
             fragContent={rconClientFrags}
+            players={players}
           />
         </div>
       </div>

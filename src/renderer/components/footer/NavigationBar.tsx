@@ -53,10 +53,16 @@ function NavigationBar({
         FRAGS
       </NavigationButton>
       <NavigationButton
-        onClick={() => handleNavigationClick('TEAMCLASSES')}
-        selected={selectedButton === 'TEAMCLASSES'}
+        onClick={() => handleNavigationClick('CLASSES-MINE')}
+        selected={selectedButton === 'CLASSES-MINE'}
       >
-        TEAMCLASSES
+        CLASSES-MINE
+      </NavigationButton>
+      <NavigationButton
+        onClick={() => handleNavigationClick('CLASSES-OTHER')}
+        selected={selectedButton === 'CLASSES-OTHER'}
+      >
+        CLASSES-OTHER
       </NavigationButton>
       <NavigationButton
         onClick={() => handleNavigationClick('NONE')}

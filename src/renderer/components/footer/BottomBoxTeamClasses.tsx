@@ -1,41 +1,67 @@
 import React from 'react';
-import { useTeamClassContext } from '@components/context/TeamClassContext';
+import { PlayerInfo } from '@components/PlayerInfo';
 
-function BottomBoxTeamClassFeedback() {
-  const teamClassFeedback = useTeamClassContext();
+function BottomBoxTeamClasses(props: {
+  ownTeam: boolean;
+  players: PlayerInfo[];
+}) {
+  const { ownTeam, players } = props;
 
-  // This will map the team class names to display names and state keys
+  // Find the player who is the current player (IsMe === true)
+  const findPlayer = () => {
+    return players.find((player) => player.IsMe);
+  };
+
+  const currentPlayer = findPlayer();
+  const myTeam = currentPlayer ? currentPlayer.Team : null; // Assuming 'team' is the team identifier, adjust if necessary
+
+  // Determine which team's players to work with (own team or opponent's)
+  const teamPlayers = ownTeam
+    ? players.filter((player) => player.Team === myTeam) // Filter players on the same team as the current player
+    : players.filter((player) => player.Team !== myTeam && player.Team !== null); // Filter players from the opposing team
+
+  // Define the class data to map and count players in each class
   const classData = [
-    { name: 'Pyro', countKey: 'PyroCount' },
-    { name: 'Soldier', countKey: 'SoldierCount' },
-    { name: 'Heavy', countKey: 'HeavyCount' },
-    { name: 'Spy', countKey: 'SpyCount' },
-    { name: 'Sniper', countKey: 'SniperCount' },
-    { name: 'Scout', countKey: 'ScoutCount' },
-    { name: 'Demoman', countKey: 'DemomanCount' },
-    { name: 'Engineer', countKey: 'EngineerCount' },
-    { name: 'Medic', countKey: 'MedicCount' },
+    { name: 'Pyro', key: 'Pyro' },
+    { name: 'Soldier', key: 'Soldier' },
+    { name: 'Heavy', key: 'Heavy' },
+    { name: 'Spy', key: 'Spy' },
+    { name: 'Sniper', key: 'Sniper' },
+    { name: 'Scout', key: 'Scout' },
+    { name: 'Demoman', key: 'Demoman' },
+    { name: 'Engineer', key: 'Engineer' },
+    { name: 'Medic', key: 'Medic' },
   ];
 
-  // Create the list of issues (classes with 0 players or more than 2 players)
+  // Define a type for classCounts to avoid the TypeScript error
+  type ClassCounts = {
+    [key: string]: number;
+  };
+
+  // Count the number of players in each class
+  const classCounts: ClassCounts = classData.reduce((counts, classInfo) => {
+    const count = teamPlayers.filter((player) => player.TF2Class === classInfo.key).length;
+    return { ...counts, [classInfo.key]: count };
+  }, {} as ClassCounts);
+
+  // Identify issues (classes with 0 or more than 3 players)
   const issues = classData
     .filter(
       (teamClass) =>
-        teamClassFeedback[teamClass.countKey] === 0 ||
-        teamClassFeedback[teamClass.countKey] > 3,
+        classCounts[teamClass.key] === 0 || classCounts[teamClass.key] > 3,
     )
     .map((teamClass) => {
-      const count = teamClassFeedback[teamClass.countKey];
+      const count = classCounts[teamClass.key];
       if (count === 0) {
         return (
-          <span key={teamClass.name}>
-            <strong>{teamClass.name}</strong> has no players
+          <span key={`no-player-${teamClass.name}`}>
+            Missing <strong>{teamClass.name}</strong>
           </span>
         );
       }
       return (
-        <span key={teamClass.name}>
-          <strong>{teamClass.name}</strong> has too many players ({count})
+        <span key={`too-many-${teamClass.name}`}>
+          Too many <strong>{teamClass.name}</strong> ({count})
         </span>
       );
     });
@@ -60,7 +86,7 @@ function BottomBoxTeamClassFeedback() {
         fontFamily: 'Arial, sans-serif',
       }}
     >
-      {teamClassFeedback ? (
+      {teamPlayers.length > 0 ? (
         <>
           {/* Left Side: Display the team classes with badges in a grid layout */}
           <div style={{ flex: 1, paddingLeft: '10px', paddingTop: '10px' }}>
@@ -73,7 +99,7 @@ function BottomBoxTeamClassFeedback() {
               }}
             >
               {classData.map((teamClass) => {
-                const count = teamClassFeedback[teamClass.countKey];
+                const count = classCounts[teamClass.key] || 0;
                 const textColor = '#fff'; // White text for contrast
 
                 return (
@@ -135,7 +161,7 @@ function BottomBoxTeamClassFeedback() {
             {issues.length > 0 ? (
               <ul style={{ paddingLeft: '20px' }}>
                 {issues.map((issue) => (
-                  <li key={String(issue)} style={{ marginBottom: '5px' }}>
+                  <li key={issue.key} style={{ marginBottom: '5px' }}>
                     {issue}
                   </li>
                 ))}
@@ -148,10 +174,10 @@ function BottomBoxTeamClassFeedback() {
           </div>
         </>
       ) : (
-        <p>- No team feedback has been calculated yet! -</p>
+        <p>- No team players have been found! -</p>
       )}
     </div>
   );
 }
 
-export default BottomBoxTeamClassFeedback;
+export default BottomBoxTeamClasses;

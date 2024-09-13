@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import BottomBoxTeamClasses from '@components/footer/BottomBoxTeamClasses';
+import { PlayerInfo } from '@components/PlayerInfo';
 import { RconAppLogEntry } from '../RconAppLogEntry';
 import NavigationBar from './NavigationBar';
 import BottomBoxConsole from './BottomBoxConsole';
@@ -6,7 +8,6 @@ import BottomBoxAll from './BottomBoxAll';
 import BottomBoxChat from './BottomBoxChat';
 import BottomBoxFrags from './BottomBoxFrags';
 import { RconAppFragEntry } from '../RconAppFragEntry';
-import BottomBoxTeamClassFeedback from '@components/footer/BottomBoxTeamClassFeedback';
 
 const containerStyleOpen = {
   position: 'absolute',
@@ -38,8 +39,9 @@ export default function BottomBox(props: {
   consoleContent: RconAppLogEntry[];
   chatContent: RconAppLogEntry[];
   fragContent: RconAppFragEntry[];
+  players: PlayerInfo[];
 }) {
-  const { consoleContent, chatContent, fragContent } = props;
+  const { consoleContent, chatContent, fragContent, players } = props;
   const [selectedButton, setSelectedButton] = useState<string>('NONE');
 
   return (
@@ -58,9 +60,14 @@ export default function BottomBox(props: {
         <BottomBoxConsole logs={consoleContent} />
       )}
       {selectedButton === 'ALL' && <BottomBoxAll logs={consoleContent} />}
-      {selectedButton === 'CHAT' && <BottomBoxChat logs={[]} />}
+      {selectedButton === 'CHAT' && <BottomBoxChat logs={chatContent} />}
       {selectedButton === 'FRAGS' && <BottomBoxFrags frags={fragContent} />}
-      {selectedButton === 'TEAMCLASSES' && <BottomBoxTeamClassFeedback />}
+      {selectedButton === 'CLASSES-MINE' && (
+        <BottomBoxTeamClasses players={players} ownTeam />
+      )}
+      {selectedButton === 'CLASSES-OTHER' && (
+        <BottomBoxTeamClasses players={players} ownTeam={false} />
+      )}
     </div>
   );
 }
