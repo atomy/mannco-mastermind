@@ -177,10 +177,7 @@ function Main() {
   ]);
 
   useEffect(() => {
-    console.log('players var changed:');
-
     setTeamClassFeedback(getClassFeedback(players));
-    console.log(`result class-feedback: ${JSON.stringify(teamClassFeedback)}`);
   }, [players]);
 
   return (
