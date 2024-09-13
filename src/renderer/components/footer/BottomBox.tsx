@@ -6,13 +6,14 @@ import BottomBoxAll from './BottomBoxAll';
 import BottomBoxChat from './BottomBoxChat';
 import BottomBoxFrags from './BottomBoxFrags';
 import { RconAppFragEntry } from '../RconAppFragEntry';
+import BottomBoxTeamClassFeedback from '@components/footer/BottomBoxTeamClassFeedback';
 
 const containerStyleOpen = {
   position: 'absolute',
   bottom: 0,
   left: 0,
   width: '99vw',
-  height: '400px',
+  height: '320px',
   overflowY: 'scroll', // Add this to enable scrolling if the content exceeds the box height
   backgroundColor: '#5b7a8c',
   color: '#f5e7de',
@@ -42,7 +43,11 @@ export default function BottomBox(props: {
   const [selectedButton, setSelectedButton] = useState<string>('NONE');
 
   return (
-    <div style={selectedButton !== "NONE" ? containerStyleOpen : containerStyleClose}>
+    <div
+      style={
+        selectedButton !== 'NONE' ? containerStyleOpen : containerStyleClose
+      }
+    >
       <NavigationBar
         initialSelected={selectedButton}
         onSelectChange={(buttonName) => {
@@ -55,6 +60,7 @@ export default function BottomBox(props: {
       {selectedButton === 'ALL' && <BottomBoxAll logs={consoleContent} />}
       {selectedButton === 'CHAT' && <BottomBoxChat logs={[]} />}
       {selectedButton === 'FRAGS' && <BottomBoxFrags frags={fragContent} />}
+      {selectedButton === 'TEAMCLASSES' && <BottomBoxTeamClassFeedback />}
     </div>
   );
 }

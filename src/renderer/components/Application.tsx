@@ -6,6 +6,9 @@ import {
   RconAppLogListener,
   Tf2ClassRequestListener,
 } from '@main/window/listenerInterfaces';
+import { TeamClassFeedback } from '@components/TeamClassFeedback';
+import TeamClassContext from '@components/context/TeamClassContext';
+import getClassFeedback from '@components/helper/getClassFeedback';
 import PlayerTableComponent from './PlayerTableComponent';
 import { PlayerInfo } from './PlayerInfo';
 import { RconAppLogEntry } from './RconAppLogEntry';
@@ -22,6 +25,8 @@ function Main() {
   const [rconClientFrags, setRconClientFrags] = useState<RconAppFragEntry[]>(
     [],
   );
+  const [teamClassFeedback, setTeamClassFeedback] =
+    useState<TeamClassFeedback>(null);
 
   const refreshPlayers = useCallback((playerCollection: PlayerInfo[]) => {
     const currentTime = Math.floor(Date.now() / 1000);
@@ -129,7 +134,7 @@ function Main() {
           classNames: [],
           errorMessage: weaponDbConfigError,
           weaponEntityName: '',
-          killerSteamID: ''
+          killerSteamID: '',
         });
       } else {
         const weaponsData = JSON.parse(weaponsDbConfig);
@@ -142,10 +147,10 @@ function Main() {
         // );
         (window as any).electronAPI.sendTf2ClassResponse({
           error: false,
-          classNames: classNames,
+          classNames,
           errorMessage: '',
-          weaponEntityName: weaponEntityName,
-          killerSteamID: killerSteamID
+          weaponEntityName,
+          killerSteamID,
         });
       }
     };
@@ -171,21 +176,30 @@ function Main() {
     weaponsDbConfig,
   ]);
 
+  useEffect(() => {
+    console.log('players var changed:');
+
+    setTeamClassFeedback(getClassFeedback(players));
+    console.log(`result class-feedback: ${JSON.stringify(teamClassFeedback)}`);
+  }, [players]);
+
   return (
-    <div id="content">
-      <div className="player-list">
-        <h1 style={{ paddingLeft: '10px' }}>Current Players</h1>
-        <PlayerTableComponent
-          players={players}
-          handleAddBlacklistSave={handleAddBlacklistSave}
-        />
-        <BottomBox
-          consoleContent={rconClientLogs}
-          chatContent={rconClientLogs}
-          fragContent={rconClientFrags}
-        />
+    <TeamClassContext.Provider value={teamClassFeedback}>
+      <div id="content">
+        <div className="player-list">
+          <h1 style={{ paddingLeft: '10px' }}>Current Players</h1>
+          <PlayerTableComponent
+            players={players}
+            handleAddBlacklistSave={handleAddBlacklistSave}
+          />
+          <BottomBox
+            consoleContent={rconClientLogs}
+            chatContent={rconClientLogs}
+            fragContent={rconClientFrags}
+          />
+        </div>
       </div>
-    </div>
+    </TeamClassContext.Provider>
   );
 }
 
