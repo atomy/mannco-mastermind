@@ -16,6 +16,13 @@ Work in progress. There is a release-package available for download and run, it 
 - Warnings-functionality, display a warning about players on your blacklist or players having VAC bans
 - Reputation system for players, you can mark players as *bots*, *hackers*, *general-warning* or *+reputation* (local database)
 - Show country flag of players
+- Class balance analysation
+
+### Class intelligence
+
+Showing class proposition and "issues" in class balance for own and other team.
+
+![App overview](https://github.com/atomy/mannco-mastermind/blob/main/doc/screenshot-class-intelligence.png)
 
 # Installation
 
