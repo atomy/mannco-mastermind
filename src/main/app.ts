@@ -48,7 +48,12 @@ const currentSteamBanInformation: PlayerInfo[] = [];
 
 // Define the callback type
 type CallbackFunction = (error?: string | null) => void;
-type Tf2ClassCallback = (error: boolean, className: string[], weaponEntityName: string, killerSteamID: string) => void;
+type Tf2ClassCallback = (
+  error: boolean,
+  className: string[],
+  weaponEntityName: string,
+  killerSteamID: string,
+) => void;
 
 const SteamApi = require('steam-web');
 
@@ -127,10 +132,18 @@ const mapWeaponEntityToTFClass = (
 
     if (result.error) {
       callback(true, [], '', '');
+      console.log(
+        `*tf2-class-response* error while trying to resolve entity-name: ${weaponEntityName}`,
+      );
       logEntityNameToFile(weaponEntityName);
     } else {
       // console.log(`callback: ${result.classNames}, ${result.weaponEntityName}, ${result.killerSteamID}`)
-      callback(false, result.classNames, result.weaponEntityName, result.killerSteamID);
+      callback(
+        false,
+        result.classNames,
+        result.weaponEntityName,
+        result.killerSteamID,
+      );
     }
   });
 };
@@ -275,33 +288,33 @@ const sendApplicationFragData = (fragMessage: RconAppFragEntry) => {
   const windows = BrowserWindow.getAllWindows();
 
   // Call func and supply callback, we have to work with a more extensive payload here cause else we may run into race-conditions leading to falsely data
-  mapWeaponEntityToTFClass(fragMessage.Weapon, fragMessage.KillerSteamID, (error, tfClasses, weaponEntityName, killerSteamID) => {
-    if (error) {
-      console.log(
-        `FAILED to map frag of entity-name ${weaponEntityName} to class!!!`,
-      );
-    } else if (tfClasses.length > 1) {
-      // console.log(
-      //   `Entity-name ${weaponEntityName} matches multiple classes: ${JSON.stringify(tfClasses)}`,
-      // );
-    } else {
-      // console.log(
-      //   `[${killerSteamID}][${getPlayerNameForSteam(killerSteamID)}] Mapped frag of entity-name ${weaponEntityName} to class ${tfClasses[0]}`,
-      // );
-      assignPlayerClass(
-        killerSteamID,
-        tfClasses[0],
-        weaponEntityName,
-      );
-    }
+  mapWeaponEntityToTFClass(
+    fragMessage.Weapon,
+    fragMessage.KillerSteamID,
+    (error, tfClasses, weaponEntityName, killerSteamID) => {
+      if (error) {
+        console.log(
+          `FAILED to map frag of entity-name ${weaponEntityName} to class!!!`,
+        );
+      } else if (tfClasses.length > 1) {
+        // console.log(
+        //   `Entity-name ${weaponEntityName} matches multiple classes: ${JSON.stringify(tfClasses)}`,
+        // );
+      } else {
+        // console.log(
+        //   `[${killerSteamID}][${getPlayerNameForSteam(killerSteamID)}] Mapped frag of entity-name ${weaponEntityName} to class ${tfClasses[0]}`,
+        // );
+        assignPlayerClass(killerSteamID, tfClasses[0], weaponEntityName);
+      }
 
-    [fragMessage.KillerClass] = tfClasses;
+      [fragMessage.KillerClass] = tfClasses;
 
-    // Send data to each window
-    windows.forEach((w) => {
-      w.webContents.send('rcon-appfrag', fragMessage);
-    });
-  });
+      // Send data to each window
+      windows.forEach((w) => {
+        w.webContents.send('rcon-appfrag', fragMessage);
+      });
+    },
+  );
 };
 
 // updateSteamProfileDataForPlayers updates steam info to current player-list
