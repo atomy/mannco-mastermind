@@ -5,7 +5,6 @@ import Link from '@mui/material/Link';
 import WarningIcon from '@mui/icons-material/Warning';
 import { styled } from '@mui/system';
 import getCountryName from '@components/GetCountryName';
-import Playtime from './Playtime';
 import SteamAccountAge from '@components/SteamAccountAge';
 import PlayerWarning from '@components/PlayerWarning';
 import PlayerAction from '@components/PlayerAction';
@@ -13,6 +12,11 @@ import { PlayerInfo } from '@components/PlayerInfo';
 import AnimatedImage from '@components/AnimatedImage';
 import SteamAvatar from '@components/SteamAvatar';
 import ClassIcon from '@components/ClassIcon';
+import sniperImage from '@assets/banners/sniper.png';
+import spyImage from '@assets/banners/spy.png';
+import faImage from '@assets/banners/fa.png';
+import ownImage from '@assets/banners/own.png';
+import Playtime from './Playtime';
 
 const StyledTableCell = styled(TableCell)({
   paddingTop: '4px',
@@ -30,25 +34,57 @@ export default function PlayerTableRow(props: {
 }) {
   const { row, handleAddBlacklistSave } = props;
 
-  // Determine background-color of row based on various player attributes.
-  const rowBackgroundColor = (): string => {
+  const rowStyle = (): any => {
     if (row.IsMe) {
-      return '#768a88';
+      return {
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url(${ownImage})`,
+        backgroundSize: 'contain',
+        backgroundColor: '#768a88',
+      };
     }
 
     if (['bot', 'cheat'].includes(row.PlayerWarningType)) {
-      return '#bd3b3b';
+      return {
+        backgroundColor: '#bd3b3b',
+      };
     }
 
     if (['warn'].includes(row.PlayerWarningType)) {
-      return '#ef9849';
+      return {
+        backgroundColor: '#ef9849',
+      };
     }
 
     if (['plusrep'].includes(row.PlayerWarningType)) {
-      return '#008000';
+      return {
+        backgroundColor: '#008000',
+      };
     }
 
-    return 'transparent';
+    if (['sniper'].includes(row.PlayerWarningType)) {
+      return {
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url(${sniperImage})`,
+        backgroundSize: 'contain',
+      };
+    }
+
+    if (['spy'].includes(row.PlayerWarningType)) {
+      return {
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url(${spyImage})`,
+        backgroundSize: 'contain',
+      };
+    }
+
+    if (['fa'].includes(row.PlayerWarningType)) {
+      return {
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url(${faImage})`,
+        backgroundSize: 'contain',
+      };
+    }
+
+    return {
+      backgroundColor: 'transparent',
+    };
   };
 
   const countryFlagSrc = row.SteamCountryCode
@@ -65,10 +101,7 @@ export default function PlayerTableRow(props: {
 
   // @ts-ignore
   return (
-    <TableRow
-      sx={{ '& > *': { borderBottom: 'unset' } }}
-      style={{ backgroundColor: rowBackgroundColor() }}
-    >
+    <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} style={rowStyle()}>
       <StyledTableCell component="th" scope="row">
         {/* Animated Country Flag */}
         <AnimatedImage
@@ -78,8 +111,8 @@ export default function PlayerTableRow(props: {
           width="30px"
           style={{ paddingRight: '4px' }}
         />
-        <ClassIcon player={row}></ClassIcon>
-        <SteamAvatar player={row}></SteamAvatar>
+        <ClassIcon player={row} />
+        <SteamAvatar player={row} />
         <span style={{ paddingLeft: '10px' }}>{row.Name}</span>
       </StyledTableCell>
       <StyledTableCell align="right">
