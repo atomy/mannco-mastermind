@@ -1,11 +1,23 @@
 import React from 'react';
-import Blacklist from '@assets/icons/blacklist.png';
-import { PlayerInfo } from './PlayerInfo';
-
+import DotWithTooltip from '@components/DotWithTooltip';
 import VacBanned from './VacBanned';
+import { PlayerInfo } from './PlayerInfo';
 
 export default function PlayerWarning(props: { player: PlayerInfo }) {
   const { player } = props;
+
+  // Determine the color based on PlayerWarningType
+  const getDotColor = (warningType: string | undefined) => {
+    if (['cheat', 'bot'].includes(warningType ?? '')) {
+      return 'red';
+    }
+    if (['warn', 'spy', 'sniper', 'minusrep'].includes(warningType ?? '')) {
+      return 'yellow';
+    }
+    return null;
+  };
+
+  const dotColor = getDotColor(player.PlayerWarningType);
 
   return (
     (player.SteamBanDaysSinceLastBan > 0 && (
@@ -14,16 +26,6 @@ export default function PlayerWarning(props: { player: PlayerInfo }) {
         number={player.SteamBanDaysSinceLastBan}
       />
     )) ||
-    (player.PlayerWarningType &&
-      ['cheat', 'bot', 'warn', 'spy', 'sniper', 'fa'].includes(
-        player.PlayerWarningType,
-      ) && (
-        <img
-          width="20px"
-          title={`Type: '${player.PlayerWarningType}' Reason: '${player.PlayerWarningReason}'`}
-          src={Blacklist}
-          alt={`Type: '${player.PlayerWarningType}' Reason: '${player.PlayerWarningReason}'`}
-        />
-      ))
+    (dotColor && <DotWithTooltip player={player} color={dotColor} />)
   );
 }

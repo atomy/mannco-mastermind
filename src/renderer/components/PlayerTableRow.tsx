@@ -75,7 +75,7 @@ export default function PlayerTableRow(props: {
       };
     }
 
-    if (['fa'].includes(row.PlayerWarningType)) {
+    if (['minusrep'].includes(row.PlayerWarningType)) {
       return {
         backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url(${faImage})`,
         backgroundSize: 'contain',
