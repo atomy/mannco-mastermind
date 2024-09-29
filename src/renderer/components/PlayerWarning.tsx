@@ -1,7 +1,7 @@
 import React from 'react';
+import Blacklist from '@assets/icons/blacklist.png';
 import { PlayerInfo } from './PlayerInfo';
 
-import Blacklist from '@assets/icons/blacklist.png';
 import VacBanned from './VacBanned';
 
 export default function PlayerWarning(props: { player: PlayerInfo }) {
@@ -15,7 +15,9 @@ export default function PlayerWarning(props: { player: PlayerInfo }) {
       />
     )) ||
     (player.PlayerWarningType &&
-      ['cheat', 'bot', 'warn'].includes(player.PlayerWarningType) && (
+      ['cheat', 'bot', 'warn', 'spy', 'sniper', 'fa'].includes(
+        player.PlayerWarningType,
+      ) && (
         <img
           width="20px"
           title={`Type: '${player.PlayerWarningType}' Reason: '${player.PlayerWarningReason}'`}
