@@ -34,6 +34,7 @@ const getCountryName = (countryCode: string) => {
     bg: 'Bulgaria',
     bf: 'Burkina Faso',
     bi: 'Burundi',
+    cc: 'Cocos (Keeling) Islands',
     cv: 'Cabo Verde',
     kh: 'Cambodia',
     cm: 'Cameroon',
