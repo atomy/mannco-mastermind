@@ -23,12 +23,12 @@ export default function PlayerAction(props: {
   const handlePlayerAddBlacklistActionClose = () =>
     setPlayerAddBlacklistActionOpen(false);
 
-  // Determine the color based on whether player.PlayerWarningType is not undefined
+  // Determine the color based on whether player.PlayerReputationType is not undefined
   const iconColor =
-    player.PlayerWarningType !== undefined ? '#6b6a65' : '#913a1e';
+    player.PlayerReputationType !== undefined ? '#6b6a65' : '#913a1e';
 
-  // Enable the IconButton only if PlayerWarningType is undefined
-  const isDisabled = player.PlayerWarningType !== undefined;
+  // Enable the IconButton only if PlayerReputationType is undefined
+  const isDisabled = player.PlayerReputationType !== undefined;
 
   return (
     <>

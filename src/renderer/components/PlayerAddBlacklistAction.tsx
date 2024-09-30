@@ -69,6 +69,7 @@ export default function PlayerAddBlacklistAction({
             </MenuItem>
             <MenuItem value="bot">Bot</MenuItem>
             <MenuItem value="cheat">Cheat</MenuItem>
+            <MenuItem value="warn">Warn</MenuItem>
             <MenuItem value="minusrep">-Rep</MenuItem>
             <MenuItem value="sniper">-SniperAllDay</MenuItem>
             <MenuItem value="spy">-SpyAllDay</MenuItem>

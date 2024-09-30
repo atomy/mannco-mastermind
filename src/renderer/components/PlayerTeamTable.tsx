@@ -43,7 +43,7 @@ export default function PlayerTeamTable({ players, handleAddBlacklistSave }: Pla
             <StyledTableCell align="right">
               Playtime | AccountAge
             </StyledTableCell>
-            <StyledTableCell align="right">Warnings</StyledTableCell>
+            <StyledTableCell align="right">Reputation</StyledTableCell>
             <StyledTableCell align="right">Actions</StyledTableCell>
           </TableRow>
         </TableHead>

@@ -39,7 +39,7 @@ export default function DotWithTooltip(props: { player: PlayerInfo, color: strin
             whiteSpace: 'nowrap',
           }}
         >
-          [{player.PlayerWarningType}] {player.PlayerWarningReason}
+          [{player.PlayerReputationType}] {player.PlayerReputationInfo}
         </div>
       )}
     </div>

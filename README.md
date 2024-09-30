@@ -13,7 +13,7 @@ Work in progress. There is a release-package available for download and run, it 
 - Provide link to steam-profile of players
 - Show connection-stats for player, ping, loss
 - Display steam playtime and account age of player
-- Warnings-functionality, display a warning about players on your blacklist or players having VAC bans
+- Player-Reputation-functionality, mark players for good/bad behaviour and display that info next to their name, also detect players having VAC bans
 - Reputation system for players, you can mark players as *bots*, *hackers*, *general-warning* or *+reputation* (local database)
 - Show country flag of players
 - Class balance analysation

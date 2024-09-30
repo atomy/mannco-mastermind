@@ -2,10 +2,10 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import { ChildProcessWithoutNullStreams } from 'node:child_process';
 import { PlayerInfo } from '@components/PlayerInfo';
 import {
-  loadPlayerWarnings,
+  loadPlayerRep,
   PlayerTF2ClassInfo,
-  PlayerWarning,
-} from '@main/playerWarnings';
+  PlayerReputation,
+} from '@main/playerRep';
 import fs from 'fs';
 import crypto from 'crypto';
 import https from 'https';
@@ -29,14 +29,14 @@ let steamTF2UpdateTimer: NodeJS.Timeout | null = null;
 // eslint-disable-next-line no-undef
 let steamBanUpdateTimer: NodeJS.Timeout | null = null;
 // eslint-disable-next-line no-undef
-let playerWarningsUpdateTime: NodeJS.Timeout | null = null;
+let playerReputationUpdateTime: NodeJS.Timeout | null = null;
 let steamProfileUpdatePlayerList: string[] = [];
 let steamTF2UpdatePlayerList: string[] = [];
 let steamBanUpdatePlayerList: string[] = [];
-let playerWarnings: PlayerWarning[] = [];
+let playerReputations: PlayerReputation[] = [];
 const playerTF2Classes: PlayerTF2ClassInfo[] = [];
 
-const playerWarningsFilepath = './playerWarnings.json';
+const playerReputationDbFilepath = './playerRepDatabase.json';
 const tf2RconFilepath = './tf2-rcon.exe';
 const tf2RconDownloadSite =
   'https://github.com/atomy/TF2-RCON-MISC/releases/download/10.1.0/main-windows-amd64.exe';
@@ -148,29 +148,29 @@ const mapWeaponEntityToTFClass = (
   });
 };
 
-// addPlayerBlacklist add entry to blacklist
-const addPlayerBlacklist = (
+// addPlayerReputation add entry for players reputation
+const addPlayerReputation = (
   steamid: string,
   type: string,
   reason: string,
 ): void => {
   console.log(
-    `[main.ts] addPlayerBlacklist() ${steamid} -- ${type} -- ${reason}`,
+    `[main.ts] addPlayerReputation() ${steamid} -- ${type} -- ${reason}`,
   );
 
   // Check if the file exists, and if not, create an empty file
-  if (!fs.existsSync(playerWarningsFilepath)) {
+  if (!fs.existsSync(playerReputationDbFilepath)) {
     console.log('[main.ts] File does not exist. Creating a new file...');
     fs.writeFileSync(
-      playerWarningsFilepath,
+      playerReputationDbFilepath,
       JSON.stringify({ players: [] }, null, 2),
       'utf8',
     );
   }
 
-  fs.readFile(playerWarningsFilepath, 'utf8', (err, data) => {
+  fs.readFile(playerReputationDbFilepath, 'utf8', (err, data) => {
     if (err) {
-      console.error('[main.ts] addPlayerBlacklist() Error reading file: ', err);
+      console.error('[main.ts] addPlayerReputation() Error reading file: ', err);
       return;
     }
 
@@ -181,12 +181,12 @@ const addPlayerBlacklist = (
       if (json.players && json.players.length > 0) {
         // Check for duplicate steamid
         const index = json.players.findIndex(
-          (player: PlayerWarning) => player.steamid === steamid,
+          (player: PlayerReputation) => player.steamid === steamid,
         );
 
         if (index !== -1) {
           console.log(
-            `[main.ts] addPlayerBlacklist() Error - Player with steamid ${steamid} already exists.`,
+            `[main.ts] addPlayerReputation() Error - Player with steamid ${steamid} already exists.`,
           );
           return; // Exit if duplicate is found
         }
@@ -196,41 +196,41 @@ const addPlayerBlacklist = (
       json.players.push({ steamid, type, reason });
 
       fs.writeFile(
-        playerWarningsFilepath,
+        playerReputationDbFilepath,
         JSON.stringify(json, null, 2),
         'utf8',
         (error) => {
           if (error) {
             console.error(
-              '[main.ts] addPlayerBlacklist() Error writing file: ',
+              '[main.ts] addPlayerReputation() Error writing file: ',
               error,
             );
           } else {
             console.log(
-              '[main.ts] addPlayerBlacklist() Successfully added player entry.',
+              '[main.ts] addPlayerReputation() Successfully added player entry.',
             );
           }
         },
       );
     } catch (error) {
       console.error(
-        '[main.ts] addPlayerBlacklist() Error parsing JSON: ',
+        '[main.ts] addPlayerReputation() Error parsing JSON: ',
         error,
       );
     }
   });
 };
 
-// Listen for *blacklist-player* messages over IPC.
-ipcMain.on('blacklist-player', async (event: Electron.Event, arg) => {
-  console.log(`[main.ts][IPC][*blacklist-player*] ${JSON.stringify(arg)}`);
-  playerWarnings.push({
+// Listen for *add-player-reputation* messages over IPC.
+ipcMain.on('add-player-reputation', async (event: Electron.Event, arg) => {
+  console.log(`[main.ts][IPC][*add-player-reputation*] ${JSON.stringify(arg)}`);
+  playerReputations.push({
     steamid: arg.steamid,
     reason: arg.reason,
     type: arg.type,
   });
 
-  addPlayerBlacklist(arg.steamid, arg.type, arg.reason);
+  addPlayerReputation(arg.steamid, arg.type, arg.reason);
 });
 
 const getPlayerNameForSteam = (steamID: string) => {
@@ -356,17 +356,17 @@ const updateSteamProfileDataForPlayers = (
   }
 };
 
-// updatePlayerWarningData retrieve player-warnings and store it in memory
-const updatePlayerWarningData = () => {
-  loadPlayerWarnings(playerWarningsFilepath, (err, players) => {
+// updatePlayerReputationData retrieve player-reputation-info and store it in memory
+const updatePlayerReputationData = () => {
+  loadPlayerRep(playerReputationDbFilepath, (err, players) => {
     if (err) {
       // Handle error
-      console.error(`updatePlayerWarningData() ERROR: ${err}`);
+      console.error(`updatePlayerReputationData() ERROR: ${err}`);
     } else if (players) {
       // Handle success
-      playerWarnings = players;
+      playerReputations = players;
       console.log(
-        `updatePlayerWarningData(): Loaded '${playerWarnings.length}' player-warnings from file!`,
+        `updatePlayerReputationData(): Loaded '${playerReputations.length}' player-reputations from file!`,
       );
     }
   });
@@ -601,10 +601,10 @@ const updateSteamInfo = () => {
 const updatePlayerWarns = () => {
   // Enrich current players with steam-cache-data if available.
   currentPlayerCollection.forEach((player) => {
-    playerWarnings.forEach((playerWarning) => {
-      if (player.SteamID === playerWarning.steamid) {
-        player.PlayerWarningReason = playerWarning.reason;
-        player.PlayerWarningType = playerWarning.type;
+    playerReputations.forEach((playerReputation) => {
+      if (player.SteamID === playerReputation.steamid) {
+        player.PlayerReputationInfo = playerReputation.reason;
+        player.PlayerReputationType = playerReputation.type;
       }
     });
   });
@@ -954,20 +954,20 @@ const startSteamBanUpdater = () => {
   }, 10000);
 };
 
-const startPlayerWarningsUpdateTimer = () => {
+const startPlayerReputationUpdateTimer = () => {
   // Check if the file exists
-  const exists = fs.existsSync(playerWarningsFilepath);
+  const exists = fs.existsSync(playerReputationDbFilepath);
 
   if (!exists) {
-    console.error(`File ${playerWarningsFilepath} does not exist!`);
+    console.error(`File ${playerReputationDbFilepath} does not exist!`);
     return;
   }
 
   // Regularly update steam-bans.
-  playerWarningsUpdateTime = setInterval(() => {
-    console.log('[main.ts] Updating player-warning data...');
-    updatePlayerWarningData();
-    console.log('[main.ts] Updating player-warning data...DONE');
+  playerReputationUpdateTime = setInterval(() => {
+    console.log('[main.ts] Updating player-reputation data...');
+    updatePlayerReputationData();
+    console.log('[main.ts] Updating player-reputation data...DONE');
   }, 60000);
 };
 
@@ -1000,7 +1000,7 @@ app.on('ready', () => {
   startSteamProfileUpdater();
   startSteamTF2Updater();
   startSteamBanUpdater();
-  startPlayerWarningsUpdateTimer();
+  startPlayerReputationUpdateTimer();
   createAppWindow();
 });
 
@@ -1071,9 +1071,9 @@ app.on('before-quit', () => {
     steamBanUpdateTimer = null;
   }
 
-  if (playerWarningsUpdateTime) {
-    clearInterval(playerWarningsUpdateTime);
-    playerWarningsUpdateTime = null;
+  if (playerReputationUpdateTime) {
+    clearInterval(playerReputationUpdateTime);
+    playerReputationUpdateTime = null;
   }
 });
 
