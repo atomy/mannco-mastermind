@@ -8,21 +8,21 @@ import MenuItem from '@mui/material/MenuItem';
 import { FormControl, Select } from '@mui/material';
 import { PlayerInfo } from './PlayerInfo';
 
-interface PlayerAddBlacklistActionProps {
+interface PlayerSetReputationActionProps {
   player: PlayerInfo;
   open: boolean;
   handleClose: () => void; // This denotes a function that doesn't take any arguments and doesn't return anything
   handleSave: (steamid: string, type: string, reason: string) => void;
 }
 
-export default function PlayerAddBlacklistAction({
+export default function PlayerSetReputationAction({
   player,
   open,
   handleClose,
   handleSave,
-}: PlayerAddBlacklistActionProps) {
-  const [reason, setReason] = useState('');
-  const [type, setType] = useState('');
+}: PlayerSetReputationActionProps) {
+  const [reason, setReason] = useState(player.PlayerReputationInfo || '');
+  const [type, setType] = useState(player.PlayerReputationType || '');
 
   const handleSaveClose = () => {
     // Placeholder for saving data
@@ -53,7 +53,7 @@ export default function PlayerAddBlacklistAction({
     >
       <Box sx={style}>
         <Typography id="modal-modal-title" variant="h6" component="h2">
-          Add marker to player `{player.Name}`
+          Set players reputation `{player.Name}`
         </Typography>
         <Typography component="h4">(Steam: {player.SteamID})</Typography>
         <FormControl fullWidth>
@@ -64,16 +64,14 @@ export default function PlayerAddBlacklistAction({
             inputProps={{ 'aria-label': 'Without label' }}
             sx={{ mt: 2, mb: 1 }}
           >
-            <MenuItem value="" disabled>
-              Select Type
-            </MenuItem>
-            <MenuItem value="bot">Bot</MenuItem>
-            <MenuItem value="cheat">Cheat</MenuItem>
-            <MenuItem value="warn">Warn</MenuItem>
+            <MenuItem value="" disabled>Select Type</MenuItem>
+            <MenuItem value="plusrep">+Rep</MenuItem>
+            <MenuItem value="bot">-Bot</MenuItem>
+            <MenuItem value="cheat">-Cheat</MenuItem>
+            <MenuItem value="warn">-Warn</MenuItem>
             <MenuItem value="minusrep">-Rep</MenuItem>
             <MenuItem value="sniper">-SniperAllDay</MenuItem>
             <MenuItem value="spy">-SpyAllDay</MenuItem>
-            <MenuItem value="plusrep">+Rep</MenuItem>
           </Select>
           <TextField
             label="Reason"

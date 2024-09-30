@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { IconButton } from '@mui/material';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import EditIcon from '@mui/icons-material/Edit';
 import { PlayerInfo } from './PlayerInfo';
-import PlayerAddBlacklistAction from './PlayerAddBlacklistAction';
+import PlayerSetReputationAction from './PlayerSetReputationAction';
 
 export default function PlayerAction(props: {
   player: PlayerInfo;
@@ -24,16 +24,12 @@ export default function PlayerAction(props: {
     setPlayerAddBlacklistActionOpen(false);
 
   // Determine the color based on whether player.PlayerReputationType is not undefined
-  const iconColor =
-    player.PlayerReputationType !== undefined ? '#6b6a65' : '#913a1e';
-
-  // Enable the IconButton only if PlayerReputationType is undefined
-  const isDisabled = player.PlayerReputationType !== undefined;
+  const iconColor = player.IsMe ? '#6b6a65' : '#913a1e';
 
   return (
     <>
       <IconButton
-        disabled={isDisabled}
+        disabled={player.IsMe}
         aria-label="delete"
         size="small"
         onClick={handlePlayerAddBlacklistActionOpen}
@@ -41,9 +37,9 @@ export default function PlayerAction(props: {
           minWidth: 24,
         }}
       >
-        <AddCircleIcon sx={{ color: iconColor }} />
+        <EditIcon sx={{ color: iconColor }} />
       </IconButton>
-      <PlayerAddBlacklistAction
+      <PlayerSetReputationAction
         player={player}
         open={playerAddBlacklistActionOpen}
         handleClose={handlePlayerAddBlacklistActionClose}

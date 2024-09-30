@@ -170,12 +170,15 @@ const addPlayerReputation = (
 
   fs.readFile(playerReputationDbFilepath, 'utf8', (err, data) => {
     if (err) {
-      console.error('[main.ts] addPlayerReputation() Error reading file: ', err);
+      console.error(
+        '[main.ts] addPlayerReputation() Error reading file: ',
+        err,
+      );
       return;
     }
 
     try {
-      const json = JSON.parse(data);
+      let json = JSON.parse(data);
 
       // check if players exists and is greater than 0
       if (json.players && json.players.length > 0) {
@@ -184,16 +187,32 @@ const addPlayerReputation = (
           (player: PlayerReputation) => player.steamid === steamid,
         );
 
+        // Player already exists, let's edit him
         if (index !== -1) {
+          json.players[index] = { steamid, type, reason };
           console.log(
-            `[main.ts] addPlayerReputation() Error - Player with steamid ${steamid} already exists.`,
+            `[main.ts] addPlayerReputation() Edited player steamid ${steamid}: ${json.players[index]}`,
           );
-          return; // Exit if duplicate is found
+        } else {
+          // Add the new player entry
+          json.players.push({ steamid, type, reason });
+          console.log(
+            `[main.ts] addPlayerReputation() Added player steamid ${steamid}: ${{ steamid, type, reason }}`,
+          );
         }
+      } else {
+        const newPlayersData: {
+          players: { steamid: string; type: string; reason: string }[];
+        } = {
+          players: [],
+        };
+        // Add the new player entry
+        newPlayersData.players.push({ steamid, type, reason });
+        console.log(
+          `[main.ts] addPlayerReputation() Created new db file with player: steamid ${steamid}: ${JSON.stringify({ steamid, type, reason })}`,
+        );
+        json = newPlayersData;
       }
-
-      // Add the new player entry
-      json.players.push({ steamid, type, reason });
 
       fs.writeFile(
         playerReputationDbFilepath,
@@ -358,6 +377,14 @@ const updateSteamProfileDataForPlayers = (
 
 // updatePlayerReputationData retrieve player-reputation-info and store it in memory
 const updatePlayerReputationData = () => {
+  if (!fs.existsSync(playerReputationDbFilepath)) {
+    // File does not exist, log a message and exit early
+    console.log(
+      `updatePlayerReputationData() WARN: File ${playerReputationDbFilepath} does not exist. Skipping.`,
+    );
+    return;
+  }
+
   loadPlayerRep(playerReputationDbFilepath, (err, players) => {
     if (err) {
       // Handle error

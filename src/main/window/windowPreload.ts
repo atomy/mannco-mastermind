@@ -50,7 +50,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on(
       'get-tf2-class',
       // eslint-disable-next-line no-undef
-      (event: Electron.Event, weaponEntityName: string, killerSteamID: string) => {
+      (
+        event: Electron.Event,
+        weaponEntityName: string,
+        killerSteamID: string,
+      ) => {
         func(weaponEntityName, killerSteamID);
       },
     );
@@ -62,6 +66,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.removeAllListeners(channel);
   },
   sendBlacklist: (steamid: string, type: string, reason: string) => {
-    ipcRenderer.send('blacklist-player', steamid, type, reason);
+    ipcRenderer.send('add-player-reputation', steamid, type, reason);
   },
 });
