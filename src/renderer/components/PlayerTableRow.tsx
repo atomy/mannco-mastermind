@@ -20,6 +20,7 @@ import warnImage from '@assets/banners/warn.png';
 import plusrepImage from '@assets/banners/plusrep.png';
 import cheatImage from '@assets/banners/cheat.png';
 import Playtime from './Playtime';
+import getCountryCode from '@components/GetCountryCode';
 
 const StyledTableCell = styled(TableCell)({
   paddingTop: '4px',
@@ -104,7 +105,7 @@ export default function PlayerTableRow(props: {
     : 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Flag_of_None.svg/2560px-Flag_of_None.svg.png';
 
   const altText = row.SteamCountryCode
-    ? `Players Country: ${row.SteamCountryCode}`
+    ? `Players Country: ${getCountryCode(row.SteamCountryCode)}`
     : 'Players country: Unknown';
 
   const titleText = row.SteamCountryCode

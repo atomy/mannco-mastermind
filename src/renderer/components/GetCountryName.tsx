@@ -69,6 +69,7 @@ const getCountryName = (countryCode: string) => {
     fj: 'Fiji',
     fi: 'Finland',
     fr: 'France',
+    fx: 'France',
     gf: 'French Guiana',
     pf: 'French Polynesia',
     ga: 'Gabon',
