@@ -134,11 +134,11 @@ export default function PlayerTableRow(props: {
           rel="noreferrer"
           href={`https://steamcommunity.com/profiles/${row.SteamID}`}
           style={{
-            color: row.SteamVisible < 3 ? '#34302d' : '',
+            color: row.SteamVisible < 3 ? 'red' : '',
           }}
           title={row.SteamVisible < 3 ? 'Steam-Profile is private' : ''}
         >
-          Profile
+          {row.SteamVisible < 3 ? 'Private' : 'Profile'}
         </Link>
       </StyledTableCell>
       <StyledTableCell align="right">
