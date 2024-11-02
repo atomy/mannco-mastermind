@@ -19,8 +19,8 @@ import ownImage from '@assets/banners/own.png';
 import warnImage from '@assets/banners/warn.png';
 import plusrepImage from '@assets/banners/plusrep.png';
 import cheatImage from '@assets/banners/cheat.png';
-import Playtime from './Playtime';
 import getCountryCode from '@components/GetCountryCode';
+import Playtime from './Playtime';
 
 const StyledTableCell = styled(TableCell)({
   paddingTop: '4px',
@@ -115,8 +115,16 @@ export default function PlayerTableRow(props: {
   // @ts-ignore
   return (
     <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} style={rowStyle()}>
-      <StyledTableCell component="th" scope="row">
-        {/* Animated Country Flag */}
+      <StyledTableCell
+        component="th"
+        scope="row"
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          maxWidth: '300px',
+        }}
+      >
         <AnimatedImage
           src={countryFlagSrc}
           alt={altText}
@@ -126,7 +134,13 @@ export default function PlayerTableRow(props: {
         />
         <ClassIcon player={row} />
         <SteamAvatar player={row} />
-        <span style={{ paddingLeft: '10px' }}>{row.Name}</span>
+        <span
+          style={{
+            paddingLeft: '10px',
+          }}
+        >
+          {row.Name}
+        </span>
       </StyledTableCell>
       <StyledTableCell align="right">
         <Link
