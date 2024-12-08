@@ -33,7 +33,7 @@ export default function PlayerTeamTable({ players, handleAddBlacklistSave }: Pla
         <TableHead>
           <TableRow>
             <StyledTableCell>Name</StyledTableCell>
-            <StyledTableCell align="right">Steam</StyledTableCell>
+            <StyledTableCell align="left">Steam</StyledTableCell>
             <StyledTableCell align="right">
               P/L
               <Tooltip title="Ping in ms / Packetloss">

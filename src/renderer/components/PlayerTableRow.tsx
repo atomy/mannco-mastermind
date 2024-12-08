@@ -142,7 +142,7 @@ export default function PlayerTableRow(props: {
           {row.Name}
         </span>
       </StyledTableCell>
-      <StyledTableCell align="right">
+      <StyledTableCell align="left">
         <Link
           target="_blank"
           rel="noreferrer"
