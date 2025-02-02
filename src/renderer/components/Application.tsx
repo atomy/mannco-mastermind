@@ -25,6 +25,7 @@ function Main() {
   const [rconClientFrags, setRconClientFrags] = useState<RconAppFragEntry[]>(
     [],
   );
+  const [teamsAvailable, setTeamsAvailable] = useState<boolean>(false);
   const [teamClassFeedback, setTeamClassFeedback] =
     useState<TeamClassFeedback>(null);
 
@@ -65,6 +66,10 @@ function Main() {
     }
 
     return matchingClasses;
+  };
+
+  const onTeamsAvailable = (available: boolean) => {
+    setTeamsAvailable(available);
   };
 
   const addRconClientLogMessage = useCallback((logEntry: RconAppLogEntry) => {
@@ -184,10 +189,18 @@ function Main() {
     <TeamClassContext.Provider value={teamClassFeedback}>
       <div id="content">
         <div className="player-list">
-          <h1 style={{ paddingLeft: '10px' }}>Current Players</h1>
+          <h1 style={{ paddingLeft: '10px' }}>
+            Current Players{' '}
+            {!teamsAvailable && (
+              <span style={{ fontSize: '0.8rem', color: 'red', marginLeft: '10px' }}>
+            No Team Information available!
+          </span>
+            )}
+          </h1>
           <PlayerTableComponent
             players={players}
             handleAddBlacklistSave={handleAddBlacklistSave}
+            onTeamsAvailable={onTeamsAvailable}
           />
           <BottomBox
             consoleContent={rconClientLogs}
