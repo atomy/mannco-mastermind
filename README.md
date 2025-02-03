@@ -70,6 +70,11 @@ Note: Don't kill the program with CTL+C on windows, cause the sub-process (tf2-r
 (https://github.com/electron/electron/issues/5273)
 You have to first close the electron window and then you can CTL+C. If you did kill the app by accident and tf2-rcon is still running and you actually need to restart tf2-rcon (which you probably dont even need) use something like TCPView to kill the process.
 
+## Build release build
+```
+npx electron-forge make
+```
+
 ### Useful links
 
 [Team Fortress 2 Color Palette](https://lospec.com/palette-list/team-fortress-2-official)
