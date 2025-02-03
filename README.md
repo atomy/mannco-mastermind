@@ -27,11 +27,10 @@ Showing class proposition and "issues" in class balance for own and other team.
 # Installation
 
 - Configure your TF2 to enable rcon and output log to console.log (see: https://github.com/algo7/tf2_rcon_misc?tab=readme-ov-file#required-launch-options)
-- Download latest release and run installer MannCoMastermind.Setup.x.y.z.exe.
 - Get into your Windows environment settings and set the path to your console.log file into the variable *TF2_LOGPATH*
   -- You may also want to acquire a steam web api key from https://steamcommunity.com/dev and set it as variable *STEAM_KEY*
 - You may need to relog into windows for environment variables to take effect
-- There should be a link to the installed app on your desktop, run it
+- Download latest release **MannCoMastermind.exe** and start it.
 
 ## Windows env settings
 They look like this:
