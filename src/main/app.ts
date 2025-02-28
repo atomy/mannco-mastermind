@@ -1,20 +1,21 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { ChildProcessWithoutNullStreams } from 'node:child_process';
-import { PlayerInfo } from '@components/PlayerInfo';
-import {
-  loadPlayerRep,
-  PlayerTF2ClassInfo,
-  PlayerReputation,
-} from '@main/playerRep';
-import fs from 'fs';
-import crypto from 'crypto';
-import https from 'https';
 import childProcess from 'child_process';
+import crypto from 'crypto';
+import fs from 'fs';
+import https from 'https';
+import { WebSocket } from 'ws';
+import { PlayerInfo } from '@components/PlayerInfo';
 import { RconAppFragEntry } from '@components/RconAppFragEntry';
 import { RconAppLogEntry } from '@components/RconAppLogEntry';
+import { PlayerTF2ClassInfo } from '@main/playerRep';
 import { SteamGamePlayerstats } from '@main/steamGamePlayerstats';
-import { WebSocket } from 'ws';
 import { createAppWindow } from './appWindow';
+import {
+  handleAddPlayerReputation,
+  getPlayerReputations,
+  updatePlayerReputationData,
+} from './playerReputationHandler';
 
 const path = require('path');
 
@@ -33,10 +34,8 @@ let playerReputationUpdateTime: NodeJS.Timeout | null = null;
 let steamProfileUpdatePlayerList: string[] = [];
 let steamTF2UpdatePlayerList: string[] = [];
 let steamBanUpdatePlayerList: string[] = [];
-let playerReputations: PlayerReputation[] = [];
 const playerTF2Classes: PlayerTF2ClassInfo[] = [];
 
-const playerReputationDbFilepath = './playerRepDatabase.json';
 const tf2RconFilepath = './tf2-rcon.exe';
 const tf2RconDownloadSite =
   'https://github.com/atomy/TF2-RCON-MISC/releases/download/10.1.0/main-windows-amd64.exe';
@@ -148,109 +147,8 @@ const mapWeaponEntityToTFClass = (
   });
 };
 
-// addPlayerReputation add entry for players reputation
-const addPlayerReputation = (
-  steamid: string,
-  type: string,
-  reason: string,
-): void => {
-  console.log(
-    `[main.ts] addPlayerReputation() ${steamid} -- ${type} -- ${reason}`,
-  );
-
-  // Check if the file exists, and if not, create an empty file
-  if (!fs.existsSync(playerReputationDbFilepath)) {
-    console.log('[main.ts] File does not exist. Creating a new file...');
-    fs.writeFileSync(
-      playerReputationDbFilepath,
-      JSON.stringify({ players: [] }, null, 2),
-      'utf8',
-    );
-  }
-
-  fs.readFile(playerReputationDbFilepath, 'utf8', (err, data) => {
-    if (err) {
-      console.error(
-        '[main.ts] addPlayerReputation() Error reading file: ',
-        err,
-      );
-      return;
-    }
-
-    try {
-      let json = JSON.parse(data);
-
-      // check if players exists and is greater than 0
-      if (json.players && json.players.length > 0) {
-        // Check for duplicate steamid
-        const index = json.players.findIndex(
-          (player: PlayerReputation) => player.steamid === steamid,
-        );
-
-        // Player already exists, let's edit him
-        if (index !== -1) {
-          json.players[index] = { steamid, type, reason };
-          console.log(
-            `[main.ts] addPlayerReputation() Edited player steamid ${steamid}: ${json.players[index]}`,
-          );
-        } else {
-          // Add the new player entry
-          json.players.push({ steamid, type, reason });
-          console.log(
-            `[main.ts] addPlayerReputation() Added player steamid ${steamid}: ${{ steamid, type, reason }}`,
-          );
-        }
-      } else {
-        const newPlayersData: {
-          players: { steamid: string; type: string; reason: string }[];
-        } = {
-          players: [],
-        };
-        // Add the new player entry
-        newPlayersData.players.push({ steamid, type, reason });
-        console.log(
-          `[main.ts] addPlayerReputation() Created new db file with player: steamid ${steamid}: ${JSON.stringify({ steamid, type, reason })}`,
-        );
-        json = newPlayersData;
-      }
-
-      fs.writeFile(
-        playerReputationDbFilepath,
-        JSON.stringify(json, null, 2),
-        'utf8',
-        (error) => {
-          if (error) {
-            console.error(
-              '[main.ts] addPlayerReputation() Error writing file: ',
-              error,
-            );
-          } else {
-            console.log(
-              '[main.ts] addPlayerReputation() Successfully added player entry.',
-            );
-          }
-        },
-      );
-    } catch (error) {
-      console.error(
-        '[main.ts] addPlayerReputation() Error parsing JSON: ',
-        error,
-      );
-    }
-  });
-};
-
 // Listen for *add-player-reputation* messages over IPC.
-ipcMain.on('add-player-reputation', async (event: Electron.Event, arg) => {
-  console.log(`[main.ts][IPC][*add-player-reputation*] ${JSON.stringify(arg)}`);
-  playerReputations.push({
-    steamid: arg.steamid,
-    reason: arg.reason,
-    type: arg.type,
-  });
-
-  addPlayerReputation(arg.steamid, arg.type, arg.reason);
-});
+ipcMain.on('add-player-reputation', handleAddPlayerReputation);
 
 const getPlayerNameForSteam = (steamID: string) => {
   const player = currentPlayerCollection.find(
@@ -376,27 +274,35 @@ const updateSteamProfileDataForPlayers = (
 };
 
 // updatePlayerReputationData retrieve player-reputation-info and store it in memory
-const updatePlayerReputationData = () => {
-  if (!fs.existsSync(playerReputationDbFilepath)) {
-    // File does not exist, log a message and exit early
-    console.log(
-      `updatePlayerReputationData() WARN: File ${playerReputationDbFilepath} does not exist. Skipping.`,
-    );
-    return;
-  }
+const startPlayerReputationUpdateTimer = () => {
+  // Regularly update player reputations
+  playerReputationUpdateTime = setInterval(() => {
+    console.log('[main.ts] Checking for players without reputation data...');
 
-  loadPlayerRep(playerReputationDbFilepath, (err, players) => {
-    if (err) {
-      // Handle error
-      console.error(`updatePlayerReputationData() ERROR: ${err}`);
-    } else if (players) {
-      // Handle success
-      playerReputations = players;
+    // Filter players who don't have any reputation data and haven't been checked
+    const playersWithoutRep = currentPlayerCollection.filter(
+      (player) => player.PlayerReputationType === undefined,
+    );
+
+    if (playersWithoutRep.length > 0) {
+      const steamIds = playersWithoutRep.map((player) => player.SteamID);
       console.log(
-        `updatePlayerReputationData(): Loaded '${playerReputations.length}' player-reputations from file!`,
+        `[main.ts] Updating reputation data for ${steamIds.length} players without reputation...`,
       );
+      updatePlayerReputationData(steamIds).then(() => {
+        // Set default NONE reputation for players who were checked but had no reputation
+        playersWithoutRep.forEach((player) => {
+          if (!player.PlayerReputationType) {
+            player.PlayerReputationType = 'NONE';
+            player.PlayerReputationInfo = '';
+          }
+        });
+      });
+      console.log('[main.ts] Updating player reputation data...DONE');
+    } else {
+      console.log('[main.ts] No players found without reputation data.');
     }
-  });
+  }, 10000); // %TODO
 };
 
 // updateSteamBanDataForPlayers updates steam info to current player-list
@@ -628,7 +534,7 @@ const updateSteamInfo = () => {
 const updatePlayerWarns = () => {
   // Enrich current players with steam-cache-data if available.
   currentPlayerCollection.forEach((player) => {
-    playerReputations.forEach((playerReputation) => {
+    getPlayerReputations().forEach((playerReputation) => {
       if (player.SteamID === playerReputation.steamid) {
         player.PlayerReputationInfo = playerReputation.reason;
         player.PlayerReputationType = playerReputation.type;
@@ -979,23 +885,6 @@ const startSteamBanUpdater = () => {
     steamBanUpdatePlayerList = [];
     // console.log('[main.ts] Updating steam-ban data... DONE');
   }, 10000);
-};
-
-const startPlayerReputationUpdateTimer = () => {
-  // Check if the file exists
-  const exists = fs.existsSync(playerReputationDbFilepath);
-
-  if (!exists) {
-    console.error(`File ${playerReputationDbFilepath} does not exist!`);
-    return;
-  }
-
-  // Regularly update steam-bans.
-  playerReputationUpdateTime = setInterval(() => {
-    console.log('[main.ts] Updating player-reputation data...');
-    updatePlayerReputationData();
-    console.log('[main.ts] Updating player-reputation data...DONE');
-  }, 60000);
 };
 
 /** Handle creating/removing shortcuts on Windows when installing/uninstalling. */
