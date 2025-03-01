@@ -1,4 +1,7 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+/* eslint-disable @typescript-eslint/no-explicit-any, import/no-unresolved, import/no-import-module-exports */
+/// <reference types="electron" />
+
+import { app, BrowserWindow, ipcMain, IpcMainEvent } from 'electron';
 import { ChildProcessWithoutNullStreams } from 'node:child_process';
 import childProcess from 'child_process';
 import crypto from 'crypto';
@@ -126,7 +129,7 @@ const mapWeaponEntityToTFClass = (
   });
 
   // Set up one-time listener for the response
-  ipcMain.once('tf2-class-response', (event: Electron.Event, result: any) => {
+  ipcMain.once('tf2-class-response', (event: IpcMainEvent, result: any) => {
     // console.log(`*tf2-class-response* result is: ${JSON.stringify(result)}`);
 
     if (result.error) {
@@ -151,9 +154,7 @@ const mapWeaponEntityToTFClass = (
 ipcMain.on('add-player-reputation', handleAddPlayerReputation);
 
 const getPlayerNameForSteam = (steamID: string) => {
-  const player = currentPlayerCollection.find(
-    (player) => steamID === player.SteamID,
-  );
+  const player = currentPlayerCollection.find((p) => steamID === p.SteamID);
 
   if (player) {
     return player.Name;
@@ -289,7 +290,7 @@ const startPlayerReputationUpdateTimer = () => {
       console.log(
         `[main.ts] Updating reputation data for ${steamIds.length} players without reputation...`,
       );
-      updatePlayerReputationData(steamIds).then(() => {
+      return updatePlayerReputationData(steamIds).then((): void => {
         // Set default NONE reputation for players who were checked but had no reputation
         playersWithoutRep.forEach((player) => {
           if (!player.PlayerReputationType) {
@@ -297,12 +298,12 @@ const startPlayerReputationUpdateTimer = () => {
             player.PlayerReputationInfo = '';
           }
         });
+        return undefined;
       });
-      console.log('[main.ts] Updating player reputation data...DONE');
-    } else {
-      console.log('[main.ts] No players found without reputation data.');
     }
-  }, 10000); // %TODO
+    console.log('[main.ts] No players found without reputation data.');
+    return undefined;
+  }, 60000);
 };
 
 // updateSteamBanDataForPlayers updates steam info to current player-list
@@ -646,7 +647,7 @@ const connectTf2rconWebsocket = () => {
 function computeFileSHA1Sync(filePath: string): string {
   const fileBuffer = fs.readFileSync(filePath);
   const hashSum = crypto.createHash('sha1');
-  hashSum.update(fileBuffer);
+  hashSum.update(fileBuffer.toString());
 
   return hashSum.digest('hex');
 }
