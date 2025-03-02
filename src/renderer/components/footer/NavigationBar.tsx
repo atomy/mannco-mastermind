@@ -6,6 +6,10 @@ const navigationBarStyle = {
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'flex-start',
+  position: 'sticky',
+  top: 0,
+  zIndex: 1000,
+  width: '100%',
 } as React.CSSProperties;
 
 // Define the prop types, including children
@@ -52,18 +56,22 @@ function NavigationBar({
       >
         FRAGS
       </NavigationButton>
-      <NavigationButton
-        onClick={() => handleNavigationClick('CLASSES-MINE')}
-        selected={selectedButton === 'CLASSES-MINE'}
-      >
-        CLASSES-MINE
-      </NavigationButton>
-      <NavigationButton
-        onClick={() => handleNavigationClick('CLASSES-OTHER')}
-        selected={selectedButton === 'CLASSES-OTHER'}
-      >
-        CLASSES-OTHER
-      </NavigationButton>
+      {(window as any).electronAPI.sourceGame === 'TF2' && (
+        <>
+          <NavigationButton
+            onClick={() => handleNavigationClick('CLASSES-MINE')}
+            selected={selectedButton === 'CLASSES-MINE'}
+          >
+            CLASSES-MINE
+          </NavigationButton>
+          <NavigationButton
+            onClick={() => handleNavigationClick('CLASSES-OTHER')}
+            selected={selectedButton === 'CLASSES-OTHER'}
+          >
+            CLASSES-OTHER
+          </NavigationButton>
+        </>
+      )}
       <NavigationButton
         onClick={() => handleNavigationClick('NONE')}
         selected={selectedButton === 'NONE'}

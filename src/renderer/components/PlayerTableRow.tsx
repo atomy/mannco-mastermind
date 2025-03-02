@@ -21,7 +21,6 @@ import plusrepImage from '@assets/banners/plusrep.png';
 import cheatImage from '@assets/banners/cheat.png';
 import getCountryCode from '@components/GetCountryCode';
 import SteamPlaytime from '@components/SteamPlaytime';
-import SteamTF2Playtime from './SteamTF2Playtime';
 
 const StyledTableCell = styled(TableCell)({
   paddingTop: '4px',

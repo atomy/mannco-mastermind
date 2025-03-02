@@ -16,6 +16,7 @@ type NavigationButtonProps = {
   onClick: () => void;
   selected: boolean;
   children: ReactNode;
+  disabled?: boolean;
 };
 
 // Use a function declaration for the component
@@ -23,11 +24,12 @@ function NavigationButton({
   onClick,
   selected,
   children,
+  disabled = false,
 }: NavigationButtonProps) {
   const buttonStyle = selected ? { ...baseStyle, ...selectedStyle } : baseStyle;
 
   return (
-    <Button style={buttonStyle} onClick={onClick}>
+    <Button style={buttonStyle} onClick={onClick} disabled={disabled}>
       {children}
     </Button>
   );
