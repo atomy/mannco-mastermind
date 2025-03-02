@@ -26,7 +26,10 @@ const StyledTableCell = styled(TableCell)({
 });
 
 // Component *PlayerTeamTable* describing a player-table for a collection of players
-export default function PlayerTeamTable({ players, handleAddBlacklistSave }: PlayerTeamTableProps) {
+export default function PlayerTeamTable({
+  players,
+  handleAddBlacklistSave,
+}: PlayerTeamTableProps) {
   return (
     <Grid item sm={6}>
       <Table aria-label="collapsible table">
@@ -40,9 +43,8 @@ export default function PlayerTeamTable({ players, handleAddBlacklistSave }: Pla
                 <InfoIcon color="primary" fontSize="small" />
               </Tooltip>
             </StyledTableCell>
-            <StyledTableCell align="right">
-              Playtime | AccountAge
-            </StyledTableCell>
+            <StyledTableCell align="right">Playtime</StyledTableCell>
+            <StyledTableCell align="right">Age</StyledTableCell>
             <StyledTableCell align="right">Reputation</StyledTableCell>
             <StyledTableCell align="right">Actions</StyledTableCell>
           </TableRow>
@@ -59,5 +61,4 @@ export default function PlayerTeamTable({ players, handleAddBlacklistSave }: Pla
       </Table>
     </Grid>
   );
-};
-
+}

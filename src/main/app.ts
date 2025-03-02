@@ -33,10 +33,13 @@ let steamTF2UpdateTimer: NodeJS.Timeout | null = null;
 // eslint-disable-next-line no-undef
 let steamBanUpdateTimer: NodeJS.Timeout | null = null;
 // eslint-disable-next-line no-undef
+let steamPlaytimeUpdateTimer: NodeJS.Timeout | null = null;
+// eslint-disable-next-line no-undef
 let playerReputationUpdateTime: NodeJS.Timeout | null = null;
 let steamProfileUpdatePlayerList: string[] = [];
 let steamTF2UpdatePlayerList: string[] = [];
 let steamBanUpdatePlayerList: string[] = [];
+let steamPlaytimeUpdatePlayerList: string[] = [];
 const playerTF2Classes: PlayerTF2ClassInfo[] = [];
 
 const tf2RconFilepath = './tf2-rcon.exe';
@@ -47,6 +50,7 @@ const tf2RconExpectedFilehash = '03463795becf55e1aa22fd648967209329758eb8';
 const currentSteamProfileInformation: PlayerInfo[] = [];
 const currentSteamTF2Information: PlayerInfo[] = [];
 const currentSteamBanInformation: PlayerInfo[] = [];
+const currentSteamPlaytimeInformation: PlayerInfo[] = [];
 
 // Define the callback type
 type CallbackFunction = (error?: string | null) => void;
@@ -357,7 +361,7 @@ const updateSteamBanDataForPlayers = (
   }
 };
 
-const parsePlayerstats = (
+const parseTF2PlayerStats = (
   player: PlayerInfo,
   playerStats: SteamGamePlayerstats,
 ) => {
@@ -399,53 +403,119 @@ const parsePlayerstats = (
   return player;
 };
 
-// updateSteamTF2DataForPlayer updates steam tf2 data to current player-list
+// Get playtime for any Steam game
+const getSteamGamePlaytime = (
+  playerSteamId: string,
+  appId: number,
+  callback: (playtime: number) => void,
+) => {
+  if (!process.env.STEAM_PLAYTIME_API_URL) {
+    console.log('[main.ts] STEAM_PLAYTIME_API_URL not configured');
+    callback(-1);
+    return;
+  }
+
+  const url = `${process.env.STEAM_PLAYTIME_API_URL}?steamid=${playerSteamId}&appid=${appId}`;
+
+  https
+    .get(url, (res) => {
+      let data = '';
+
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        try {
+          const jsonResponse = JSON.parse(data);
+
+          if (jsonResponse.playtime) {
+            const hours = parseInt(jsonResponse.playtime, 10);
+            callback(hours);
+          } else {
+            console.log(
+              `[main.ts] No playtime data for ${playerSteamId} in game ${appId}`,
+            );
+            callback(-1);
+          }
+        } catch (error) {
+          console.log(
+            `[main.ts] Error parsing playtime data for ${playerSteamId}: ${error}`,
+          );
+          callback(-1);
+        }
+      });
+    })
+    .on('error', (error) => {
+      console.log(
+        `[main.ts] Error fetching playtime for ${playerSteamId}: ${error}`,
+      );
+      callback(-1);
+    });
+};
+
+// Update the updateSteamTF2DataForPlayer function to use STEAM_APPID
 const updateSteamTF2DataForPlayer = (
   steam: typeof SteamApi,
   playerSteamId: string,
 ) => {
-  // console.log(`updateSteamTF2DataForPlayer() for: ${playerSteamId}`);
+  // Get current game's playtime
+  const currentAppId = Number(process.env.STEAM_APPID) || 0;
 
-  steam.getUserStatsForGame({
-    steamid: playerSteamId,
-    appid: 440,
-    callback: (err: any, data: any) => {
-      // console.log(`? ${err} --- ${JSON.stringify(data)}`);
-      // HTTP 403 are expected, they happen when that information is private.
-      if (typeof err !== 'undefined') {
-        currentPlayerCollection.forEach((player) => {
-          if (player.SteamID === playerSteamId) {
-            // const fixedErr = err.replace(
-            //   ' Error: Check your API key is correct',
-            //   '',
-            // );
-            player.SteamTF2DataLoaded = 'ERROR';
-            // console.log(`ERROR '${player.SteamID}': ${fixedErr}`);
-            currentSteamTF2Information.push(player);
-          }
-        });
-      } else if (data && typeof data.playerstats === 'object') {
-        const steamPlayerStats = data.playerstats;
-        // console.log(
-        //   `Incomming tf2-data-update for ${data.playerstats.steamID}`,
-        // );
-        currentPlayerCollection.forEach((player) => {
-          if (player.SteamID === playerSteamId) {
-            player.SteamTF2DataLoaded = 'COMPLETED';
-            // console.log(
-            //   `Updated '${player.SteamID}' gameName: ${steamPlayerStats.gameName}`,
-            // );
-            const playtimePlayer = parsePlayerstats(player, steamPlayerStats);
-            // console.log(
-            //   `SteamID '${player.SteamID}' SteamTF2Playtime: ${playtimePlayer.SteamTF2Playtime}`,
-            // );
-            player.SteamTF2Playtime = playtimePlayer.SteamTF2Playtime;
-            currentSteamTF2Information.push(playtimePlayer);
-          }
-        });
+  getSteamGamePlaytime(playerSteamId, currentAppId, (playtime) => {
+    const playerIndex = currentPlayerCollection.findIndex(
+      (p) => p.SteamID === playerSteamId,
+    );
+    if (playerIndex !== -1) {
+      console.log(
+        `[main.ts] Updated playtime for ${currentPlayerCollection[playerIndex].Name} (${playerSteamId}): ${playtime} hours`,
+      );
+      currentPlayerCollection[playerIndex].SteamPlaytime = playtime;
+
+      // Cache the updated playtime
+      const existingCacheIndex = currentSteamPlaytimeInformation.findIndex(
+        (p) => p.SteamID === playerSteamId,
+      );
+      if (existingCacheIndex !== -1) {
+        currentSteamPlaytimeInformation[existingCacheIndex].SteamPlaytime =
+          playtime;
+      } else {
+        const cachePlayer = { ...currentPlayerCollection[playerIndex] };
+        currentSteamPlaytimeInformation.push(cachePlayer);
       }
-    },
+    }
   });
+
+  // For TF2, also get detailed class-based playtime
+  if (process.env.STEAM_APPID === '440') {
+    steam.getUserStatsForGame({
+      steamid: playerSteamId,
+      appid: 440,
+      callback: (err: any, data: any) => {
+        if (typeof err !== 'undefined') {
+          currentPlayerCollection.forEach((player) => {
+            if (player.SteamID === playerSteamId) {
+              player.SteamTF2DataLoaded = 'ERROR';
+              currentSteamTF2Information.push(player);
+            }
+          });
+        } else if (data && typeof data.playerstats === 'object') {
+          const steamPlayerStats = data.playerstats;
+          currentPlayerCollection.forEach((player) => {
+            if (player.SteamID === playerSteamId) {
+              player.SteamTF2DataLoaded = 'COMPLETED';
+              const playtimePlayer = parseTF2PlayerStats(
+                player,
+                steamPlayerStats,
+              );
+              player.SteamTF2Playtime = playtimePlayer.SteamTF2Playtime;
+              currentSteamTF2Information.push(player);
+            }
+          });
+        }
+      },
+    });
+  }
 };
 
 // updateSteamInfo updates steam info to current player-list
@@ -463,9 +533,6 @@ const updateSteamInfo = () => {
         player.SteamConfigured = steamPlayer.SteamConfigured;
         player.SteamCreatedTimestamp = steamPlayer.SteamCreatedTimestamp;
         player.SteamCountryCode = steamPlayer.SteamCountryCode;
-        // console.log(
-        // `Updated '${player.SteamID}' with cached data: ${JSON.stringify(player)}`,
-        // );
       }
     });
 
@@ -473,9 +540,6 @@ const updateSteamInfo = () => {
       if (player.SteamID === steamPlayer.SteamID) {
         player.SteamTF2DataLoaded = steamPlayer.SteamTF2DataLoaded;
         player.SteamTF2Playtime = steamPlayer.SteamTF2Playtime;
-        // console.log(
-        //   `Updated '${player.SteamID}' with cached tf2-data: ${JSON.stringify(player)}`,
-        // );
       }
     });
 
@@ -489,12 +553,29 @@ const updateSteamInfo = () => {
         player.SteamBanCommunityBanned = steamPlayer.SteamBanCommunityBanned;
         player.SteamBanNumberOfGameBans = steamPlayer.SteamBanNumberOfGameBans;
         player.SteamBanEconomyBan = steamPlayer.SteamBanEconomyBan;
-
-        // console.log(
-        //   `currentSteamBanInformation - Updated '${player.SteamID}' with cached steam-ban: ${JSON.stringify(player)}`,
-        // );
       }
     });
+
+    // Check cached playtime data
+    let playtimeFound = false;
+    currentSteamPlaytimeInformation.forEach((steamPlayer) => {
+      if (player.SteamID === steamPlayer.SteamID) {
+        player.SteamPlaytime = steamPlayer.SteamPlaytime;
+        playtimeFound = true;
+      }
+    });
+
+    // Initialize playtime to -1 only if it's undefined and not found in cache
+    if (typeof player.SteamPlaytime === 'undefined' && !playtimeFound) {
+      player.SteamPlaytime = -1;
+      // Only queue for update if playtime hasn't been loaded yet
+      if (!steamPlaytimeUpdatePlayerList.includes(player.SteamID)) {
+        console.log(
+          `steamPlaytimeUpdatePlayerList - Adding '${player.SteamID}' (new player)`,
+        );
+        steamPlaytimeUpdatePlayerList.push(player.SteamID);
+      }
+    }
   });
 
   // Check if there are currently any players.
@@ -562,9 +643,21 @@ const connectTf2rconWebsocket = () => {
 
   if (tf2rconWs !== null) {
     tf2rconWs.on('open', function open() {
-      // const jsonPayload = JSON.stringify({ key: 'value' }); // Replace with your JSON payload
-      // tf2rconWs.send(jsonPayload);
-      // console.log('Sent message:', jsonPayload);
+      // Always send status command
+      const statusPayload = JSON.stringify({
+        type: 'command',
+        command: 'status',
+      });
+      tf2rconWs.send(statusPayload);
+
+      // Send tf_lobby_debug command only for TF2 (appid 440)
+      if (process.env.STEAM_APPID === '440') {
+        const lobbyPayload = JSON.stringify({
+          type: 'command',
+          command: 'tf_lobby_debug',
+        });
+        tf2rconWs.send(lobbyPayload);
+      }
     });
 
     tf2rconWs.on('message', function incoming(data: string) {
@@ -580,7 +673,10 @@ const connectTf2rconWebsocket = () => {
 
         updateSteamInfo();
         updatePlayerWarns();
-        updateTF2ClassInfo();
+        // Only update TF2 class info for TF2 (appid 440)
+        if (process.env.STEAM_APPID === '440') {
+          updateTF2ClassInfo();
+        }
         sendPlayerData();
       } else if (incommingJson.type === 'application-log') {
         const uniqueKey = () => {
@@ -888,6 +984,63 @@ const startSteamBanUpdater = () => {
   }, 10000);
 };
 
+const startSteamPlaytimeUpdater = () => {
+  if (typeof process.env.STEAM_KEY === 'undefined') {
+    console.log(
+      'Env *STEAM_KEY* not configured, not updating steam playtime data.',
+    );
+    return;
+  }
+
+  const currentAppId = Number(process.env.STEAM_APPID) || 0;
+  if (currentAppId === 0) {
+    console.log(
+      'No valid STEAM_APPID configured, not updating steam playtime data.',
+    );
+    return;
+  }
+
+  console.log(
+    `[main.ts] Starting Steam playtime updater for AppID: ${currentAppId}`,
+  );
+
+  // Regularly update steam playtime data
+  steamPlaytimeUpdateTimer = setInterval(() => {
+    if (steamPlaytimeUpdatePlayerList.length > 0) {
+      console.log(
+        `[main.ts] Updating playtime for ${steamPlaytimeUpdatePlayerList.length} players...`,
+      );
+    }
+
+    steamPlaytimeUpdatePlayerList.forEach((playerSteamID) => {
+      getSteamGamePlaytime(playerSteamID, currentAppId, (playtime) => {
+        const playerIndex = currentPlayerCollection.findIndex(
+          (p) => p.SteamID === playerSteamID,
+        );
+        if (playerIndex !== -1) {
+          console.log(
+            `[main.ts] Updated playtime for ${currentPlayerCollection[playerIndex].Name} (${playerSteamID}): ${playtime} hours`,
+          );
+          currentPlayerCollection[playerIndex].SteamPlaytime = playtime;
+
+          // Cache the updated playtime
+          const existingCacheIndex = currentSteamPlaytimeInformation.findIndex(
+            (p) => p.SteamID === playerSteamID,
+          );
+          if (existingCacheIndex !== -1) {
+            currentSteamPlaytimeInformation[existingCacheIndex].SteamPlaytime =
+              playtime;
+          } else {
+            const cachePlayer = { ...currentPlayerCollection[playerIndex] };
+            currentSteamPlaytimeInformation.push(cachePlayer);
+          }
+        }
+      });
+    });
+    steamPlaytimeUpdatePlayerList = [];
+  }, 10000);
+};
+
 /** Handle creating/removing shortcuts on Windows when installing/uninstalling. */
 // eslint-disable-next-line global-require
 if (require('electron-squirrel-startup')) {
@@ -915,7 +1068,11 @@ app.on('ready', () => {
 
   connectTf2rconWebsocket();
   startSteamProfileUpdater();
-  startSteamTF2Updater();
+  startSteamPlaytimeUpdater();
+  // Only start TF2 updater for TF2 (appid 440)
+  if (process.env.STEAM_APPID === '440') {
+    startSteamTF2Updater();
+  }
   startSteamBanUpdater();
   startPlayerReputationUpdateTimer();
   createAppWindow();
@@ -991,6 +1148,11 @@ app.on('before-quit', () => {
   if (playerReputationUpdateTime) {
     clearInterval(playerReputationUpdateTime);
     playerReputationUpdateTime = null;
+  }
+
+  if (steamPlaytimeUpdateTimer) {
+    clearInterval(steamPlaytimeUpdateTimer);
+    steamPlaytimeUpdateTimer = null;
   }
 });
 
