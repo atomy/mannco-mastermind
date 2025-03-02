@@ -21,6 +21,7 @@ export interface PlayerInfo {
   SteamBanVACBans: number;
   SteamBanDaysSinceLastBan: number;
   SteamTF2Playtime: number;
+  SteamPlaytime: number;
   SteamURL: string;
   SteamAvatarSmall: string;
   SteamAvatarMedium: string;

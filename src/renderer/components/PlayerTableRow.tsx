@@ -20,7 +20,8 @@ import warnImage from '@assets/banners/warn.png';
 import plusrepImage from '@assets/banners/plusrep.png';
 import cheatImage from '@assets/banners/cheat.png';
 import getCountryCode from '@components/GetCountryCode';
-import Playtime from './Playtime';
+import SteamPlaytime from '@components/SteamPlaytime';
+import SteamTF2Playtime from './SteamTF2Playtime';
 
 const StyledTableCell = styled(TableCell)({
   paddingTop: '4px',
@@ -132,7 +133,9 @@ export default function PlayerTableRow(props: {
           width="30px"
           style={{ paddingRight: '4px' }}
         />
-        <ClassIcon player={row} />
+        {(window as any).electronAPI.sourceGame === 'TF2' && (
+          <ClassIcon player={row} />
+        )}
         <SteamAvatar player={row} />
         <span
           style={{
@@ -169,7 +172,12 @@ export default function PlayerTableRow(props: {
         )}
       </StyledTableCell>
       <StyledTableCell align="right">
-        <Playtime seconds={row.SteamTF2Playtime} /> |{' '}
+        <SteamPlaytime
+          hours={row.SteamPlaytime}
+          tf2Minutes={row.SteamTF2Playtime}
+        />
+      </StyledTableCell>
+      <StyledTableCell align="right">
         <SteamAccountAge steamCreatedTimestamp={row.SteamCreatedTimestamp} />
       </StyledTableCell>
       <StyledTableCell align="right">

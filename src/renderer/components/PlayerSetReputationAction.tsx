@@ -64,7 +64,12 @@ export default function PlayerSetReputationAction({
             inputProps={{ 'aria-label': 'Without label' }}
             sx={{ mt: 2, mb: 1 }}
           >
-            <MenuItem value="" disabled>Select Type</MenuItem>
+            <MenuItem value="" disabled>
+              Select Type
+            </MenuItem>
+            <MenuItem value="skillplus">+Skill-Plus</MenuItem>
+            <MenuItem value="skillneutral">.Skill-Neutral</MenuItem>
+            <MenuItem value="skillminus">-Skill-Minus</MenuItem>
             <MenuItem value="plusrep">+Rep</MenuItem>
             <MenuItem value="bot">-Bot</MenuItem>
             <MenuItem value="cheat">-Cheat</MenuItem>

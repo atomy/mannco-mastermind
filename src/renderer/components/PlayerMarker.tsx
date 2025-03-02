@@ -17,6 +17,15 @@ export default function PlayerMarker(props: { player: PlayerInfo }) {
     if (['plusrep'].includes(reputationType ?? '')) {
       return 'green';
     }
+    if (['skillplus'].includes(reputationType ?? '')) {
+      return 'purple';
+    }
+    if (['skillneutral'].includes(reputationType ?? '')) {
+      return 'grey';
+    }
+    if (['skillminus'].includes(reputationType ?? '')) {
+      return 'black';
+    }
     return null;
   };
 
