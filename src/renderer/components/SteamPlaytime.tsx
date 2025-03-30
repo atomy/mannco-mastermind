@@ -5,13 +5,14 @@ export default function SteamPlaytime(props: {
   tf2Minutes: number;
 }) {
   const { hours, tf2Minutes } = props;
+  const tf2Hours = Math.floor(tf2Minutes / 3600);
 
   if (typeof tf2Minutes !== 'undefined') {
     return (
       <div>
         <div>{hours} hours</div>
         <div style={{ fontSize: '0.9em', color: '#666' }}>
-          TF2: {Math.floor(tf2Minutes / 3600)} hours
+          TF2: {tf2Hours > 0 ? tf2Hours : '?'} hours
         </div>
       </div>
     );
