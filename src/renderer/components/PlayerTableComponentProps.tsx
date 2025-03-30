@@ -1,3 +1,4 @@
+import { AppConfig } from '@components/AppConfig';
 import { PlayerInfo } from '@components/PlayerInfo';
 
 interface PlayerTableComponentProps {
@@ -8,6 +9,7 @@ interface PlayerTableComponentProps {
     reason: string,
   ) => void;
   onTeamsAvailable: (available: boolean) => void;
+  appConfig: AppConfig,
 }
 
 export default PlayerTableComponentProps;

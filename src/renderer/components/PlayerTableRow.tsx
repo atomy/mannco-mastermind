@@ -21,6 +21,7 @@ import plusrepImage from '@assets/banners/plusrep.png';
 import cheatImage from '@assets/banners/cheat.png';
 import getCountryCode from '@components/GetCountryCode';
 import SteamPlaytime from '@components/SteamPlaytime';
+import { AppConfig } from '@components/AppConfig';
 
 const StyledTableCell = styled(TableCell)({
   paddingTop: '4px',
@@ -35,8 +36,9 @@ export default function PlayerTableRow(props: {
     type: string,
     reason: string,
   ) => void;
+  appConfig: AppConfig;
 }) {
-  const { row, handleAddBlacklistSave } = props;
+  const { row, handleAddBlacklistSave, appConfig } = props;
 
   const rowStyle = (): any => {
     if (row.IsMe) {
@@ -112,6 +114,8 @@ export default function PlayerTableRow(props: {
     ? getCountryName(row.SteamCountryCode)
     : 'Country information unavailable';
 
+  console.log(`app id is: ${appConfig.AppId}`);
+
   // @ts-ignore
   return (
     <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} style={rowStyle()}>
@@ -132,9 +136,7 @@ export default function PlayerTableRow(props: {
           width="30px"
           style={{ paddingRight: '4px' }}
         />
-        {(window as any).electronAPI.sourceGame === 'TF2' && (
-          <ClassIcon player={row} />
-        )}
+        {appConfig.AppId === '440' && <ClassIcon player={row} />}
         <SteamAvatar player={row} />
         <span
           style={{

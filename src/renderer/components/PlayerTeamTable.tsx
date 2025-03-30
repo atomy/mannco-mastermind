@@ -10,6 +10,7 @@ import TableBody from '@mui/material/TableBody';
 import PlayerTableRow from '@components/PlayerTableRow';
 import { styled } from '@mui/system';
 import TableCell from '@mui/material/TableCell';
+import { AppConfig } from '@components/AppConfig';
 
 interface PlayerTeamTableProps {
   players: PlayerInfo[];
@@ -18,6 +19,7 @@ interface PlayerTeamTableProps {
     type: string,
     reason: string,
   ) => void;
+  appConfig: AppConfig;
 }
 
 const StyledTableCell = styled(TableCell)({
@@ -29,6 +31,7 @@ const StyledTableCell = styled(TableCell)({
 export default function PlayerTeamTable({
   players,
   handleAddBlacklistSave,
+  appConfig,
 }: PlayerTeamTableProps) {
   return (
     <Grid item sm={6}>
@@ -55,6 +58,7 @@ export default function PlayerTeamTable({
               key={player.SteamID.toString()}
               row={player}
               handleAddBlacklistSave={handleAddBlacklistSave}
+              appConfig={appConfig}
             />
           ))}
         </TableBody>

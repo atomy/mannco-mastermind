@@ -1,3 +1,4 @@
+import { AppConfig } from '@components/AppConfig';
 import React, { useState } from 'react';
 import BottomBoxTeamClasses from '@components/footer/BottomBoxTeamClasses';
 import { PlayerInfo } from '@components/PlayerInfo';
@@ -47,8 +48,10 @@ export default function BottomBox(props: {
   chatContent: RconAppLogEntry[];
   fragContent: RconAppFragEntry[];
   players: PlayerInfo[];
+  appConfig: AppConfig;
 }) {
-  const { consoleContent, chatContent, fragContent, players } = props;
+  const { consoleContent, chatContent, fragContent, players, appConfig } =
+    props;
   const [selectedButton, setSelectedButton] = useState<string>('NONE');
 
   return (
@@ -62,6 +65,7 @@ export default function BottomBox(props: {
         onSelectChange={(buttonName) => {
           setSelectedButton(buttonName);
         }}
+        appConfig={appConfig}
       />
       <div style={contentStyle}>
         {selectedButton === 'CONSOLE' && (

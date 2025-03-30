@@ -9,6 +9,7 @@ export default function PlayerTableComponent({
   players,
   handleAddBlacklistSave,
   onTeamsAvailable,
+  appConfig,
 }: PlayerTableComponentProps) {
   const getTeamPlayers = (ownTeam: boolean): PlayerInfo[] => {
     const mePlayer = players.find((element) => element.IsMe);
@@ -42,10 +43,12 @@ export default function PlayerTableComponent({
       <PlayerTeamTable
         players={getTeamPlayers(true)}
         handleAddBlacklistSave={handleAddBlacklistSave}
+        appConfig={appConfig}
       />
       <PlayerTeamTable
         players={getTeamPlayers(false)}
         handleAddBlacklistSave={handleAddBlacklistSave}
+        appConfig={appConfig}
       />
     </Grid>
   );

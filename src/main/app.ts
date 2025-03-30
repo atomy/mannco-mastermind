@@ -13,6 +13,7 @@ import { RconAppFragEntry } from '@components/RconAppFragEntry';
 import { RconAppLogEntry } from '@components/RconAppLogEntry';
 import { PlayerTF2ClassInfo } from '@main/playerRep';
 import { SteamGamePlayerstats } from '@main/steamGamePlayerstats';
+import { AppConfig } from '@components/AppConfig';
 import { createAppWindow } from './appWindow';
 import {
   handleAddPlayerReputation,
@@ -237,6 +238,35 @@ const sendApplicationFragData = (fragMessage: RconAppFragEntry) => {
       });
     },
   );
+};
+
+const installAppConfigHandler = () => {
+  const appConfig: AppConfig = {
+    AppId: process.env.STEAM_APPID || '',
+    Environment: process.env.ENVIRONMENT || 'production',
+    SteamKey: process.env.STEAM_KEY || '',
+    SteamAppId: process.env.STEAM_APPID || '',
+    SteamPlaytimeApiUrl: process.env.STEAM_PLAYTIME_API_URL || '',
+    PlayerReputationApiUrl: process.env.PLAYER_REPUATION_API_URL || '',
+    PlayerReputationApiKey: process.env.PLAYER_REPUATION_API_KEY || '',
+    Tf2RconAutostart: process.env.TF2_RCON_AUTOSTART || '1',
+    AutoOpenDevtools: process.env.AUTO_OPEN_DEVTOOLS || '0',
+    Tf2LogPath: process.env.TF2_LOGPATH || '',
+  };
+
+  // Get all window instances
+  const windows = BrowserWindow.getAllWindows();
+
+  // Listen for get-appconfig request
+  ipcMain.on('get-appconfig', () => {
+    console.log('[main.ts] Received get-appconfig request, sending app config');
+    // Send data to each window
+    windows.forEach((w) => {
+      w.webContents.send('app-config', appConfig);
+    });
+  });
+
+  console.log('[main.ts] Waiting for get-appconfig request...');
 };
 
 // updateSteamProfileDataForPlayers updates steam info to current player-list
@@ -1076,6 +1106,7 @@ app.on('ready', () => {
   startSteamBanUpdater();
   startPlayerReputationUpdateTimer();
   createAppWindow();
+  installAppConfigHandler();
 });
 
 /**

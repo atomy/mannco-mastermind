@@ -1,3 +1,4 @@
+import { AppConfig } from '@components/AppConfig';
 import React, { useState } from 'react';
 import NavigationButton from './NavigationButton';
 
@@ -16,12 +17,14 @@ const navigationBarStyle = {
 type NavigationBarProps = {
   onSelectChange: (buttonName: string) => void;
   initialSelected: string;
+  appConfig: AppConfig;
 };
 
 // Use a function declaration for the component
 function NavigationBar({
   onSelectChange,
   initialSelected,
+  appConfig,
 }: NavigationBarProps) {
   const [selectedButton, setSelectedButton] = useState<string>(initialSelected);
 
@@ -56,7 +59,7 @@ function NavigationBar({
       >
         FRAGS
       </NavigationButton>
-      {(window as any).electronAPI.sourceGame === 'TF2' && (
+      {appConfig && appConfig.AppId === '440' && (
         <>
           <NavigationButton
             onClick={() => handleNavigationClick('CLASSES-MINE')}

@@ -1,6 +1,7 @@
 import { PlayerInfo } from '@components/PlayerInfo';
 import { RconAppLogEntry } from '@components/RconAppLogEntry';
 import { RconAppFragEntry } from '@components/RconAppFragEntry';
+import { AppConfig } from '@components/AppConfig';
 
 export interface PlayerDataListener {
   (playerInfoCollection: PlayerInfo[]): void;
@@ -19,4 +20,9 @@ export interface RconAppFragListener {
 // Define the interface for the tf2 class request listener function
 export interface Tf2ClassRequestListener {
   (weaponEntityName: string, killerSteamID: string): void;
+}
+
+// Define the interface for the tf2 class request listener function
+export interface AppConfigListener {
+  (appConfig: AppConfig): void;
 }

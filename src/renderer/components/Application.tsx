@@ -5,6 +5,7 @@ import {
   RconAppFragListener,
   RconAppLogListener,
   Tf2ClassRequestListener,
+  AppConfigListener,
 } from '@main/window/listenerInterfaces';
 import { TeamClassFeedback } from '@components/TeamClassFeedback';
 import TeamClassContext from '@components/context/TeamClassContext';
@@ -15,6 +16,7 @@ import { RconAppLogEntry } from './RconAppLogEntry';
 import BottomBox from './footer/BottomBox';
 import { RconAppFragEntry } from './RconAppFragEntry';
 import useRemoteConfigHook from './hooks/useRemoteConfigHook';
+import { AppConfig } from './AppConfig';
 import '@styles/app.scss';
 
 function Main() {
@@ -28,6 +30,7 @@ function Main() {
   const [teamsAvailable, setTeamsAvailable] = useState<boolean>(false);
   const [teamClassFeedback, setTeamClassFeedback] =
     useState<TeamClassFeedback>(null);
+  const [appConfig, setAppConfig] = useState<AppConfig | null>(null);
 
   const refreshPlayers = useCallback((playerCollection: PlayerInfo[]) => {
     const currentTime = Math.floor(Date.now() / 1000);
@@ -129,10 +132,6 @@ function Main() {
       weaponEntityName: string,
       killerSteamID: string,
     ) => {
-      // console.log(
-      //   `handleTf2ClassRequest() in: ${weaponEntityName} - isWeaponsDbConfigLoading: ${isWeaponsDbConfigLoading} - weaponDbConfigError: ${weaponDbConfigError} - killerSteamID: ${killerSteamID}`,
-      // );
-
       if (isWeaponsDbConfigLoading || weaponDbConfigError) {
         (window as any).electronAPI.sendTf2ClassResponse({
           error: true,
@@ -147,9 +146,6 @@ function Main() {
           weaponEntityName,
           weaponsData,
         );
-        // console.log(
-        //   `Determined className ${JSON.stringify(classNames)} for weaponEntityName ${weaponEntityName}`,
-        // );
         (window as any).electronAPI.sendTf2ClassResponse({
           error: false,
           classNames,
@@ -160,10 +156,32 @@ function Main() {
       }
     };
 
+    const appConfigListener: AppConfigListener = (config: AppConfig) => {
+      console.log('[Application.tsx] Received app config:', {
+        AppId: config.AppId,
+        Environment: config.Environment,
+        SteamKey: config.SteamKey,
+        SteamAppId: config.SteamAppId,
+        SteamPlaytimeApiUrl: config.SteamPlaytimeApiUrl,
+        PlayerReputationApiUrl: config.PlayerReputationApiUrl,
+        PlayerReputationApiKey: config.PlayerReputationApiKey,
+        Tf2RconAutostart: config.Tf2RconAutostart,
+        AutoOpenDevtools: config.AutoOpenDevtools,
+        Tf2LogPath: config.Tf2LogPath,
+      });
+      setAppConfig(config);
+    };
+
+    // Register all listeners
     (window as any).electronAPI.onPlayerData(playerDataListener);
     (window as any).electronAPI.onRconAppLog(rconAppLogListener);
     (window as any).electronAPI.onRconAppFrag(rconAppFragListener);
     (window as any).electronAPI.onTf2ClassRequest(tf2ClassRequestListener);
+    (window as any).electronAPI.onAppConfig(appConfigListener);
+
+    // Request app config from main process
+    console.log('[Application.tsx] Requesting app config from main process');
+    (window as any).electronAPI.getAppConfig();
 
     // Cleanup when the component is unmounted
     return () => {
@@ -171,6 +189,7 @@ function Main() {
       (window as any).electronAPI.removeAllListeners('player-data');
       (window as any).electronAPI.removeAllListeners('rcon-applog');
       (window as any).electronAPI.removeAllListeners('rcon-appfrag');
+      (window as any).electronAPI.removeAllListeners('app-config');
     };
   }, [
     addRconClientFragMessage,
@@ -192,21 +211,25 @@ function Main() {
           <h1 style={{ paddingLeft: '10px' }}>
             Current Players{' '}
             {!teamsAvailable && (
-              <span style={{ fontSize: '0.8rem', color: 'red', marginLeft: '10px' }}>
-            No Team Information available!
-          </span>
+              <span
+                style={{ fontSize: '0.8rem', color: 'red', marginLeft: '10px' }}
+              >
+                No Team Information available!
+              </span>
             )}
           </h1>
           <PlayerTableComponent
             players={players}
             handleAddBlacklistSave={handleAddBlacklistSave}
             onTeamsAvailable={onTeamsAvailable}
+            appConfig={appConfig}
           />
           <BottomBox
             consoleContent={rconClientLogs}
             chatContent={rconClientLogs}
             fragContent={rconClientFrags}
             players={players}
+            appConfig={appConfig}
           />
         </div>
       </div>
