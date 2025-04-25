@@ -2,7 +2,7 @@ $titlebar-baseSize: 16px;
 $titlebar-height: 28px;
 $titlebar-bg: #171b21;
 $titlebar-iconSize: 16px;
-$em: $titlebar-baseSize*1em;
+$em: $titlebar-baseSize * 1em;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +20,7 @@ $em: $titlebar-baseSize*1em;
   user-select: none;
   position: relative;
 
-  &>section {
+  & > section {
     display: flex;
     align-items: center;
   }

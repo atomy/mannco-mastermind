@@ -34,7 +34,7 @@ export default function PlayerMarker(props: { player: PlayerInfo }) {
   return (
     (player.SteamBanDaysSinceLastBan > 0 && (
       <VacBanned
-        strongWarning={player.SteamBanDaysSinceLastBan < 365 ?? false}
+        strongWarning={player.SteamBanDaysSinceLastBan < 365}
         number={player.SteamBanDaysSinceLastBan}
       />
     )) ||

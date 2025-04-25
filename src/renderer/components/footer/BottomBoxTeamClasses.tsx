@@ -18,7 +18,9 @@ function BottomBoxTeamClasses(props: {
   // Determine which team's players to work with (own team or opponent's)
   const teamPlayers = ownTeam
     ? players.filter((player) => player.Team === myTeam) // Filter players on the same team as the current player
-    : players.filter((player) => player.Team !== myTeam && player.Team !== null); // Filter players from the opposing team
+    : players.filter(
+        (player) => player.Team !== myTeam && player.Team !== null,
+      ); // Filter players from the opposing team
 
   // Define the class data to map and count players in each class
   const classData = [
@@ -40,7 +42,9 @@ function BottomBoxTeamClasses(props: {
 
   // Count the number of players in each class
   const classCounts: ClassCounts = classData.reduce((counts, classInfo) => {
-    const count = teamPlayers.filter((player) => player.TF2Class === classInfo.key).length;
+    const count = teamPlayers.filter(
+      (player) => player.TF2Class === classInfo.key,
+    ).length;
     return { ...counts, [classInfo.key]: count };
   }, {} as ClassCounts);
 

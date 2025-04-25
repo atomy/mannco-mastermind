@@ -8,7 +8,9 @@ interface SteamAvatarProps {
 
 export default function SteamAvatar({ player }: SteamAvatarProps) {
   // For the Steam Avatar logic
-  const avatarSrc = player.SteamAvatarSmall ? player.SteamAvatarSmall : 'https://avatars.akamai.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg';
+  const avatarSrc = player.SteamAvatarSmall
+    ? player.SteamAvatarSmall
+    : 'https://avatars.akamai.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg';
 
   return (
     <AnimatedImage
@@ -18,5 +20,4 @@ export default function SteamAvatar({ player }: SteamAvatarProps) {
       style={{ paddingLeft: '6px', paddingRight: '6px' }} // No borderRadius here
     />
   );
-};
-
+}

@@ -20,10 +20,19 @@ function BottomBoxFrags({ frags }: { frags: RconAppFragEntry[] }) {
   return (
     <div style={{ paddingLeft: '10px' }}>
       {frags.length > 0 ? (
-        <ul style={{ paddingLeft: '0', whiteSpace: 'pre', fontFamily: 'monospace' }}>
+        <ul
+          style={{
+            paddingLeft: '0',
+            whiteSpace: 'pre',
+            fontFamily: 'monospace',
+          }}
+        >
           {frags.map((fragEntry) => (
             <li key={fragEntry.Key}>
-              {formatTimestamp(fragEntry.Timestamp)} {padName(fragEntry.KillerName, 50)} ⚔ {padName(fragEntry.VictimName, 50)} {padName(fragEntry.Weapon, 32)} {fragEntry.Crit ? '★★★' : ''}
+              {formatTimestamp(fragEntry.Timestamp)}{' '}
+              {padName(fragEntry.KillerName, 50)} ⚔{' '}
+              {padName(fragEntry.VictimName, 50)}{' '}
+              {padName(fragEntry.Weapon, 32)} {fragEntry.Crit ? '★★★' : ''}
             </li>
           ))}
         </ul>

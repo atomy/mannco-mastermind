@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/named
 /* eslint-disable @typescript-eslint/no-explicit-any, import/no-unresolved, import/no-import-module-exports */
 /// <reference types="electron" />
 
@@ -20,8 +21,18 @@ import {
   getPlayerReputations,
   updatePlayerReputationData,
 } from './playerReputationHandler';
-
-const path = require('path');
+import {
+  tf2RconFilepath,
+  tf2RconDownloadSite,
+  tf2RconExpectedFilehash,
+} from './tf2RconConfig';
+import { TF2RconDownloadCallback } from './tf2RconDownloadCallback';
+import { OnAppExitCallback } from './appExitCallback';
+import {
+  sendPlayerData,
+  sendApplicationLogData,
+  mapWeaponEntityToTFClass,
+} from './appIpc';
 
 let tf2rconChild: ChildProcessWithoutNullStreams | null = null;
 let tf2rconWs: WebSocket | null = null;
@@ -43,33 +54,17 @@ let steamBanUpdatePlayerList: string[] = [];
 let steamPlaytimeUpdatePlayerList: string[] = [];
 const playerTF2Classes: PlayerTF2ClassInfo[] = [];
 
-const tf2RconFilepath = './tf2-rcon.exe';
-const tf2RconDownloadSite =
-  'https://github.com/atomy/TF2-RCON-MISC/releases/download/10.1.0/main-windows-amd64.exe';
-const tf2RconExpectedFilehash = '03463795becf55e1aa22fd648967209329758eb8';
-
 const currentSteamProfileInformation: PlayerInfo[] = [];
 const currentSteamTF2Information: PlayerInfo[] = [];
 const currentSteamBanInformation: PlayerInfo[] = [];
 const currentSteamPlaytimeInformation: PlayerInfo[] = [];
 
-// Define the callback type
-type CallbackFunction = (error?: string | null) => void;
-type Tf2ClassCallback = (
-  error: boolean,
-  className: string[],
-  weaponEntityName: string,
-  killerSteamID: string,
-) => void;
-
 const SteamApi = require('steam-web');
 
-const logFilePath = path.join(__dirname, 'weapon_mapping_failures.log');
-
 // Signal handler.
-function handleExit(): void {
+function handleExit(onAppExitCallback: OnAppExitCallback): void {
   console.log(`[main.ts] Received signal. Exiting application.`);
-  shouldRestartTF2Rcon = false;
+  onAppExitCallback();
 
   if (tf2rconChild) {
     tf2rconChild.kill('SIGTERM');
@@ -78,85 +73,6 @@ function handleExit(): void {
   // Safely exit the Electron application
   app.quit();
 }
-
-const sendPlayerData = () => {
-  // Get all window instances
-  const windows = BrowserWindow.getAllWindows();
-
-  // currentPlayerCollection.forEach((player) => {
-  //   if (!player.Team) {
-  //      console.log(`Sending player without a team: ${player.Name} -- ${player.Team}`);
-  //   }
-  // });
-
-  // Send data to each window
-  windows.forEach((w) => {
-    w.webContents.send('player-data', currentPlayerCollection);
-  });
-};
-
-const sendApplicationLogData = (logMessage: RconAppLogEntry) => {
-  // Get all window instances
-  const windows = BrowserWindow.getAllWindows();
-
-  // console.log(`Sending log-message: ${logMessage}`);
-
-  // Send data to each window
-  windows.forEach((w) => {
-    w.webContents.send('rcon-applog', logMessage);
-  });
-};
-
-// Function to log just the entity names to a file
-const logEntityNameToFile = (weaponEntityName: string) => {
-  try {
-    fs.appendFileSync(logFilePath, `${weaponEntityName}\n`, 'utf8');
-  } catch (err) {
-    console.error(`Failed to write to log file: ${err.message}`);
-  }
-};
-
-// Function to request the TF2 class for a given weapon entity name
-const mapWeaponEntityToTFClass = (
-  weaponEntityName: string,
-  killerSteamID: string,
-  callback: Tf2ClassCallback,
-) => {
-  const windows = BrowserWindow.getAllWindows();
-
-  // Send request to renderer
-  // console.log(
-  //   `mapWeaponEntityToTFClass() sending request *get-tf2-class* to frontend with weaponEntityName ${weaponEntityName}`,
-  // );
-  // Send data to each window
-  windows.forEach((w) => {
-    w.webContents.send('get-tf2-class', weaponEntityName, killerSteamID);
-  });
-
-  // Set up one-time listener for the response
-  ipcMain.once('tf2-class-response', (event: IpcMainEvent, result: any) => {
-    // console.log(`*tf2-class-response* result is: ${JSON.stringify(result)}`);
-
-    if (result.error) {
-      callback(true, [], '', '');
-      console.log(
-        `*tf2-class-response* error while trying to resolve entity-name: ${weaponEntityName}`,
-      );
-      logEntityNameToFile(weaponEntityName);
-    } else {
-      // console.log(`callback: ${result.classNames}, ${result.weaponEntityName}, ${result.killerSteamID}`)
-      callback(
-        false,
-        result.classNames,
-        result.weaponEntityName,
-        result.killerSteamID,
-      );
-    }
-  });
-};
-
-// Listen for *add-player-reputation* messages over IPC.
-ipcMain.on('add-player-reputation', handleAddPlayerReputation);
 
 const getPlayerNameForSteam = (steamID: string) => {
   const player = currentPlayerCollection.find((p) => steamID === p.SteamID);
@@ -707,7 +623,7 @@ const connectTf2rconWebsocket = () => {
         if (process.env.STEAM_APPID === '440') {
           updateTF2ClassInfo();
         }
-        sendPlayerData();
+        sendPlayerData(currentPlayerCollection);
       } else if (incommingJson.type === 'application-log') {
         const uniqueKey = () => {
           const randomPart = Math.random().toString(36).substr(2, 9); // Using a random string
@@ -855,7 +771,7 @@ function downloadFile(
 }
 
 // downloadTF2Rcon downloads the tf2-rcon program that establishes communication with tf2
-const downloadTF2Rcon = (callback: CallbackFunction) => {
+const downloadTF2Rcon = (callback: TF2RconDownloadCallback) => {
   // Use fs.access to check if the file exists
   fs.access(tf2RconFilepath, fs.constants.F_OK, (err) => {
     if (err) {
@@ -1077,6 +993,12 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
+const onAppExit = () => {
+  console.log('[event] onAppExit!');
+
+  shouldRestartTF2Rcon = false;
+};
+
 /**
  * This method will be called when Electron has finished
  * initialization and is ready to create browser windows.
@@ -1085,10 +1007,10 @@ if (require('electron-squirrel-startup')) {
 app.on('ready', () => {
   console.log('[event] ready!');
 
-  process.on('SIGTERM', handleExit);
-  process.on('SIGHUP', handleExit);
-  process.on('SIGQUIT', handleExit);
-  process.on('SIGINT', handleExit);
+  process.on('SIGTERM', () => handleExit(onAppExit));
+  process.on('SIGHUP', () => handleExit(onAppExit));
+  process.on('SIGQUIT', () => handleExit(onAppExit));
+  process.on('SIGINT', () => handleExit(onAppExit));
 
   // Download tf2-rcon when needed.
   downloadTF2Rcon(() => {
@@ -1107,6 +1029,9 @@ app.on('ready', () => {
   startPlayerReputationUpdateTimer();
   createAppWindow();
   installAppConfigHandler();
+
+  // Listen for *add-player-reputation* messages over IPC.
+  ipcMain.on('add-player-reputation', handleAddPlayerReputation);
 });
 
 /**

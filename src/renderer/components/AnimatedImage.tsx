@@ -10,7 +10,13 @@ interface AnimatedImageProps {
 }
 
 // Component *AnimatedImage* describing an animated image that fades-in and out on change
-const AnimatedImage: React.FC<AnimatedImageProps> = ({ src, alt = 'image', title, width, style }) => {
+const AnimatedImage: React.FC<AnimatedImageProps> = ({
+  src,
+  alt = 'image',
+  title,
+  width,
+  style,
+}) => {
   const [currentSrc, setCurrentSrc] = useState<string>(src);
   const [isLoaded, setIsLoaded] = useState<boolean>(true); // Initially set to true
   const [flash, setFlash] = useState<boolean>(false); // To handle the flash effect

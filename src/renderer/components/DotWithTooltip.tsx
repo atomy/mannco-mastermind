@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { PlayerInfo } from '@components/PlayerInfo';
 
-export default function DotWithTooltip(props: { player: PlayerInfo, color: string }) {
+export default function DotWithTooltip(props: {
+  player: PlayerInfo;
+  color: string;
+}) {
   const { player, color } = props;
 
   const [isHovered, setIsHovered] = useState(false);

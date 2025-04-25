@@ -23,9 +23,10 @@ export default function ClassIcon({ player }: ClassIconProps) {
   };
 
   // For the TF2 class icon logic
-  const classIconSrc = player.TF2Class && player.TF2Class !== 'Unknown'
-    ? getClassIcon(player.TF2Class)
-    : AllClass;
+  const classIconSrc =
+    player.TF2Class && player.TF2Class !== 'Unknown'
+      ? getClassIcon(player.TF2Class)
+      : AllClass;
 
   return (
     <AnimatedImage
@@ -35,4 +36,4 @@ export default function ClassIcon({ player }: ClassIconProps) {
       style={{ paddingLeft: '6px', paddingRight: '6px' }}
     />
   );
-};
+}

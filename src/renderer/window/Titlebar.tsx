@@ -132,10 +132,10 @@ const Titlebar: React.FC<Props> = (props) => {
   }
 
   return (
-    <div className='window-titlebar'>
+    <div className="window-titlebar">
       {props.icon ? (
-        <section className='window-titlebar-icon'>
-          <img src={props.icon} alt='titlebar icon' />
+        <section className="window-titlebar-icon">
+          <img src={props.icon} alt="titlebar icon" />
         </section>
       ) : (
         ''
@@ -146,7 +146,7 @@ const Titlebar: React.FC<Props> = (props) => {
           centered: props.mode === 'centered-title',
         })}
       >
-        {menusVisible ? '' : <div className='window-title'>{props.title}</div>}
+        {menusVisible ? '' : <div className="window-title">{props.title}</div>}
       </section>
 
       <section
@@ -156,22 +156,22 @@ const Titlebar: React.FC<Props> = (props) => {
       >
         {titlebarMenus.map((item, menuIndex) => {
           return (
-            <div className='menu-item' key={`menu_${menuIndex}`}>
+            <div className="menu-item" key={`menu_${menuIndex}`}>
               <div
-                className='menu-title'
+                className="menu-title"
                 onClick={(e) => showMenu(menuIndex, e)}
                 onMouseEnter={() => onMenuHover(menuIndex)}
                 onMouseDown={(e) => e.preventDefault()}
               >
                 {item.name}
               </div>
-              <div className='menu-popup' ref={menusRef[menuIndex]}>
+              <div className="menu-popup" ref={menusRef[menuIndex]}>
                 {item.items?.map((menuItem, menuItemIndex) => {
                   if (menuItem.name === '__') {
                     return (
                       <div
                         key={`menu_${menuIndex}_popup_item_${menuItemIndex}`}
-                        className='popup-item-separator'
+                        className="popup-item-separator"
                       />
                     );
                   }
@@ -179,14 +179,14 @@ const Titlebar: React.FC<Props> = (props) => {
                   return (
                     <div
                       key={`menu_${menuIndex}_popup_item_${menuItemIndex}`}
-                      className='menu-popup-item'
+                      className="menu-popup-item"
                       onClick={() =>
                         handleAction(menuItem.action, menuItem.value)
                       }
                       onMouseDown={(e) => e.preventDefault()}
                     >
-                      <div className='popup-item-name'>{menuItem.name}</div>
-                      <div className='popup-item-shortcut'>
+                      <div className="popup-item-name">{menuItem.name}</div>
+                      <div className="popup-item-shortcut">
                         {menuItem.shortcut}
                       </div>
                     </div>

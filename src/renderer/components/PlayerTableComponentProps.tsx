@@ -9,7 +9,7 @@ interface PlayerTableComponentProps {
     reason: string,
   ) => void;
   onTeamsAvailable: (available: boolean) => void;
-  appConfig: AppConfig,
+  appConfig: AppConfig;
 }
 
 export default PlayerTableComponentProps;
