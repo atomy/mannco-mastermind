@@ -103,7 +103,7 @@ export default function PlayerTableRow(props: {
   };
 
   const countryFlagSrc = row.SteamCountryCode
-    ? `https://flagcdn.com/h40/${row.SteamCountryCode.toLowerCase()}.png`
+    ? `https://flagcdn.com/h40/${getCountryCode(row.SteamCountryCode).toLowerCase()}.png`
     : 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Flag_of_None.svg/2560px-Flag_of_None.svg.png';
 
   const altText = row.SteamCountryCode
