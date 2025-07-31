@@ -2,6 +2,7 @@ import { PlayerInfo } from '@components/PlayerInfo';
 import { RconAppLogEntry } from '@components/RconAppLogEntry';
 import { RconAppFragEntry } from '@components/RconAppFragEntry';
 import { AppConfig } from '@components/AppConfig';
+import { RconAppBackendData } from '@main/rconAppBackendData';
 
 export interface PlayerDataListener {
   (playerInfoCollection: PlayerInfo[]): void;
@@ -25,4 +26,9 @@ export interface Tf2ClassRequestListener {
 // Define the interface for the tf2 class request listener function
 export interface AppConfigListener {
   (appConfig: AppConfig): void;
+}
+
+// Define the interface for the RCON connection status listener function
+export interface RconBackendDataListener {
+  (backendData: RconAppBackendData): void;
 }

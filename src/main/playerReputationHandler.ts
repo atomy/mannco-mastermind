@@ -1,12 +1,59 @@
 ﻿import https from 'https';
 import { PlayerReputation } from './playerRep';
+import { PlayerInfo } from '@components/PlayerInfo';
+import { sendPlayerData } from './appIpc';
 
 // Array to store player reputations
 let playerReputations: PlayerReputation[] = [];
 
 export const getPlayerReputations = () => playerReputations;
+
+// Function to get current player collection (will be set by app.ts)
+let getCurrentPlayerCollection: () => PlayerInfo[] = () => [];
+
+export const setGetCurrentPlayerCollection = (getter: () => PlayerInfo[]) => {
+  getCurrentPlayerCollection = getter;
+};
+
 export const setPlayerReputations = (reputations: PlayerReputation[]) => {
+  // console.log(
+  //   `[main.ts] setPlayerReputations called with ${reputations.length} reputations:`,
+  //   reputations.map((r) => `${r.steamid}:${r.type}`),
+  // );
   playerReputations = reputations;
+
+  // Update currentPlayerCollection with reputation data and send to frontend
+  const currentPlayerCollection = getCurrentPlayerCollection();
+  console.log(
+    `[main.ts] Current player collection has ${currentPlayerCollection.length} players`,
+  );
+
+  if (currentPlayerCollection.length > 0) {
+    const updatedPlayers = currentPlayerCollection.map((player) => {
+      const reputation = playerReputations.find(
+        (rep) => rep.steamid === player.SteamID,
+      );
+      if (reputation) {
+        // console.log(
+        //   `[main.ts] Updating player ${player.Name} (${player.SteamID}) with reputation ${reputation.type}`,
+        // );
+        return {
+          ...player,
+          PlayerReputationType: reputation.type,
+          PlayerReputationInfo: reputation.reason,
+        };
+      }
+      return player;
+    });
+
+    // Send updated player data to frontend
+    // console.log(
+    //   `[main.ts] Sending ${updatedPlayers.length} updated players to frontend`,
+    // );
+    sendPlayerData(updatedPlayers);
+  } else {
+    console.log(`[main.ts] No current player collection available`);
+  }
 };
 
 interface ReputationResponse {
@@ -123,10 +170,10 @@ export const updatePlayerReputationData = async (steamIds: string[]) => {
     `[main.ts] Checking reputation for ${playersToCheck.length} new players`,
   );
 
-  // Set initial NONE reputation for new players
+  // Set initial UPDATING reputation for new players
   const newReputations = playersToCheck.map((steamId) => ({
     steamid: steamId,
-    type: 'NONE',
+    type: 'IN_PROGRESS',
     reason: '',
   }));
 
@@ -141,6 +188,11 @@ export const updatePlayerReputationData = async (steamIds: string[]) => {
     }
 
     fetchPlayerReputation(playersToCheck[index]).then((reputation) => {
+      console.log(
+        `[main.ts] Reputation result for ${playersToCheck[index]}:`,
+        reputation,
+      );
+
       if (reputation) {
         // Update the existing reputation entry if API returned data
         const existingIndex = playerReputations.findIndex(
@@ -148,6 +200,25 @@ export const updatePlayerReputationData = async (steamIds: string[]) => {
         );
         if (existingIndex !== -1) {
           playerReputations[existingIndex] = reputation;
+          console.log(
+            `[main.ts] Updated reputation for ${playersToCheck[index]} to ${reputation.type}`,
+          );
+          setPlayerReputations(playerReputations);
+        }
+      } else {
+        // No reputation found, set to NONE
+        const existingIndex = playerReputations.findIndex(
+          (r) => r.steamid === playersToCheck[index],
+        );
+        if (existingIndex !== -1) {
+          playerReputations[existingIndex] = {
+            steamid: playersToCheck[index],
+            type: 'NONE',
+            reason: '',
+          };
+          // console.log(
+          //   `[main.ts] Set reputation for ${playersToCheck[index]} to NONE`,
+          // );
           setPlayerReputations(playerReputations);
         }
       }

@@ -1,6 +1,30 @@
 import React, { useState } from 'react';
 import { PlayerInfo } from '@components/PlayerInfo';
 
+// Loading spinner component
+function LoadingSpinner() {
+  return (
+    <>
+      <style>
+        {`
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+      <span
+        style={{
+          display: 'inline-block',
+          animation: 'spin 1s linear infinite',
+        }}
+      >
+        ⏳
+      </span>
+    </>
+  );
+}
+
 export default function DotWithTooltip(props: {
   player: PlayerInfo;
   color: string;
@@ -42,7 +66,13 @@ export default function DotWithTooltip(props: {
             whiteSpace: 'nowrap',
           }}
         >
-          [{player.PlayerReputationType}] {player.PlayerReputationInfo}
+          [
+          {player.PlayerReputationType === 'IN_PROGRESS' ? (
+            <LoadingSpinner />
+          ) : (
+            player.PlayerReputationType
+          )}
+          ] {player.PlayerReputationInfo}
         </div>
       )}
     </div>

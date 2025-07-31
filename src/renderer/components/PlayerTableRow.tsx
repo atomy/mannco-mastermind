@@ -114,8 +114,6 @@ export default function PlayerTableRow(props: {
     ? getCountryName(row.SteamCountryCode)
     : 'Country information unavailable';
 
-  console.log(`app id is: ${appConfig.AppId}`);
-
   // @ts-ignore
   return (
     <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} style={rowStyle()}>

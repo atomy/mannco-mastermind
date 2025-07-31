@@ -6,6 +6,7 @@ import {
   RconAppLogListener,
   Tf2ClassRequestListener,
   AppConfigListener,
+  RconBackendDataListener,
 } from '@main/window/listenerInterfaces';
 import { TeamClassFeedback } from '@components/TeamClassFeedback';
 import TeamClassContext from '@components/context/TeamClassContext';
@@ -17,7 +18,10 @@ import BottomBox from './footer/BottomBox';
 import { RconAppFragEntry } from './RconAppFragEntry';
 import useRemoteConfigHook from './hooks/useRemoteConfigHook';
 import { AppConfig } from './AppConfig';
+import StatusLabel from './StatusLabel';
+import StatusLabelHolder from './StatusLabelHolder';
 import '@styles/app.scss';
+import { RconAppBackendData } from '@main/rconAppBackendData';
 
 function Main() {
   const { weaponsDbConfig, isWeaponsDbConfigLoading, weaponDbConfigError } =
@@ -31,6 +35,7 @@ function Main() {
   const [teamClassFeedback, setTeamClassFeedback] =
     useState<TeamClassFeedback>(null);
   const [appConfig, setAppConfig] = useState<AppConfig | null>(null);
+  const [isRconConnected, setIsRconConnected] = useState<boolean>(false);
 
   const refreshPlayers = useCallback((playerCollection: PlayerInfo[]) => {
     const currentTime = Math.floor(Date.now() / 1000);
@@ -172,12 +177,19 @@ function Main() {
       setAppConfig(config);
     };
 
+    const rconConnectionListener: RconBackendDataListener = (
+      backendData: RconAppBackendData,
+    ) => {
+      setIsRconConnected(backendData.isRconConnected);
+    };
+
     // Register all listeners
     (window as any).electronAPI.onPlayerData(playerDataListener);
     (window as any).electronAPI.onRconAppLog(rconAppLogListener);
     (window as any).electronAPI.onRconAppFrag(rconAppFragListener);
     (window as any).electronAPI.onTf2ClassRequest(tf2ClassRequestListener);
     (window as any).electronAPI.onAppConfig(appConfigListener);
+    (window as any).electronAPI.onBackendDataUpdate(rconConnectionListener);
 
     // Request app config from main process
     console.log('[Application.tsx] Requesting app config from main process');
@@ -190,6 +202,7 @@ function Main() {
       (window as any).electronAPI.removeAllListeners('rcon-applog');
       (window as any).electronAPI.removeAllListeners('rcon-appfrag');
       (window as any).electronAPI.removeAllListeners('app-config');
+      (window as any).electronAPI.removeAllListeners('backend-data');
     };
   }, [
     addRconClientFragMessage,
@@ -208,16 +221,21 @@ function Main() {
     <TeamClassContext.Provider value={teamClassFeedback}>
       <div id="content">
         <div className="player-list">
-          <h1 style={{ paddingLeft: '10px' }}>
-            Current Players{' '}
-            {!teamsAvailable && (
-              <span
-                style={{ fontSize: '0.8rem', color: 'red', marginLeft: '10px' }}
-              >
-                No Team Information available!
-              </span>
-            )}
-          </h1>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '10px',
+              borderBottom: '1px solid #ddd',
+            }}
+          >
+            <h1 style={{ margin: 0 }}>Current Players</h1>
+            <StatusLabelHolder
+              teamsAvailable={teamsAvailable}
+              isRconConnected={isRconConnected}
+            />
+          </div>
           <PlayerTableComponent
             players={players}
             handleAddBlacklistSave={handleAddBlacklistSave}

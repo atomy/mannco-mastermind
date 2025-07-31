@@ -5,12 +5,14 @@ import {
   PlayerDataListener,
   RconAppFragListener,
   RconAppLogListener,
+  RconBackendDataListener,
   Tf2ClassRequestListener,
 } from '@main/window/listenerInterfaces';
 import { RconAppFragEntry } from '@components/RconAppFragEntry';
 import { RconAppLogEntry } from '@components/RconAppLogEntry';
 import titlebarContext from './titlebarContext';
 import { AppConfig } from '@components/AppConfig';
+import { RconAppBackendData } from '@main/rconAppBackendData';
 
 contextBridge.exposeInMainWorld('electron_window', {
   titlebar: titlebarContext,
@@ -79,6 +81,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
       // eslint-disable-next-line no-undef
       (event: Electron.Event, appConfig: AppConfig) => {
         func(appConfig);
+      },
+    );
+  },
+  onBackendDataUpdate: (func: RconBackendDataListener) => {
+    ipcRenderer.on(
+      'backend-data',
+      // eslint-disable-next-line no-undef
+      (event: Electron.Event, backendData: RconAppBackendData) => {
+        func(backendData);
       },
     );
   },
