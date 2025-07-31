@@ -5,7 +5,6 @@
 import { app, BrowserWindow, ipcMain, IpcMainEvent } from 'electron';
 import { ChildProcessWithoutNullStreams } from 'node:child_process';
 import childProcess from 'child_process';
-import crypto from 'crypto';
 import fs from 'fs';
 import https from 'https';
 import { WebSocket } from 'ws';
@@ -13,7 +12,6 @@ import { PlayerInfo } from '@components/PlayerInfo';
 import { RconAppFragEntry } from '@components/RconAppFragEntry';
 import { RconAppLogEntry } from '@components/RconAppLogEntry';
 import { PlayerTF2ClassInfo } from '@main/playerRep';
-import { SteamGamePlayerstats } from '@main/steamGamePlayerstats';
 import { AppConfig } from '@components/AppConfig';
 import { createAppWindow } from './appWindow';
 import {
@@ -35,6 +33,9 @@ import {
   mapWeaponEntityToTFClass,
   sendBackendData,
 } from './appIpc';
+import { computeFileSHA1Sync } from './util';
+import { parseTF2PlayerStats } from './tf2PlayerStats';
+import { PlaytimeRequest } from './playtimeTypes';
 
 let tf2rconChild: ChildProcessWithoutNullStreams | null = null;
 let tf2rconWs: WebSocket | null = null;
@@ -54,6 +55,10 @@ let steamProfileUpdatePlayerList: string[] = [];
 let steamTF2UpdatePlayerList: string[] = [];
 let steamBanUpdatePlayerList: string[] = [];
 let steamPlaytimeUpdatePlayerList: string[] = [];
+
+// Rate-limited playtime request queue
+let playtimeRequestQueue: PlaytimeRequest[] = [];
+let isProcessingPlaytimeQueue = false;
 
 const playerTF2Classes: PlayerTF2ClassInfo[] = [];
 
@@ -313,58 +318,6 @@ const updateSteamBanDataForPlayers = (
     });
   }
 };
-
-const parseTF2PlayerStats = (
-  player: PlayerInfo,
-  playerStats: SteamGamePlayerstats,
-) => {
-  let totalPlayTime = 0;
-  const classes = [
-    'Scout',
-    'Soldier',
-    'Medic',
-    'Engineer',
-    'Heavy',
-    'Sniper',
-    'Spy',
-    'Pyro',
-    'Demoman',
-  ];
-
-  // When playerStats are unavailable, skip.
-  if (typeof playerStats.stats === 'undefined') {
-    console.log(
-      `Failed to acquire tf2-playtime for SteamID '${player.SteamID}'!`,
-    );
-
-    return player;
-  }
-
-  playerStats.stats.forEach((stat) => {
-    const classMatch = classes.some((className) =>
-      stat.name.startsWith(className),
-    );
-    if (classMatch && stat.name.endsWith('.accum.iPlayTime')) {
-      totalPlayTime += stat.value;
-    }
-  });
-
-  // console.log(`SteamID '${player.SteamID}' totalPlayTime: ${totalPlayTime}`);
-
-  player.SteamTF2Playtime = totalPlayTime;
-
-  return player;
-};
-
-// Rate-limited playtime request queue
-interface PlaytimeRequest {
-  playerSteamId: string;
-  appId: number;
-  callback: (playtime: number) => void;
-}
-
-let playtimeRequestQueue: PlaytimeRequest[] = [];
-let isProcessingPlaytimeQueue = false;
 
 // Process the playtime request queue with rate limiting
 const processPlaytimeQueue = () => {
@@ -758,15 +711,6 @@ const connectTf2rconWebsocket = () => {
     });
   }
 };
-
-// computeFileSHA1 function to compute SHA1 hash of a file
-function computeFileSHA1Sync(filePath: string): string {
-  const fileBuffer = fs.readFileSync(filePath);
-  const hashSum = crypto.createHash('sha1');
-  hashSum.update(fileBuffer.toString());
-
-  return hashSum.digest('hex');
-}
 
 // downloadFile function to download a file
 function downloadFile(
