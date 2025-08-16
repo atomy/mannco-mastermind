@@ -3,6 +3,7 @@ export interface AppConfig {
   Environment: string;
   SteamKey: string;
   SteamAppId: string;
+  SteamGameShortname: string;
   SteamPlaytimeApiUrl: string;
   PlayerReputationApiUrl: string;
   PlayerReputationApiKey: string;

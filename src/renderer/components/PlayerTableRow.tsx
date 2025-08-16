@@ -174,6 +174,7 @@ export default function PlayerTableRow(props: {
         <SteamPlaytime
           hours={row.SteamPlaytime}
           tf2Minutes={row.SteamTF2Playtime}
+          appConfig={appConfig}
         />
       </StyledTableCell>
       <StyledTableCell align="right">

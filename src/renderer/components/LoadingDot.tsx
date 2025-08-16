@@ -1,7 +1,7 @@
 import React from 'react';
 import { PlayerInfo } from './PlayerInfo';
 
-// Loading spinner component (same as in SteamTF2Playtime)
+// Loading spinner component (same as in Playtime)
 function LoadingSpinner() {
   return (
     <>

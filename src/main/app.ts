@@ -174,6 +174,7 @@ const installAppConfigHandler = () => {
     Environment: process.env.ENVIRONMENT || 'production',
     SteamKey: process.env.STEAM_KEY || '',
     SteamAppId: process.env.STEAM_APPID || '',
+    SteamGameShortname: process.env.STEAM_GAME_SHORTNAME || '',
     SteamPlaytimeApiUrl: process.env.STEAM_PLAYTIME_API_URL || '',
     PlayerReputationApiUrl: process.env.PLAYER_REPUATION_API_URL || '',
     PlayerReputationApiKey: process.env.PLAYER_REPUATION_API_KEY || '',
@@ -632,9 +633,9 @@ const connectTf2rconWebsocket = () => {
     tf2rconWs.on('message', function incoming(data: string) {
       // console.log(`[main.ts] Received: ${String(data)}`);
       const incommingJson = JSON.parse(String(data));
+      setIsRconConnected(true);
 
       if (incommingJson.type === 'command') {
-        setIsRconConnected(true);
       } else if (incommingJson.type === 'player-update') {
         const playerJson = JSON.stringify(incommingJson['current-players']);
         currentPlayerCollection = JSON.parse(playerJson);
@@ -934,7 +935,7 @@ const startSteamTF2Updater = () => {
 
 const startSteamBanUpdater = () => {
   if (typeof process.env.STEAM_KEY === 'undefined') {
-    console.log('Env *STEAM_KEY* not configured, not updating steam-tf2-data.');
+    console.log('Env *STEAM_KEY* not configured, not updating steam-ban-data.');
     return;
   }
 
@@ -948,6 +949,50 @@ const startSteamBanUpdater = () => {
     updateSteamBanDataForPlayers(steam, steamBanUpdatePlayerList);
     steamBanUpdatePlayerList = [];
     // console.log('[main.ts] Updating steam-ban data... DONE');
+  }, 10000);
+};
+
+// General playtime updater for all games
+const startSteamPlaytimeUpdater = () => {
+  if (typeof process.env.STEAM_KEY === 'undefined') {
+    console.log(
+      'Env *STEAM_KEY* not configured, not updating steam-playtime-data.',
+    );
+    return;
+  }
+
+  // Regularly update steam playtime data for all games.
+  steamPlaytimeUpdateTimer = setInterval(() => {
+    // console.log('[main.ts] Updating steam playtime data...');
+    steamPlaytimeUpdatePlayerList.forEach((playerSteamID) => {
+      const currentAppId = Number(process.env.STEAM_APPID) || 0;
+      getSteamGamePlaytime(playerSteamID, currentAppId, (playtime) => {
+        const playerIndex = currentPlayerCollection.findIndex(
+          (p) => p.SteamID === playerSteamID,
+        );
+        if (playerIndex !== -1) {
+          console.log(
+            `[main.ts] Updated playtime for ${currentPlayerCollection[playerIndex].Name} (${playerSteamID}) in game ${currentAppId}: ${playtime} hours`,
+          );
+          currentPlayerCollection[playerIndex].SteamPlaytime =
+            playtime.toString();
+
+          // Cache the updated playtime
+          const existingCacheIndex = currentSteamPlaytimeInformation.findIndex(
+            (p) => p.SteamID === playerSteamID,
+          );
+          if (existingCacheIndex !== -1) {
+            currentSteamPlaytimeInformation[existingCacheIndex].SteamPlaytime =
+              playtime.toString();
+          } else {
+            const cachePlayer = { ...currentPlayerCollection[playerIndex] };
+            currentSteamPlaytimeInformation.push(cachePlayer);
+          }
+        }
+      });
+    });
+    steamPlaytimeUpdatePlayerList = [];
+    // console.log('[main.ts] Updating steam playtime data... DONE');
   }, 10000);
 };
 
@@ -988,6 +1033,8 @@ app.on('ready', () => {
   if (process.env.STEAM_APPID === '440') {
     startSteamTF2Updater();
   }
+  // Start general playtime updater for all games
+  startSteamPlaytimeUpdater();
   startSteamBanUpdater();
   startPlayerReputationUpdateTimer();
   createAppWindow();

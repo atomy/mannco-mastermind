@@ -167,6 +167,7 @@ function Main() {
         Environment: config.Environment,
         SteamKey: config.SteamKey,
         SteamAppId: config.SteamAppId,
+        SteamGameShortname: config.SteamGameShortname,
         SteamPlaytimeApiUrl: config.SteamPlaytimeApiUrl,
         PlayerReputationApiUrl: config.PlayerReputationApiUrl,
         PlayerReputationApiKey: config.PlayerReputationApiKey,
