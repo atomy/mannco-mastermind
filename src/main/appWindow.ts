@@ -28,7 +28,6 @@ export function createAppWindow(): BrowserWindow {
   // Criteria to find the external display based on bounds
   const targetBounds = { x: -247, y: -1086, width: 1920, height: 1080 };
   const externalDisplay = displays.find((display) => {
-    // %TODO, make configurable
     const { bounds } = display;
     return (
       bounds.x === targetBounds.x &&

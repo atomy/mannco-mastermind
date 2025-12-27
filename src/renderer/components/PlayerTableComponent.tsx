@@ -40,16 +40,20 @@ export default function PlayerTableComponent({
 
   return (
     <Grid container spacing={2}>
-      <PlayerTeamTable
-        players={getTeamPlayers(true)}
-        handleAddBlacklistSave={handleAddBlacklistSave}
-        appConfig={appConfig}
-      />
-      <PlayerTeamTable
-        players={getTeamPlayers(false)}
-        handleAddBlacklistSave={handleAddBlacklistSave}
-        appConfig={appConfig}
-      />
+      <Grid item sm={6} sx={{ borderRight: '1px solid rgba(0, 0, 0, 0.12)' }}>
+        <PlayerTeamTable
+          players={getTeamPlayers(true)}
+          handleAddBlacklistSave={handleAddBlacklistSave}
+          appConfig={appConfig}
+        />
+      </Grid>
+      <Grid item sm={6}>
+        <PlayerTeamTable
+          players={getTeamPlayers(false)}
+          handleAddBlacklistSave={handleAddBlacklistSave}
+          appConfig={appConfig}
+        />
+      </Grid>
     </Grid>
   );
 }

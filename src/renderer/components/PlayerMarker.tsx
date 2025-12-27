@@ -3,6 +3,7 @@ import DotWithTooltip from '@components/DotWithTooltip';
 import VacBanned from './VacBanned';
 import LoadingDot from './LoadingDot';
 import { PlayerInfo } from './PlayerInfo';
+import { AppConfig } from './AppConfig';
 
 // Reputation type constants
 const REPUTATION_TYPES = {
@@ -19,8 +20,11 @@ const REPUTATION_TYPES = {
   IN_PROGRESS: 'IN_PROGRESS',
 };
 
-export default function PlayerMarker(props: { player: PlayerInfo }) {
-  const { player } = props;
+export default function PlayerMarker(props: {
+  player: PlayerInfo;
+  appConfig?: AppConfig;
+}) {
+  const { player, appConfig } = props;
 
   // Reputation type to color mapping
   const REPUTATION_COLOR_MAP = {
@@ -63,6 +67,6 @@ export default function PlayerMarker(props: { player: PlayerInfo }) {
 
   // Check for reputation color
   if (dotColor) {
-    return <DotWithTooltip player={player} color={dotColor} />;
+    return <DotWithTooltip player={player} color={dotColor} appConfig={appConfig} />;
   }
 }

@@ -32,4 +32,17 @@ export interface PlayerInfo {
   SteamConfigured: number;
   PlayerReputationInfo: string;
   PlayerReputationType: string;
+  DysStatsLoaded: string;
+  DysRank: number;
+  DysPoints: number;
+  DysAssist: number;
+  DysCyberdamage: number;
+  DysCyberfrag: number;
+  DysDamage: number;
+  DysFrag: number;
+  DysHack: number;
+  DysHealing: number;
+  DysObjective: number;
+  DysSecondary: number;
+  DysTacscan: number;
 }

@@ -25,11 +25,15 @@ function LoadingSpinner() {
   );
 }
 
+import Link from '@mui/material/Link';
+import { AppConfig } from './AppConfig';
+
 export default function DotWithTooltip(props: {
   player: PlayerInfo;
   color: string;
+  appConfig?: AppConfig;
 }) {
-  const { player, color } = props;
+  const { player, color, appConfig } = props;
 
   const [isHovered, setIsHovered] = useState(false);
 
@@ -39,14 +43,26 @@ export default function DotWithTooltip(props: {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <svg
-        width="20px"
-        height="20px"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 20 20"
+      <Link
+        href={
+          appConfig?.ReputationWwwUrl
+            ? `${appConfig.ReputationWwwUrl.replace(/\/$/, '')}/id/${player.SteamID}`
+            : '#'
+        }
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ textDecoration: 'none', display: 'inline-block' }}
+        onClick={(e) => e.stopPropagation()}
       >
-        <circle cx="10" cy="10" r="10" fill={color} />
-      </svg>
+        <svg
+          width="20px"
+          height="20px"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+        >
+          <circle cx="10" cy="10" r="10" fill={color} />
+        </svg>
+      </Link>
 
       {isHovered && (
         <div

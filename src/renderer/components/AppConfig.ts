@@ -7,6 +7,8 @@ export interface AppConfig {
   SteamPlaytimeApiUrl: string;
   PlayerReputationApiUrl: string;
   PlayerReputationApiKey: string;
+  ReputationWwwUrl: string;
+  DysStatsApiUrl: string;
   Tf2RconAutostart: string;
   AutoOpenDevtools: string;
   Tf2LogPath: string;

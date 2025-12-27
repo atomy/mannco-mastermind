@@ -20,6 +20,7 @@ import {
   updatePlayerReputationData,
   setGetCurrentPlayerCollection,
 } from './playerReputationHandler';
+import { getDysStats } from './dysStatsHandler';
 import {
   tf2RconFilepath,
   tf2RconDownloadSite,
@@ -51,10 +52,13 @@ let steamBanUpdateTimer: NodeJS.Timeout | null = null;
 let steamPlaytimeUpdateTimer: NodeJS.Timeout | null = null;
 // eslint-disable-next-line no-undef
 let playerReputationUpdateTime: NodeJS.Timeout | null = null;
+// eslint-disable-next-line no-undef
+let dysStatsUpdateTimer: NodeJS.Timeout | null = null;
 let steamProfileUpdatePlayerList: string[] = [];
 let steamTF2UpdatePlayerList: string[] = [];
 let steamBanUpdatePlayerList: string[] = [];
 let steamPlaytimeUpdatePlayerList: string[] = [];
+let dysStatsUpdatePlayerList: string[] = [];
 
 // Rate-limited playtime request queue
 let playtimeRequestQueue: PlaytimeRequest[] = [];
@@ -66,6 +70,7 @@ const currentSteamProfileInformation: PlayerInfo[] = [];
 const currentSteamTF2Information: PlayerInfo[] = [];
 const currentSteamBanInformation: PlayerInfo[] = [];
 const currentSteamPlaytimeInformation: PlayerInfo[] = [];
+const currentDysStatsInformation: PlayerInfo[] = [];
 
 const SteamApi = require('steam-web');
 
@@ -178,6 +183,8 @@ const installAppConfigHandler = () => {
     SteamPlaytimeApiUrl: process.env.STEAM_PLAYTIME_API_URL || '',
     PlayerReputationApiUrl: process.env.PLAYER_REPUATION_API_URL || '',
     PlayerReputationApiKey: process.env.PLAYER_REPUATION_API_KEY || '',
+    ReputationWwwUrl: process.env.REPUTATION_WWW_URL || '',
+    DysStatsApiUrl: process.env.DYSTATS_API_URL || '',
     Tf2RconAutostart: process.env.TF2_RCON_AUTOSTART || '1',
     AutoOpenDevtools: process.env.AUTO_OPEN_DEVTOOLS || '0',
     Tf2LogPath: process.env.TF2_LOGPATH || '',
@@ -540,6 +547,27 @@ const updateSteamInfo = () => {
         steamPlaytimeUpdatePlayerList.push(player.SteamID);
       }
     }
+
+    // Check cached Dys stats data (only for appid 17580)
+    if (process.env.STEAM_APPID === '17580') {
+      currentDysStatsInformation.forEach((dysPlayer) => {
+        if (player.SteamID === dysPlayer.SteamID) {
+          player.DysStatsLoaded = dysPlayer.DysStatsLoaded;
+          player.DysRank = dysPlayer.DysRank;
+          player.DysPoints = dysPlayer.DysPoints;
+          player.DysAssist = dysPlayer.DysAssist;
+          player.DysCyberdamage = dysPlayer.DysCyberdamage;
+          player.DysCyberfrag = dysPlayer.DysCyberfrag;
+          player.DysDamage = dysPlayer.DysDamage;
+          player.DysFrag = dysPlayer.DysFrag;
+          player.DysHack = dysPlayer.DysHack;
+          player.DysHealing = dysPlayer.DysHealing;
+          player.DysObjective = dysPlayer.DysObjective;
+          player.DysSecondary = dysPlayer.DysSecondary;
+          player.DysTacscan = dysPlayer.DysTacscan;
+        }
+      });
+    }
   });
 
   // Check if there are currently any players.
@@ -578,6 +606,21 @@ const updateSteamInfo = () => {
     if (typeof player.PlayerReputationType === 'undefined') {
       player.PlayerReputationType = 'IN_PROGRESS';
       player.PlayerReputationInfo = '';
+    }
+
+    // Update Dys stats for the given player (only for appid 17580)
+    if (process.env.STEAM_APPID === '17580') {
+      if (typeof player.DysPoints === 'undefined') {
+        // Check if the SteamID is not already in the list
+        if (!dysStatsUpdatePlayerList.includes(player.SteamID)) {
+          console.log(
+            `[main.ts] Adding player ${player.Name} (${player.SteamID}) to Dys stats update queue`,
+          );
+          dysStatsUpdatePlayerList.push(player.SteamID);
+        }
+        // Set loading state
+        player.DysStatsLoaded = 'IN_PROGRESS';
+      }
     }
   });
 };
@@ -996,6 +1039,152 @@ const startSteamPlaytimeUpdater = () => {
   }, 10000);
 };
 
+// Dys stats updater for appid 17580
+const startDysStatsUpdater = () => {
+  if (process.env.STEAM_APPID !== '17580') {
+    console.log(
+      '[main.ts] Not starting Dys stats updater (appid is not 17580)',
+    );
+    return;
+  }
+
+  if (!process.env.DYSTATS_API_URL) {
+    console.warn(
+      '[main.ts] WARNING: DYSTATS_API_URL not configured, Dys stats will not be fetched (appid 17580)',
+    );
+    return;
+  }
+
+  console.log(
+    `[main.ts] Starting Dys stats updater (interval: 10s, ${dysStatsUpdatePlayerList.length} players in queue)`,
+  );
+
+  // Regularly update Dys stats data.
+  dysStatsUpdateTimer = setInterval(() => {
+    if (dysStatsUpdatePlayerList.length > 0) {
+      console.log(
+        `[main.ts] Processing Dys stats update queue: ${dysStatsUpdatePlayerList.length} player(s)`,
+      );
+    }
+    dysStatsUpdatePlayerList.forEach((playerSteamID) => {
+      const player = currentPlayerCollection.find((p) => p.SteamID === playerSteamID);
+      const playerName = player ? player.Name : 'Unknown';
+      console.log(
+        `[main.ts] Fetching Dys stats for player: ${playerName} (${playerSteamID})`,
+      );
+      getDysStats(playerSteamID, (stats) => {
+        const playerIndex = currentPlayerCollection.findIndex(
+          (p) => p.SteamID === playerSteamID,
+        );
+        if (playerIndex !== -1) {
+          if (stats) {
+            console.log(
+              `[main.ts] Successfully updated Dys stats for ${currentPlayerCollection[playerIndex].Name} (${playerSteamID}): rank=${stats.rank}, points=${stats.points}, frag=${stats.frag}, damage=${stats.damage}, assist=${stats.assist}, objective=${stats.objective}`,
+            );
+            currentPlayerCollection[playerIndex].DysRank = stats.rank;
+            currentPlayerCollection[playerIndex].DysPoints = stats.points;
+            currentPlayerCollection[playerIndex].DysAssist = stats.assist;
+            currentPlayerCollection[playerIndex].DysCyberdamage =
+              stats.cyberdamage;
+            currentPlayerCollection[playerIndex].DysCyberfrag = stats.cyberfrag;
+            currentPlayerCollection[playerIndex].DysDamage = stats.damage;
+            currentPlayerCollection[playerIndex].DysFrag = stats.frag;
+            currentPlayerCollection[playerIndex].DysHack = stats.hack;
+            currentPlayerCollection[playerIndex].DysHealing = stats.healing;
+            currentPlayerCollection[playerIndex].DysObjective =
+              stats.objective;
+            currentPlayerCollection[playerIndex].DysSecondary =
+              stats.secondary;
+            currentPlayerCollection[playerIndex].DysTacscan = stats.tacscan;
+            currentPlayerCollection[playerIndex].DysStatsLoaded = 'COMPLETED';
+
+            // Cache the updated Dys stats
+            const existingCacheIndex = currentDysStatsInformation.findIndex(
+              (p) => p.SteamID === playerSteamID,
+            );
+            if (existingCacheIndex !== -1) {
+              currentDysStatsInformation[existingCacheIndex].DysRank =
+                stats.rank;
+              currentDysStatsInformation[existingCacheIndex].DysPoints =
+                stats.points;
+              currentDysStatsInformation[existingCacheIndex].DysAssist =
+                stats.assist;
+              currentDysStatsInformation[existingCacheIndex].DysCyberdamage =
+                stats.cyberdamage;
+              currentDysStatsInformation[existingCacheIndex].DysCyberfrag =
+                stats.cyberfrag;
+              currentDysStatsInformation[existingCacheIndex].DysDamage =
+                stats.damage;
+              currentDysStatsInformation[existingCacheIndex].DysFrag = stats.frag;
+              currentDysStatsInformation[existingCacheIndex].DysHack = stats.hack;
+              currentDysStatsInformation[existingCacheIndex].DysHealing =
+                stats.healing;
+              currentDysStatsInformation[existingCacheIndex].DysObjective =
+                stats.objective;
+              currentDysStatsInformation[existingCacheIndex].DysSecondary =
+                stats.secondary;
+              currentDysStatsInformation[existingCacheIndex].DysTacscan =
+                stats.tacscan;
+              currentDysStatsInformation[existingCacheIndex].DysStatsLoaded =
+                'COMPLETED';
+            } else {
+              const cachePlayer = { ...currentPlayerCollection[playerIndex] };
+              currentDysStatsInformation.push(cachePlayer);
+              console.log(
+                `[main.ts] Cached Dys stats for ${currentPlayerCollection[playerIndex].Name} (${playerSteamID})`,
+              );
+            }
+          } else {
+            // No stats found, set defaults and cache to prevent retries
+            console.log(
+              `[main.ts] No Dys stats found for ${currentPlayerCollection[playerIndex].Name} (${playerSteamID}), setting defaults to 0 and caching to prevent retries`,
+            );
+            currentPlayerCollection[playerIndex].DysRank = 0;
+            currentPlayerCollection[playerIndex].DysPoints = 0;
+            currentPlayerCollection[playerIndex].DysAssist = 0;
+            currentPlayerCollection[playerIndex].DysCyberdamage = 0;
+            currentPlayerCollection[playerIndex].DysCyberfrag = 0;
+            currentPlayerCollection[playerIndex].DysDamage = 0;
+            currentPlayerCollection[playerIndex].DysFrag = 0;
+            currentPlayerCollection[playerIndex].DysHack = 0;
+            currentPlayerCollection[playerIndex].DysHealing = 0;
+            currentPlayerCollection[playerIndex].DysObjective = 0;
+            currentPlayerCollection[playerIndex].DysSecondary = 0;
+            currentPlayerCollection[playerIndex].DysTacscan = 0;
+            currentPlayerCollection[playerIndex].DysStatsLoaded = 'COMPLETED';
+
+            // Cache the "no stats found" result to prevent retries
+            const existingCacheIndex = currentDysStatsInformation.findIndex(
+              (p) => p.SteamID === playerSteamID,
+            );
+            if (existingCacheIndex !== -1) {
+              currentDysStatsInformation[existingCacheIndex].DysRank = 0;
+              currentDysStatsInformation[existingCacheIndex].DysPoints = 0;
+              currentDysStatsInformation[existingCacheIndex].DysAssist = 0;
+              currentDysStatsInformation[existingCacheIndex].DysCyberdamage = 0;
+              currentDysStatsInformation[existingCacheIndex].DysCyberfrag = 0;
+              currentDysStatsInformation[existingCacheIndex].DysDamage = 0;
+              currentDysStatsInformation[existingCacheIndex].DysFrag = 0;
+              currentDysStatsInformation[existingCacheIndex].DysHack = 0;
+              currentDysStatsInformation[existingCacheIndex].DysHealing = 0;
+              currentDysStatsInformation[existingCacheIndex].DysObjective = 0;
+              currentDysStatsInformation[existingCacheIndex].DysSecondary = 0;
+              currentDysStatsInformation[existingCacheIndex].DysTacscan = 0;
+              currentDysStatsInformation[existingCacheIndex].DysStatsLoaded =
+                'COMPLETED';
+            } else {
+              const cachePlayer = { ...currentPlayerCollection[playerIndex] };
+              currentDysStatsInformation.push(cachePlayer);
+            }
+          }
+        }
+      });
+    });
+    dysStatsUpdatePlayerList = [];
+    // console.log('[main.ts] Updating Dys stats data... DONE');
+  }, 10000);
+};
+
 /** Handle creating/removing shortcuts on Windows when installing/uninstalling. */
 // eslint-disable-next-line global-require
 if (require('electron-squirrel-startup')) {
@@ -1037,6 +1226,10 @@ app.on('ready', () => {
   startSteamPlaytimeUpdater();
   startSteamBanUpdater();
   startPlayerReputationUpdateTimer();
+  // Only start Dys stats updater for Dystopia (appid 17580)
+  if (process.env.STEAM_APPID === '17580') {
+    startDysStatsUpdater();
+  }
   createAppWindow();
   installAppConfigHandler();
 

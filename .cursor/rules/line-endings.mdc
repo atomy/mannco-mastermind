@@ -1,0 +1,44 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Line Endings
+
+All files in this codebase must use Unix-style line endings (LF, `\n`) rather than Windows-style line endings (CRLF, `\r\n`).
+
+## Requirements
+
+- Use LF (`\n`) for all line endings
+- Never use CRLF (`\r\n`)
+- Configure your editor to use LF line endings
+- Set `.gitattributes` to enforce LF line endings
+- Run `git config core.autocrlf input` on your local machine
+
+## Why?
+
+- Ensures consistency across different operating systems
+- Prevents issues with tools and build processes
+- Reduces unnecessary diff changes
+- Follows standard practice for modern web development
+
+## How to Fix
+
+If you see linter errors about `Delete ␍`, you need to:
+
+1. Convert existing files to LF:
+   ```bash
+   # On Unix systems
+   find . -type f -name "*.ts" -o -name "*.tsx" | xargs dos2unix
+   
+   # On Windows with Git Bash
+   find . -type f -name "*.ts" -o -name "*.tsx" | xargs unix2dos
+   ```
+
+2. Configure Git:
+   ```bash
+   git config core.autocrlf input
+   ```
+
+3. Configure your editor to use LF line endings
+

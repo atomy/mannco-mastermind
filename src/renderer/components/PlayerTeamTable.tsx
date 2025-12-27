@@ -1,6 +1,5 @@
 import React from 'react';
 import { PlayerInfo } from '@components/PlayerInfo';
-import { Grid } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
@@ -34,8 +33,7 @@ export default function PlayerTeamTable({
   appConfig,
 }: PlayerTeamTableProps) {
   return (
-    <Grid item sm={6}>
-      <Table aria-label="collapsible table">
+    <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>
             <StyledTableCell>Name</StyledTableCell>
@@ -48,6 +46,10 @@ export default function PlayerTeamTable({
             </StyledTableCell>
             <StyledTableCell align="right">Playtime</StyledTableCell>
             <StyledTableCell align="right">Age</StyledTableCell>
+            {/* Stats column only for Dystopia (appid 17580) */}
+            {appConfig?.SteamAppId === '17580' && (
+              <StyledTableCell align="right">Stats</StyledTableCell>
+            )}
             <StyledTableCell align="right">Reputation</StyledTableCell>
             <StyledTableCell align="right">Actions</StyledTableCell>
           </TableRow>
@@ -63,6 +65,5 @@ export default function PlayerTeamTable({
           ))}
         </TableBody>
       </Table>
-    </Grid>
   );
 }
