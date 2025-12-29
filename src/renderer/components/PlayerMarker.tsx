@@ -50,10 +50,6 @@ export default function PlayerMarker(props: {
 
   const dotColor = getDotColor(player.PlayerReputationType);
 
-  if (player.SteamID === '76561199886583888') {
-    console.log('out: ', JSON.stringify(player, null, 2));
-  }
-
   // Check for VAC ban first
   if (player.SteamBanDaysSinceLastBan > 0) {
     return (
