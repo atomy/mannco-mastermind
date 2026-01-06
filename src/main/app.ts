@@ -234,7 +234,17 @@ const updateSteamProfileDataForPlayers = (
                 // console.log(
                 // `Updated '${player.SteamID}': ${JSON.stringify(player)}`,
                 // );
-                currentSteamProfileInformation.push(player);
+                // Create a copy to avoid stale references
+                const cachePlayer = { ...player };
+                // Remove or update existing cache entry for this SteamID
+                const existingIndex = currentSteamProfileInformation.findIndex(
+                  (p) => p.SteamID === player.SteamID,
+                );
+                if (existingIndex !== -1) {
+                  currentSteamProfileInformation[existingIndex] = cachePlayer;
+                } else {
+                  currentSteamProfileInformation.push(cachePlayer);
+                }
               }
             });
           });
@@ -297,7 +307,16 @@ const updateSteamBanDataForPlayers = (
             if (playerSteamIds.includes(player.SteamID)) {
               player.SteamBanDataLoaded = 'ERROR';
               // console.log(`ERROR '${player.SteamID}': ${err}`);
-              currentSteamBanInformation.push(player);
+              // Create a copy to avoid stale references
+              const cachePlayer = { ...player };
+              const existingIndex = currentSteamBanInformation.findIndex(
+                (p) => p.SteamID === player.SteamID,
+              );
+              if (existingIndex !== -1) {
+                currentSteamBanInformation[existingIndex] = cachePlayer;
+              } else {
+                currentSteamBanInformation.push(cachePlayer);
+              }
             }
           });
         } else if (data && typeof data.players !== 'undefined') {
@@ -317,7 +336,16 @@ const updateSteamBanDataForPlayers = (
                 // console.log(
                 //   `updateSteamBanDataForPlayers() Updated '${player.SteamID}': ${JSON.stringify(player)}`,
                 // );
-                currentSteamBanInformation.push(player);
+                // Create a copy to avoid stale references
+                const cachePlayer = { ...player };
+                const existingIndex = currentSteamBanInformation.findIndex(
+                  (p) => p.SteamID === player.SteamID,
+                );
+                if (existingIndex !== -1) {
+                  currentSteamBanInformation[existingIndex] = cachePlayer;
+                } else {
+                  currentSteamBanInformation.push(cachePlayer);
+                }
               }
             });
           });
@@ -464,7 +492,16 @@ const updateSteamTF2DataForPlayer = (
           currentPlayerCollection.forEach((player) => {
             if (player.SteamID === playerSteamId) {
               player.SteamTF2DataLoaded = 'ERROR';
-              currentSteamTF2Information.push(player);
+              // Create a copy to avoid stale references
+              const cachePlayer = { ...player };
+              const existingIndex = currentSteamTF2Information.findIndex(
+                (p) => p.SteamID === player.SteamID,
+              );
+              if (existingIndex !== -1) {
+                currentSteamTF2Information[existingIndex] = cachePlayer;
+              } else {
+                currentSteamTF2Information.push(cachePlayer);
+              }
             }
           });
         } else if (data && typeof data.playerstats === 'object') {
@@ -477,7 +514,16 @@ const updateSteamTF2DataForPlayer = (
                 steamPlayerStats,
               );
               player.SteamTF2Playtime = playtimePlayer.SteamTF2Playtime;
-              currentSteamTF2Information.push(player);
+              // Create a copy to avoid stale references
+              const cachePlayer = { ...player };
+              const existingIndex = currentSteamTF2Information.findIndex(
+                (p) => p.SteamID === player.SteamID,
+              );
+              if (existingIndex !== -1) {
+                currentSteamTF2Information[existingIndex] = cachePlayer;
+              } else {
+                currentSteamTF2Information.push(cachePlayer);
+              }
             }
           });
         }
@@ -681,7 +727,42 @@ const connectTf2rconWebsocket = () => {
       if (incommingJson.type === 'command') {
       } else if (incommingJson.type === 'player-update') {
         const playerJson = JSON.stringify(incommingJson['current-players']);
-        currentPlayerCollection = JSON.parse(playerJson);
+        const newPlayerCollection = JSON.parse(playerJson);
+        
+        // Clean up stale cache entries before updating to prevent race conditions
+        // Remove cache entries for players that no longer exist
+        const currentSteamIds = new Set(newPlayerCollection.map((p: PlayerInfo) => p.SteamID));
+        const cleanCacheArray = (cacheArray: PlayerInfo[]) => {
+          return cacheArray.filter((cachedPlayer) => 
+            currentSteamIds.has(cachedPlayer.SteamID)
+          );
+        };
+        
+        // Update currentPlayerCollection after cleaning caches to prevent stale references
+        currentPlayerCollection = newPlayerCollection;
+        
+        // Clean stale entries from all cache arrays
+        // Note: We create new arrays to avoid mutating while iterating
+        const cleanedProfileInfo = cleanCacheArray(currentSteamProfileInformation);
+        currentSteamProfileInformation.length = 0;
+        currentSteamProfileInformation.push(...cleanedProfileInfo);
+        
+        const cleanedTF2Info = cleanCacheArray(currentSteamTF2Information);
+        currentSteamTF2Information.length = 0;
+        currentSteamTF2Information.push(...cleanedTF2Info);
+        
+        const cleanedBanInfo = cleanCacheArray(currentSteamBanInformation);
+        currentSteamBanInformation.length = 0;
+        currentSteamBanInformation.push(...cleanedBanInfo);
+        
+        const cleanedPlaytimeInfo = cleanCacheArray(currentSteamPlaytimeInformation);
+        currentSteamPlaytimeInformation.length = 0;
+        currentSteamPlaytimeInformation.push(...cleanedPlaytimeInfo);
+        
+        const cleanedDysInfo = cleanCacheArray(currentDysStatsInformation);
+        currentDysStatsInformation.length = 0;
+        currentDysStatsInformation.push(...cleanedDysInfo);
+        
         // console.log(
         //   `play-update coming in, len: ${currentPlayerCollection.length}`,
         // );
