@@ -1,5 +1,6 @@
 import * as React from 'react';
 import TableCell from '@mui/material/TableCell';
+import Tooltip from '@mui/material/Tooltip';
 import { styled } from '@mui/system';
 import { PlayerInfo } from '@components/PlayerInfo';
 import { AppConfig } from '@components/AppConfig';
@@ -35,6 +36,13 @@ export default function PlayerNameCell({
     ? getCountryName(row.SteamCountryCode)
     : 'Country information unavailable';
 
+  const playerName = row.Name || '';
+  const maxLength = 16;
+  const isNameTruncated = playerName.length > maxLength;
+  const displayName = isNameTruncated 
+    ? playerName.substring(0, maxLength) + '...'
+    : playerName;
+
   return (
     <StyledTableCell
       component="th"
@@ -55,13 +63,25 @@ export default function PlayerNameCell({
       />
       {appConfig?.AppId === '440' && <ClassIcon player={row} />}
       <SteamAvatar player={row} />
-      <span
-        style={{
-          paddingLeft: '10px',
-        }}
-      >
-        {row.Name}
-      </span>
+      {isNameTruncated ? (
+        <Tooltip title={playerName} arrow>
+          <span
+            style={{
+              paddingLeft: '10px',
+            }}
+          >
+            {displayName}
+          </span>
+        </Tooltip>
+      ) : (
+        <span
+          style={{
+            paddingLeft: '10px',
+          }}
+        >
+          {displayName}
+        </span>
+      )}
     </StyledTableCell>
   );
 }
