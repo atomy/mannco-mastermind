@@ -1294,10 +1294,25 @@ app.on('ready', () => {
   // Download tf2-rcon when needed.
   downloadTF2Rcon(() => {
     // Start tf2-rcon-backend when download completed or file already present.
-    startTF2Rcon();
+    const willStartProcess =
+      !process.env.TF2_RCON_AUTOSTART ||
+      Number(process.env.TF2_RCON_AUTOSTART) !== 0;
+    
+    if (willStartProcess) {
+      startTF2Rcon();
+      // Wait for tf2-rcon to start before connecting WebSocket
+      // Give the process 2 seconds to start and bind to the port
+      setTimeout(() => {
+        connectTf2rconWebsocket();
+      }, 2000);
+    } else {
+      // Autostart is disabled, but still try to connect (user might start manually)
+      // Use a shorter delay since the process might already be running
+      setTimeout(() => {
+        connectTf2rconWebsocket();
+      }, 500);
+    }
   });
-
-  connectTf2rconWebsocket();
   startSteamProfileUpdater();
   // Only start TF2 updater for TF2 (appid 440)
   if (process.env.STEAM_APPID === '440') {
