@@ -12,7 +12,7 @@ import {
   PlayerInfo,
   ChatInfo,
   FragInfo,
-} from './LogParser';
+} from './logParser';
 
 export class LogWatcher extends EventEmitter {
   private logPath: string;

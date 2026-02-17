@@ -106,3 +106,11 @@ export const getDysStats = (
     });
 };
 
+/** Promise-based wrapper for getDysStats */
+export const getDysStatsAsync = (
+  playerSteamId: string,
+): Promise<DysStats | null> =>
+  new Promise((resolve) => {
+    getDysStats(playerSteamId, resolve);
+  });
+

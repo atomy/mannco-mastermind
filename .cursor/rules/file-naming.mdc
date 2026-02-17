@@ -1,0 +1,24 @@
+---
+description: File naming convention — use camelCase for all source files
+alwaysApply: true
+---
+
+# File Naming
+
+Use **camelCase** for all source file names in this project. Do not use PascalCase for file names.
+
+## Rules
+
+- **TypeScript/JavaScript**: `camelCase.ts`, `camelCase.tsx`, `camelCase.js`
+- **One main export per file**: Name the file after its primary export (e.g. `rconManager.ts` exports `RconManager`, `dysStatsHandler.ts` exports handler logic).
+- **Class/component names** stay PascalCase in code; only the **filename** is camelCase.
+
+## Examples
+
+- ✅ `rconManager.ts`, `rconClient.ts`, `logParser.ts`, `logWatcher.ts`
+- ✅ `dysStatsHandler.ts`, `appWindow.ts`, `playerReputationHandler.ts`, `rconAppBackendData.ts`
+- ❌ `RconManager.ts`, `LogParser.ts`, `AppWindow.ts`
+
+## Rationale
+
+Consistent camelCase filenames match the rest of the codebase and avoid mixing conventions (PascalCase for files vs. camelCase elsewhere).

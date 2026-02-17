@@ -139,8 +139,6 @@ export class LogParser {
       VictimName: match[2],
       Weapon: match[3],
       Crit: !!match[4],
-      KillerSteamID: '',
-      VictimSteamID: '',
     };
   }
 

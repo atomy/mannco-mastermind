@@ -6,9 +6,9 @@
 import { EventEmitter } from 'events';
 import * as os from 'os';
 import * as net from 'net';
-import { RconClient } from './RconClient';
-import { LogWatcher } from './LogWatcher';
-import { LogParser, PlayerInfo, LobbyDebugPlayer } from './LogParser';
+import { RconClient } from './rconClient';
+import { LogWatcher } from './logWatcher';
+import { LogParser, PlayerInfo, LobbyDebugPlayer } from './logParser';
 
 export class RconManager extends EventEmitter {
   private rconClient: RconClient | null = null;
@@ -66,6 +66,8 @@ export class RconManager extends EventEmitter {
 
       // Start watching the log
       this.logWatcher.start();
+
+      this.lastUpdate = Math.floor(Date.now() / 1000);
 
       // Start periodic update checks
       this.startUpdateChecker();
@@ -180,19 +182,56 @@ export class RconManager extends EventEmitter {
   }
 
   /**
-   * Execute status commands (status + tf_lobby_debug for TF2)
+   * Execute status commands (status + tf_lobby_debug for TF2).
+   * Parses the status response and updates the player list from it.
    */
   private async executeStatusCommands(): Promise<void> {
     try {
       if (!this.rconClient) return;
 
-      await this.rconClient.execute('status');
+      const statusResponse = await this.rconClient.execute('status');
+      if (process.env.DEBUG_RCON === '1') {
+        console.log(
+          '[RconManager] status response length=%d lines=%d',
+          statusResponse.length,
+          statusResponse.split(/\r?\n/).length,
+        );
+        console.log('[RconManager] status response preview:', statusResponse.slice(0, 400).replace(/\n/g, ' | '));
+      }
+
+      // Parse status output and update players (same format as log file)
+      const statusLines = statusResponse.split(/\r?\n/);
+      let parsedCount = 0;
+      for (const line of statusLines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+        const playerInfo = LogParser.parsePlayerInfo(trimmed);
+        if (playerInfo) {
+          this.updatePlayer(playerInfo);
+          parsedCount++;
+        }
+      }
+      if (parsedCount > 0) {
+        if (process.env.DEBUG_RCON === '1') {
+          console.log('[RconManager] Parsed %d player(s) from status response', parsedCount);
+        }
+        this.emitPlayerUpdate();
+      } else if (process.env.DEBUG_RCON === '1' && statusResponse.length > 0) {
+        const sampleLines = statusLines.filter((l) => l.trim().startsWith('#')).slice(0, 3);
+        console.log('[RconManager] No player lines parsed; sample #-lines:', sampleLines);
+      }
 
       // Only execute tf_lobby_debug for TF2 (appid 440)
       if (process.env.STEAM_APPID === '440') {
         this.lastLobbyDebugResponse = await this.rconClient.execute(
           'tf_lobby_debug',
         );
+        // Status is often empty over RCON; refresh LastSeen from lobby so players don't all expire
+        this.refreshLastSeenFromLobby();
+        // When status returned no players, build/update player list from lobby debug (SteamID + team/type only)
+        if (parsedCount === 0) {
+          this.syncPlayersFromLobby();
+        }
       }
 
       this.lastUpdate = Math.floor(Date.now() / 1000);
@@ -260,6 +299,79 @@ export class RconManager extends EventEmitter {
     }
 
     this.lastUpdate = Math.floor(Date.now() / 1000);
+  }
+
+  /**
+   * Build or update the player list from tf_lobby_debug when status returns empty over RCON.
+   * Creates minimal PlayerInfo entries (SteamID, Team, Type) so the UI has a player list.
+   */
+  private syncPlayersFromLobby(): void {
+    if (
+      !this.lastLobbyDebugResponse ||
+      this.lastLobbyDebugResponse.includes('Failed to find lobby shared object')
+    ) {
+      return;
+    }
+    const lobbyPlayers = LogParser.parseLobbyResponse(this.lastLobbyDebugResponse);
+    const now = Math.floor(Date.now() / 1000);
+    for (const lp of lobbyPlayers) {
+      const existingIndex = this.players.findIndex((p) => p.SteamID === lp.SteamID);
+      if (existingIndex !== -1) {
+        const p = this.players[existingIndex];
+        p.LastSeen = now;
+        p.Team = lp.Team;
+        p.Type = lp.Type;
+        p.MemberType = lp.MemberType;
+      } else {
+        const minimal: PlayerInfo = {
+          SteamID: lp.SteamID,
+          Name: '', // No name from lobby; status over RCON is often empty
+          UserID: 0,
+          SteamAccType: 'U',
+          SteamUniverse: 1,
+          Connected: '0:00',
+          Ping: 0,
+          Loss: 0,
+          State: 'active',
+          LastSeen: now,
+          Team: lp.Team,
+          Type: lp.Type,
+          MemberType: lp.MemberType,
+        };
+        // IsMe set when we have name from status/log; lobby-only entries have no name
+        this.players.push(minimal);
+      }
+    }
+    if (lobbyPlayers.length > 0) {
+      this.emitPlayerUpdate();
+    }
+  }
+
+  /**
+   * Refresh LastSeen for existing players that appear in the latest lobby debug.
+   * When status returns empty over RCON, we never get updatePlayer() calls, so
+   * players would otherwise all expire after PLAYER_EXPIRATION_SECONDS.
+   */
+  private refreshLastSeenFromLobby(): void {
+    if (
+      !this.lastLobbyDebugResponse ||
+      this.lastLobbyDebugResponse.includes('Failed to find lobby shared object')
+    ) {
+      return;
+    }
+    const lobbyPlayers = LogParser.parseLobbyResponse(this.lastLobbyDebugResponse);
+    const lobbySteamIds = new Set(lobbyPlayers.map((p) => p.SteamID));
+    const now = Math.floor(Date.now() / 1000);
+    let refreshed = 0;
+    for (const p of this.players) {
+      if (lobbySteamIds.has(p.SteamID)) {
+        p.LastSeen = now;
+        refreshed++;
+      }
+    }
+    if (refreshed > 0 && process.env.DEBUG_RCON === '1') {
+      console.log('[RconManager] Refreshed LastSeen for %d player(s) from lobby', refreshed);
+    }
   }
 
   /**

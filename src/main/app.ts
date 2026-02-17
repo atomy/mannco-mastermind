@@ -15,7 +15,7 @@ import {
   updatePlayerReputationData,
   setGetCurrentPlayerCollection,
 } from './playerReputationHandler';
-import { getDysStats } from './dysStatsHandler';
+import { getDysStatsAsync } from './dysStatsHandler';
 import { OnAppExitCallback } from './appExitCallback';
 import {
   sendPlayerData,
@@ -24,8 +24,8 @@ import {
 } from './appIpc';
 import { parseTF2PlayerStats } from './tf2PlayerStats';
 import { PlaytimeRequest } from './playtimeTypes';
-import { RconManager } from './rcon/RconManager';
-import type { FragInfo as RconFragInfo } from './rcon/LogParser';
+import { RconManager } from './rcon/rconManager';
+import type { FragInfo as RconFragInfo } from './rcon/logParser';
 
 // RCON Manager instance
 let rconManager: RconManager | null = null;
@@ -206,6 +206,10 @@ const updateSteamProfileDataForPlayers = (
                 player.SteamConfigured = steamPlayer.profilestate;
                 player.SteamCreatedTimestamp = steamPlayer.timecreated;
                 player.SteamCountryCode = steamPlayer.loccountrycode;
+                // Use Steam display name when we have no in-game name (e.g. lobby-only players)
+                if ((!player.Name || player.Name.trim() === '') && steamPlayer.personaname) {
+                  player.Name = steamPlayer.personaname;
+                }
 
                 const cachePlayer = { ...player };
                 const existingIndex = currentSteamProfileInformation.findIndex(
@@ -219,6 +223,9 @@ const updateSteamProfileDataForPlayers = (
               }
             });
           });
+          if (currentPlayerCollection.length > 0) {
+            sendPlayerData(currentPlayerCollection);
+          }
         }
       },
     });
@@ -779,7 +786,7 @@ const startDysStatsUpdater = () => {
 
   dysStatsUpdateTimer = setInterval(async () => {
     dysStatsUpdatePlayerList.forEach(async (playerSteamID) => {
-      const stats = await getDysStats(playerSteamID);
+      const stats = await getDysStatsAsync(playerSteamID);
       const playerIndex = currentPlayerCollection.findIndex(
         (p) => p.SteamID === playerSteamID,
       );

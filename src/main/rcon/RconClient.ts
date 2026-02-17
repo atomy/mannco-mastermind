@@ -28,7 +28,11 @@ export class RconClient extends EventEmitter {
   private requestId = 0;
   private pendingRequests = new Map<
     number,
-    { resolve: (value: string) => void; reject: (reason: Error) => void }
+    {
+      resolve: (value: string) => void;
+      reject: (reason: Error) => void;
+      buffer?: string;
+    }
   >();
 
   constructor(host: string, port: number, password: string) {
@@ -136,11 +140,13 @@ export class RconClient extends EventEmitter {
         reject(new Error('Socket not connected'));
       }
 
-      // Timeout after 10 seconds
+      // Timeout after 10 seconds; resolve with any accumulated response, or empty string if none
       setTimeout(() => {
-        if (this.pendingRequests.has(id)) {
+        const pending = this.pendingRequests.get(id);
+        if (pending) {
           this.pendingRequests.delete(id);
-          reject(new Error(`Command timeout: ${command}`));
+          const body = pending.buffer !== undefined ? pending.buffer : '';
+          pending.resolve(body);
         }
       }, 10000);
     });
@@ -215,7 +221,9 @@ export class RconClient extends EventEmitter {
   }
 
   /**
-   * Handle a parsed packet
+   * Handle a parsed packet.
+   * Source RCON may split long responses across multiple SERVERDATA_RESPONSE_VALUE
+   * packets (max ~4096 chars each). We accumulate until an empty body (terminator).
    */
   private handlePacket(packet: RconPacket): void {
     const pending = this.pendingRequests.get(packet.id);
@@ -231,9 +239,48 @@ export class RconClient extends EventEmitter {
         this.pendingRequests.delete(packet.id);
       }
     } else if (packet.type === SERVERDATA_RESPONSE_VALUE) {
+      // Server may send empty first then data (same id). Resolve any older pending request with "" so we don't drop the data packet for the current id.
+      this.resolveOlderPendingWithEmpty(packet.id);
+
+      const pending = this.pendingRequests.get(packet.id);
       if (pending) {
-        pending.resolve(packet.body);
-        this.pendingRequests.delete(packet.id);
+        if (pending.buffer === undefined) {
+          pending.buffer = '';
+        }
+        pending.buffer += packet.body;
+        const emptyTerminator = packet.body.length === 0;
+        const smallPayload = packet.body.length > 0 && packet.body.length < 4096;
+        const isComplete =
+          (emptyTerminator && pending.buffer.length > 0) || smallPayload;
+        if (process.env.DEBUG_RCON === '1') {
+          console.log(
+            `[RCON] Response packet id=${packet.id} bodyLen=${packet.body.length} totalBuf=${pending.buffer.length} complete=${isComplete}`,
+          );
+        }
+        if (isComplete) {
+          const fullResponse = pending.buffer;
+          this.pendingRequests.delete(packet.id);
+          if (process.env.DEBUG_RCON === '1') {
+            console.log(
+              `[RCON] Full response length=${fullResponse.length} preview=${fullResponse.slice(0, 120).replace(/\n/g, ' ')}...`,
+            );
+          }
+          pending.resolve(fullResponse);
+        }
+        // If empty and buffer still empty: do not resolve yet; wait for a possible data packet with same id, or for next response (different id) or timeout
+      }
+    }
+  }
+
+  /**
+   * Resolve any pending request with id less than this one with "".
+   * Used when we receive a response for a newer command: the older one is complete with no more data.
+   */
+  private resolveOlderPendingWithEmpty(currentId: number): void {
+    for (const [id, pending] of this.pendingRequests) {
+      if (id < currentId) {
+        this.pendingRequests.delete(id);
+        pending.resolve(pending.buffer !== undefined ? pending.buffer : '');
       }
     }
   }
