@@ -1,6 +1,6 @@
 # Overview
 
-Application that connects to your source-1 game instance (Team Fortress 2, mods like Dystopia etc.) and shows all players currently on the server where you are on, providing additional intelligence information.
+Application that connects to your source-1 game instance (Team Fortress 2, mods like Dystopia, Empires etc.) and shows all players currently on the server where you are on, providing additional intelligence information.
 
 ![Current Players – overview with player list, stats and log](doc/2026-02-17_21-11.png)
 
